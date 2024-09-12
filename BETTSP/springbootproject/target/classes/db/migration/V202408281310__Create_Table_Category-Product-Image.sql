@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS public.category(id SERIAL PRIMARY KEY, name VARCHAR(255));
+CREATE TABLE IF NOT EXISTS public.product(id SERIAL PRIMARY KEY, name VARCHAR(255), description VARCHAR(255), id_category BIGINT);
+CREATE TABLE IF NOT EXISTS public.image(id SERIAL PRIMARY KEY, url VARCHAR(255), description VARCHAR(255), id_product BIGINT);
