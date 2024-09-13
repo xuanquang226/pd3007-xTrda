@@ -34,6 +34,14 @@ public class ProductServiceImpl implements ProductService {
         // imageDTOs.add(imageDTO);
         // }
         // imageDao.createManyImage(imageDTOs);
+        /*
+         * - gui json co chua cac thong tin cua productdto, product dto co gi? co name
+         * des idcategory va mot list image
+         * - list image xu ly sao? cung la mot doi tuong luon chua name des va (link img
+         * se null va duoc them vao sau)
+         * -
+         */
+        String directory = "D:/Quang/project-30-07-2024/BETTSP/springbootproject/src/main/resources/static/images/";
 
         productDao.createOneProduct(productDTO);
         ProductDTO newProductDTO = productDao.findOneProductByName(productDTO.getName());

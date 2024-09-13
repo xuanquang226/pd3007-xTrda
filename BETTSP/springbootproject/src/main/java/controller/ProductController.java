@@ -14,8 +14,8 @@ import data.dto.ProductDTO;
 import services.ProductService;
 
 @RestController
-@RequestMapping("product")
-@CrossOrigin(origins = "http://localhost:3030")
+@RequestMapping("/product")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
 
     @Autowired

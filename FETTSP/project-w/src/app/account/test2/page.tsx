@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react";
 import Test from "../test/page";
-
+import CreateProduct from "@/components/create-product";
 export default function () {
     const [name, setName] = useState<string>('');
     // const [age, setAge] = useState<number>(0);
@@ -56,6 +56,7 @@ export default function () {
                     </div>
                 </div>
             </div>
+            <CreateProduct></CreateProduct>
         </>
     )
 }

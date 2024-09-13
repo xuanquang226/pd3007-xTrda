@@ -4,6 +4,7 @@ import styles from "./layout.module.css"
 import { useEffect, useState } from "react";
 import { Gallery } from "react-grid-gallery";
 import HandleImage from "../../../components/handle-img"
+import CreateProduct from "@/components/create-product";
 
 
 export default function LearnHTMLLayout() {
@@ -209,6 +210,8 @@ export default function LearnHTMLLayout() {
                 </div>
             </div>
             <HandleImage ></HandleImage>
+
+            <CreateProduct></CreateProduct>
         </>
     );
 }
