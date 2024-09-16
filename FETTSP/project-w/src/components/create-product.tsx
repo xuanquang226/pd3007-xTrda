@@ -1,19 +1,8 @@
 'use client'
+import { Product } from "@/type/product";
 import { useEffect, useState } from "react";
 
-interface Image {
-    id: number;
-    url: string;
-    description: string;
-    idProduct: number;
-}
-interface Product {
-    id: number;
-    name: string;
-    description: string;
-    idCategory: number;
-    imageDTOs: Image[];
-}
+
 
 export default function CreateProduct() {
     const [product, setProduct] = useState<Product>({
@@ -35,11 +24,17 @@ export default function CreateProduct() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        const formData = new FormData();
+
         if (files) {
+            Array.from(files).map(file => {
+                formData.append('files', file);
+            })
+
             const images: Image[] = Array.from(files).map((file, index) => ({
                 id: index,
-                url: URL.createObjectURL(file),
-                description: '',
+                url: ' ',
+                description: file.name,
                 idProduct: 0,
             }));
 
@@ -48,13 +43,15 @@ export default function CreateProduct() {
                 imageDTOs: images,
             };
 
+            formData.append('product', JSON.stringify(updatedProduct));
+
             try {
                 const response = await fetch("http://localhost:8082/product", {
                     method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(updatedProduct)
+                    // headers: {
+                    //     'Content-Type': 'application/json',
+                    // khong can khi gui formdata },
+                    body: formData
                 });
 
                 if (response.ok) {

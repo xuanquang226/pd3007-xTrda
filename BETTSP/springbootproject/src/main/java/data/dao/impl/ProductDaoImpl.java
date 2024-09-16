@@ -77,7 +77,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public ProductDTO findOneProductByName(String name) {
+    public List<ProductDTO> findOneProductByName(String name) {
         return productMapper.toDto(productRepository.findByName(name));
     }
 

@@ -2,6 +2,8 @@ package services;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import data.dto.ProductDTO;
 
 public interface ProductService {
@@ -9,7 +11,7 @@ public interface ProductService {
 
     ProductDTO getOneProduct(Long id);
 
-    void createOneProduct(ProductDTO productDTO);
+    void createOneProduct(ProductDTO productDTO, MultipartFile[] files);
 
     void updateOneProduct(ProductDTO productDTO);
 

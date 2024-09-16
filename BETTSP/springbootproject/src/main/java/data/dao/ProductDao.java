@@ -9,7 +9,7 @@ public interface ProductDao {
 
     ProductDTO getOneProduct(Long id);
 
-    ProductDTO findOneProductByName(String name);
+    List<ProductDTO> findOneProductByName(String name);
 
     void createOneProduct(ProductDTO productDTO);
 
