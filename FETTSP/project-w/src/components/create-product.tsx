@@ -1,4 +1,5 @@
 'use client'
+import { Image } from "@/type/image";
 import { Product } from "@/type/product";
 import { useEffect, useState } from "react";
 

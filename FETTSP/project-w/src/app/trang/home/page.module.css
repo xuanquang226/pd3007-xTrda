@@ -60,11 +60,20 @@
 .grid-main{
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  height: 25%;
   width: 100%;
   gap: 5px;
   padding-bottom: 5px;
   box-sizing: border-box;
-  justify-content: space-between;
+  justify-content: flex-start;
+}
+
+.grid-item{
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+  flex-basis: 33%;
 }
 
 .grid-main .grid-item img{

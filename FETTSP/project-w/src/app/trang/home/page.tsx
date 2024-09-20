@@ -3,10 +3,11 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import ShowImageModal from '../../../components/show-image.modal'
 import { useEffect, useState } from "react";
+import { Image } from "@/type/image";
 export default function homeTrang() {
     const [linkImg, setLinkImg] = useState<string>("");
     const [showImgModal, setShowImgModal] = useState<boolean>(false);
-
+    const [images, setImages] = useState<Image[]>();
 
     useEffect(() => {
         // const newDiv = document.createElement('div');
@@ -16,6 +17,9 @@ export default function homeTrang() {
         // const linkHome = document.getElementById('link-home');
         // if (linkHome) linkHome.setAttribute("hidden", "false");
 
+        fetch("http://localhost:8082/images/many")
+            .then(res => res.json())
+            .then(data => setImages(data));
     }, []);
 
 
@@ -41,137 +45,15 @@ export default function homeTrang() {
                     <div className={styles['site-content']}>
                         <div className={styles['site-content__list-image']}>
                             <div className={styles['grid-main']}>
-                                <div className={styles['grid-item']} >
-                                    <img src="../images/01.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/01.jpg");
-                                            setShowImgModal(true);
-                                        }} style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }}
-                                    />
-                                </div>
-                            </div>
-                            <div className={styles['grid-main']}>
-                                <div className={styles['grid-item']} >
-                                    <img src="../images/02.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/02.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{
-                                            objectFit: "contain", maxWidth: "100%", maxHeight: "100%",
-                                        }} />
-                                </div>
-                                <div className={styles['grid-item']} >
-                                    <img src="../images/03.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/03.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                            </div>
-
-                            <div className={styles['grid-main']}>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/04.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/04.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/05.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/05.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                            </div>
-
-                            <div className={styles['grid-main']}>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/06.jpg"
-                                        onClick={() => {
-                                            setLinkImg("../images/06.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        alt="" style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/07.jpg"
-                                        onClick={() => {
-                                            setLinkImg("../images/07.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        alt="" style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/08.jpg"
-                                        onClick={() => {
-                                            setLinkImg("../images/08.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        alt="" style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                            </div>
-
-                            <div className={styles['grid-main']}>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/09.jpg"
-                                        onClick={() => {
-                                            setLinkImg("../images/09.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        alt="" style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/10.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/10.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                            </div>
-
-                            <div className={styles['grid-main']}>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/11.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/11.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                            </div>
-
-                            <div className={styles['grid-main']}>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/12.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/12.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/13.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/13.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
-                                <div className={styles['grid-item']}>
-                                    <img src="../images/14.jpg" alt=""
-                                        onClick={() => {
-                                            setLinkImg("../images/14.jpg");
-                                            setShowImgModal(true);
-                                        }}
-                                        style={{ objectFit: "contain", maxWidth: "100%", maxHeight: "100%" }} />
-                                </div>
+                                {images?.map((image) => (
+                                    <div className={styles['grid-item']} >
+                                        <img src={image.url} alt=""
+                                            onClick={() => {
+                                                setLinkImg(image.url);
+                                                setShowImgModal(true);
+                                            }} style={{ maxWidth: "100%", maxHeight: "100%" }}
+                                        />
+                                    </div>))}
                             </div>
                         </div>
                     </div>
