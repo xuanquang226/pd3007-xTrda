@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 
 @SpringBootApplication
-@ComponentScan(value = { "controller", "services", "data" })
+@ComponentScan(value = { "controller", "services", "data", "config" })
 @EntityScan(basePackages = { "data.entities" })
 @EnableJpaRepositories(basePackages = { "data.repositories" })
 @OpenAPIDefinition(info = @Info(title = "Library Apis", version = "1.0", description = "Library Management Apis"))

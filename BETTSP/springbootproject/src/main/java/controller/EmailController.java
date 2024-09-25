@@ -1,0 +1,32 @@
+package controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import data.dto.MailDTO;
+import services.MailService;
+
+@RestController
+@RequestMapping("/mail")
+@CrossOrigin(origins = "http://localhost:3000")
+public class EmailController {
+
+    @Autowired
+    private MailService mailService;
+
+    @PostMapping
+    public void sendMail(@RequestPart("mail") String jsonMail) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        MailDTO mailDTO = objectMapper.readValue(jsonMail, MailDTO.class);
+        mailService.sendEmail(mailDTO);
+    }
+}
