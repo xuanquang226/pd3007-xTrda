@@ -15,31 +15,70 @@ export default function contactMe() {
         body: ''
     });
 
+    const [errors, setErrors] = useState({
+        name: false,
+        email: false,
+        body: false,
+        phone: false
+    });
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = new FormData();
-        const fullEmail = `${mail.email}@gmail.com`;
-        const updatedMail = {
+
+        const fullEmail: string = `${mail.email}@gmail.com`;
+        const updatedMail: Mail = {
             ...mail,
             email: fullEmail
         }
-        formData.append('mail', JSON.stringify(updatedMail));
+        checkFieldInput(mail);
+        if (errors.email === false && errors.body === false && errors.phone === false) {
+            const formData = new FormData();
+            formData.append('mail', JSON.stringify(updatedMail));
+            try {
+                const response = await fetch("http://localhost:8082/mail", {
+                    method: 'POST',
+                    body: formData
+                });
+                if (response.ok) {
+                    console.log("Send mail succeed");
 
-        try {
-            const response = await fetch("http://localhost:8082/mail", {
-                method: 'POST',
-                body: formData
-            });
-            if (response.ok) {
-                console.log("Send mail succeed");
-
-            } else {
-                console.log("Send mail error");
+                } else {
+                    console.log("Send mail error");
+                }
+            } catch (error) {
+                console.log("Send mail error", error);
             }
-        } catch (error) {
-            console.log("Send mail error", error);
+            clearForm();
+        } else {
+            console.log("Nhap day du du lieu can thiet");
         }
-        clearForm();
+    };
+
+    const checkFieldInput = (mail: Mail) => {
+        let newErrors = { ...errors };
+        if (mail.email.length === 0) {
+            newErrors.email = true;
+        } else {
+            newErrors.email = false;
+        }
+
+        if (mail.name.length === 0) {
+            newErrors.name = true;
+        } else {
+            newErrors.name = false;
+        }
+
+        if (mail.phone.length === 0) {
+            newErrors.phone = true;
+        } else {
+            newErrors.phone = false;
+        }
+        if (mail.body.length === 0) {
+            newErrors.body = true;
+        } else {
+            newErrors.body = false;
+        }
+        setErrors(newErrors);
     };
 
     const clearForm = () => {
@@ -78,19 +117,6 @@ export default function contactMe() {
             <div className={styles['site-wrapper']}>
                 <div className={styles['site-container']}>
                     <div className={styles['site-content']}>
-                        {/* <form id="form-id" onSubmit={handleSubmit}>
-                            <label> Name customer:</label>
-                            <input type="text" placeholder="input name" onChange={(e) => setMail({ ...mail, name: e.target.value })} />
-                            <label> Email: </label>
-                            <input type="text" placeholder="input email" onChange={(e) => setMail({ ...mail, email: e.target.value })} />
-                            <label>Phone: </label>
-                            <input type="number" placeholder="input phone" onChange={(e) => setMail({ ...mail, phone: Number(e.target.value) })} />
-                            <label>Subject: </label>
-                            <input type="text" placeholder="input subject" onChange={(e) => setMail({ ...mail, subject: e.target.value })} />
-                            <label>Body: </label>
-                            <input type="text" placeholder="input body" onChange={(e) => setMail({ ...mail, body: e.target.value })} />
-                            <input type="submit" value="Submit" />
-                        </form> */}
                         <Form id="form-id" className="" onSubmit={handleSubmit}>
                             <div className="form-header" style={{ width: "50%" }}>
                                 <Form.Group className="mb-3" controlId="formName">
@@ -102,6 +128,7 @@ export default function contactMe() {
                                         onChange={(e) => setMail({ ...mail, name: e.target.value })}
                                     ></Form.Control>
                                 </Form.Group>
+                                <Form.Text className="text-danger" style={{ visibility: errors.name ? "visible" : "hidden" }}>Không được để trống</Form.Text>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Email</Form.Label>
                                     <InputGroup>
@@ -114,6 +141,7 @@ export default function contactMe() {
                                         <InputGroupText>@gmail.com</InputGroupText>
                                     </InputGroup>
                                 </Form.Group>
+                                <Form.Text className="text-danger" style={{ visibility: errors.email ? "visible" : "hidden" }}>Không được để trống</Form.Text>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Phone number</Form.Label>
                                     <Form.Control
@@ -123,6 +151,7 @@ export default function contactMe() {
                                         onChange={handlePhoneChange}
                                     ></Form.Control>
                                 </Form.Group>
+                                <Form.Text className="text-danger" style={{ visibility: errors.phone ? "visible" : "hidden" }}>Không được để trống</Form.Text>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Subject</Form.Label>
                                     <Form.Control
@@ -144,6 +173,7 @@ export default function contactMe() {
                                         style={{ height: '25vh', resize: "none" }}
                                     />
                                 </Form.Group>
+                                <Form.Text className="text-danger" style={{ visibility: errors.body ? "visible" : "hidden" }}>Không được để trống</Form.Text>
                             </div>
                             <div className="form-footer">
                                 <Button
