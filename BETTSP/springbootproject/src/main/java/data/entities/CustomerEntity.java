@@ -11,19 +11,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "Customer")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Product")
-public class ProductEntity extends BaseEntity {
-
+@AllArgsConstructor
+public class CustomerEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String description;
-    private Long idCategory;
-    private String price;
-    private Long quantity;
+    private String mail;
+    private String location;
+    private Long idAccount;
 }

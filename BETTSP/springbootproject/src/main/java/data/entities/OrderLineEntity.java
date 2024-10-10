@@ -11,19 +11,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "OrderLine")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Product")
-public class ProductEntity extends BaseEntity {
+@AllArgsConstructor
+public class OrderLineEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long idOrder;
+    private Long idProduct;
     private String name;
-    private String description;
-    private Long idCategory;
-    private String price;
     private Long quantity;
+    private String price;
+    private String note;
 }

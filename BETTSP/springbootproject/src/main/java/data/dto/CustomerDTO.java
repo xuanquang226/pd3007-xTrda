@@ -9,15 +9,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProductDTO extends BaseDTO {
+@AllArgsConstructor
+public class CustomerDTO extends BaseDTO {
     private Long id;
     private String name;
-    private String description;
-    private Long idCategory;
-    private List<ImageDTO> imageDTOs;
-
-    private Long quantity;
-    private String price;
+    private String mail;
+    private String location;
+    private Long idAccount;
+    private List<OrderDTO> listOrder;
 }
