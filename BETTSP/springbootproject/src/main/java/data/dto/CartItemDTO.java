@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CartItemDTO extends BaseDTO {
+    private Long id;
     private Long idCart;
     private Long idProduct;
     private Long quantity;
