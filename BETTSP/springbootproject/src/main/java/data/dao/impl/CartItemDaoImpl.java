@@ -99,4 +99,9 @@ public class CartItemDaoImpl implements CartItemDao {
         }
     }
 
+    @Override
+    public CartItemDTO getOneCartItemByIdProductAndIdCart(Long idProduct, Long idCart) {
+        return mapper.toDto(repository.findByIdProductAndIdCart(idProduct, idCart)
+                .orElseThrow(() -> new EntityNotFoundException("Khong tim thay entity")));
+    }
 }

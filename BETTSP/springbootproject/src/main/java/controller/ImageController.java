@@ -92,7 +92,7 @@ public class ImageController {
     }
 
     @PostMapping
-    public void createOneImage(ImageDTO imageDTO) {
+    public void createOneImage(@RequestBody ImageDTO imageDTO) {
         imageService.createOneImage(imageDTO);
     }
 
@@ -107,7 +107,7 @@ public class ImageController {
     }
 
     @DeleteMapping
-    public void deleteManyImage(@RequestBody List<Long> listDto) {
-        imageService.deleteManyImage(listDto);
+    public void deleteManyImage(@RequestBody List<Long> ids) {
+        imageService.deleteManyImage(ids);
     }
 }

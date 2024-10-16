@@ -20,4 +20,6 @@ public interface CartItemDao {
     void deleteOneCartItem(Long id);
 
     void deleteManyCartItem(List<Long> ids);
+
+    CartItemDTO getOneCartItemByIdProductAndIdCart(Long idProduct, Long idCart);
 }

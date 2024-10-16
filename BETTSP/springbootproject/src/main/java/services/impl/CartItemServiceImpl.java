@@ -1,12 +1,16 @@
 package services.impl;
 
+import java.lang.System.Logger.Level;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import data.dao.CartItemDao;
+import data.dao.ProductDao;
 import data.dto.CartItemDTO;
+import data.dto.ProductDTO;
 import jakarta.persistence.EntityNotFoundException;
 import services.CartItemService;
 
@@ -16,14 +20,50 @@ public class CartItemServiceImpl implements CartItemService {
     @Autowired
     private CartItemDao cartItemDao;
 
+    @Autowired
+    private ProductDao productDao;
+
     @Override
     public void createManyCartItem(List<CartItemDTO> dtos) {
-        cartItemDao.createManyCartItem(dtos);
+        List<CartItemDTO> newDtos = new ArrayList<>();
+        for (CartItemDTO dto : dtos) {
+            try {
+                if (dto.getIdProduct() != null) {
+                    newDtos.add(dto);
+                } else {
+                    throw new IllegalArgumentException("CartItemDto can't be null");
+                }
+            } catch (IllegalArgumentException eArgumentException) {
+                System.getLogger(CartItemServiceImpl.class.getName()).log(Level.INFO, eArgumentException);
+            }
+        }
+        cartItemDao.createManyCartItem(newDtos);
     }
 
     @Override
     public void createOneCartItem(CartItemDTO dto) {
-        cartItemDao.createOneCartItem(dto);
+        // Inserting the name of product and price after adding it to the cart
+        // Validate the value before creating the cart item
+        CartItemDTO cartItemDTO = dto;
+        ProductDTO productDTO = null;
+        try {
+            productDTO = productDao.getOneProduct(dto.getIdProduct());
+            cartItemDTO.setName(productDTO.getName());
+            Long price = Long.parseLong(productDTO.getPrice().toString()) * dto.getQuantity();
+            cartItemDTO.setPrice(price);
+        } catch (EntityNotFoundException entityNotFoundException) {
+            throw new IllegalArgumentException();
+        }
+
+        if (cartItemDTO.getQuantity() > productDTO.getQuantity()) {
+            throw new IllegalArgumentException();
+        }
+
+        if (cartItemDTO.getIdProduct() != null) {
+            cartItemDao.createOneCartItem(cartItemDTO);
+        } else {
+            throw new IllegalArgumentException("CartItemDto can't be null");
+        }
     }
 
     @Override
@@ -58,8 +98,23 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public void updateOneCartItem(CartItemDTO dto) {
-        cartItemDao.updateOneCartItem(dto);
+    public void updateOneCartItem(CartItemDTO dto) throws IllegalArgumentException, EntityNotFoundException {
+
+        CartItemDTO newDto = cartItemDao.getOneCartItemByIdProductAndIdCart(dto.getIdProduct(), dto.getIdCart());
+        ProductDTO productDTO = productDao.getOneProduct(newDto.getIdProduct());
+
+        if (dto.getQuantity() != null) {
+            if (dto.getQuantity() > productDTO.getQuantity()) {
+                throw new IllegalArgumentException();
+            }
+            newDto.setQuantity(dto.getQuantity());
+            Long newPrice = Long.parseLong(productDTO.getPrice().toString()) * dto.getQuantity();
+            newDto.setPrice(newPrice);
+        }
+        if (dto.getNote() != null) {
+            newDto.setNote(dto.getNote());
+        }
+        cartItemDao.updateOneCartItem(newDto);
     }
 
 }
