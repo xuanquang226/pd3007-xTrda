@@ -13,6 +13,8 @@ public interface CartItemService {
 
     CartItemDTO getOneCartItem(Long id);
 
+    List<CartItemDTO> getAllCartItemByIdCart(Long idCart);
+
     void updateOneCartItem(CartItemDTO dto);
 
     void updateManyCartItem(List<CartItemDTO> dtos);

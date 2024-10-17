@@ -1,5 +1,6 @@
 package data.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ import data.entities.CartItemEntity;
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItemEntity, Long> {
     Optional<CartItemEntity> findByIdProductAndIdCart(Long idProduct, Long idCart);
+
+    List<CartItemEntity> findAllByIdCart(Long idCart);
 }

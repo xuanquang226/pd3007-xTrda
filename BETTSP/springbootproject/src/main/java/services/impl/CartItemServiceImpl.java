@@ -117,4 +117,8 @@ public class CartItemServiceImpl implements CartItemService {
         cartItemDao.updateOneCartItem(newDto);
     }
 
+    @Override
+    public List<CartItemDTO> getAllCartItemByIdCart(Long idCart) {
+        return cartItemDao.getManyCartItemByIdCart(idCart);
+    }
 }

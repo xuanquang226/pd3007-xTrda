@@ -104,4 +104,9 @@ public class CartItemDaoImpl implements CartItemDao {
         return mapper.toDto(repository.findByIdProductAndIdCart(idProduct, idCart)
                 .orElseThrow(() -> new EntityNotFoundException("Khong tim thay entity")));
     }
+
+    @Override
+    public List<CartItemDTO> getManyCartItemByIdCart(Long idCart) {
+        return mapper.toDto(repository.findAllByIdCart(idCart));
+    }
 }

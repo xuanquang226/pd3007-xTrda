@@ -22,4 +22,6 @@ public interface CartItemDao {
     void deleteManyCartItem(List<Long> ids);
 
     CartItemDTO getOneCartItemByIdProductAndIdCart(Long idProduct, Long idCart);
+
+    List<CartItemDTO> getManyCartItemByIdCart(Long idCart);
 }

@@ -25,5 +25,5 @@ public class CartEntity extends BaseEntity {
     private String totalPrice;
     private String status;
     private String codeDiscount;
-    private String note;
+    private String notes;
 }

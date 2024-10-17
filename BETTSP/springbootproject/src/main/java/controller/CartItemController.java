@@ -36,6 +36,12 @@ public class CartItemController {
         }
     }
 
+    @GetMapping("/many/{idCart}")
+    public ResponseEntity<List<CartItemDTO>> getManyCartItemByIdCart(@PathVariable Long idCart) {
+        List<CartItemDTO> listCartItem = cartItemService.getAllCartItemByIdCart(idCart);
+        return ResponseEntity.ok(listCartItem);
+    }
+
     @PostMapping
     public ResponseEntity<Void> createOneCartItem(@RequestBody CartItemDTO cartItemDTO) {
         try {
