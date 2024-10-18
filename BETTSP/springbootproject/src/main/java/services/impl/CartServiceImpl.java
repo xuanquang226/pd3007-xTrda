@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import data.dao.CartDao;
 import data.dao.CartItemDao;
@@ -32,38 +34,35 @@ public class CartServiceImpl implements CartService {
         return null;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public CartDTO getOneCartByIdCustomer(Long idCustomer) throws EntityNotFoundException {
         CartDTO cart = cartDao.getOneCartByIdCustomer(idCustomer);
         List<CartItemDTO> listCartItem = cartItemDao.getManyCartItemByIdCart(cart.getId());
         cart.setListCartItem(listCartItem);
         return cart;
-    }
-
-    @Override
-    public void updateOneCart(CartDTO dto) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void updateCodeDiscount() {
-        // TODO Auto-generated method stub
-
+    public void updateOneCartWithoutTotalPrice(CartDTO dto) {
+        CartDTO newCart = cartDao.getOneCartByIdCart(dto.getId());
+        if (dto.getNotes() != null) {
+            newCart.setNotes(dto.getNotes());
+        }
+        if (dto.getCodeDiscount() != null) {
+            newCart.setCodeDiscount(dto.getCodeDiscount());
+        }
+        if (dto.getStatus() != null) {
+            newCart.setStatus(dto.getStatus());
+        }
+        if (dto.getListCartItem() != null) {
+            newCart.setListCartItem(dto.getListCartItem());
+        }
+        cartDao.updateOneCartWithoutTotalPrice(newCart);
     }
 
-    @Override
-    public void updateNotes() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void updateStatus() {
-        // TODO Auto-generated method stub
-
-    }
-
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public void updateTotalPrice(Long idCustomer) {
         // CartDTO cart = getOneCartByIdCart(idCustomer); bị null
@@ -75,8 +74,19 @@ public class CartServiceImpl implements CartService {
             tempPrice += cartItem.getPrice();
         }
 
-        String totalPrice = String.valueOf(tempPrice);
-        cartDao.updateTotalPrice(totalPrice, idCustomer);
+        // TODO tim hieu 1 code tuong ung voi phan tram
+        String codeDiscount = cart.getCodeDiscount();
+        Long codeDiscountToPercent = Long.parseLong(codeDiscount);
+
+        Double totalPrice = tempPrice - ((Double.valueOf(codeDiscountToPercent) / 100) * tempPrice);
+
+        cartDao.updateTotalPrice(String.valueOf(totalPrice), idCustomer);
+    }
+
+    @Override
+    public CartDTO updateTotalPriceAndGetCart(Long idCustomer) {
+        updateTotalPrice(idCustomer);
+        return getOneCartByIdCustomer(idCustomer);
     }
 
 }

@@ -27,12 +27,11 @@ public class CartController {
     @GetMapping("/{idCustomer}")
     public ResponseEntity<CartDTO> getOneCartByIdCustomer(@PathVariable Long idCustomer) {
         try {
-            CartDTO cart = cartService.getOneCartByIdCustomer(idCustomer);
+            CartDTO cart = cartService.updateTotalPriceAndGetCart(idCustomer);
             return ResponseEntity.ok(cart);
         } catch (EntityNotFoundException entityNotFoundException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
     }
 
     @PostMapping
@@ -41,9 +40,16 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/{idCustomer}")
-    public ResponseEntity<Void> updateTotalPrice(@PathVariable Long idCustomer) {
-        cartService.updateTotalPrice(idCustomer);
+    // @PutMapping("/{idCustomer}")
+    // public ResponseEntity<Void> updateTotalPrice(@PathVariable Long idCustomer) {
+    // cartService.updateTotalPrice(idCustomer);
+    // return ResponseEntity.noContent().build();
+    // }
+
+    @PutMapping
+    public ResponseEntity<Void> updateCart(@RequestBody CartDTO cart) {
+        cartService.updateOneCartWithoutTotalPrice(cart);
         return ResponseEntity.noContent().build();
     }
+
 }

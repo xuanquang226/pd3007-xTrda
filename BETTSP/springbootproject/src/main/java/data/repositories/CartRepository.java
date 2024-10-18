@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface CartRepository extends JpaRepository<CartEntity, Long> {
+
+    @Transactional
     Optional<CartEntity> findByIdCustomer(Long idCustomer);
 
     @Modifying

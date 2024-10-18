@@ -1,10 +1,10 @@
 package data.dao.impl;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import data.dao.CartDao;
 import data.dto.CartDTO;
@@ -26,13 +26,14 @@ public class CartDaoImpl implements CartDao {
         return mapper.toDto(repository.findById(id).orElseThrow(() -> new EntityNotFoundException()));
     }
 
+    @Transactional
     @Override
     public CartDTO getOneCartByIdCustomer(Long idCustomer) {
         return mapper.toDto(repository.findByIdCustomer(idCustomer).orElseThrow(() -> new EntityNotFoundException()));
     }
 
     @Override
-    public void updateOneCart(CartDTO dto) {
+    public void updateOneCartWithoutTotalPrice(CartDTO dto) {
         Optional<CartDTO> optional = Optional.ofNullable((getOneCartByIdCart(dto.getId())));
         if (optional.isPresent()) {
             repository.save(mapper.toEntity(dto));
@@ -46,24 +47,7 @@ public class CartDaoImpl implements CartDao {
         repository.save(mapper.toEntity(dto));
     }
 
-    @Override
-    public void updateCodeDiscount() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void updateNotes() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void updateStatus() {
-        // TODO Auto-generated method stub
-
-    }
-
+    @Transactional
     @Override
     public void updateTotalPrice(String totalPrice, Long idCustomer) {
         repository.updateTotalPriceByIdCustomerAndTotalPrice(totalPrice, idCustomer);

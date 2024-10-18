@@ -8,15 +8,9 @@ public interface CartDao {
 
     CartDTO getOneCartByIdCustomer(Long idCustomer);
 
-    void updateOneCart(CartDTO dto);
+    void updateOneCartWithoutTotalPrice(CartDTO dto);
 
     void createOneCart(CartDTO dto);
 
     void updateTotalPrice(String totalPrice, Long idCustomer);
-
-    void updateStatus();
-
-    void updateCodeDiscount();
-
-    void updateNotes();
 }

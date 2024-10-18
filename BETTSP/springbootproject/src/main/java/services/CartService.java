@@ -7,15 +7,11 @@ public interface CartService {
 
     CartDTO getOneCartByIdCustomer(Long idCustomer);
 
-    void updateOneCart(CartDTO dto);
+    void updateOneCartWithoutTotalPrice(CartDTO dto);
 
     void createOneCart(CartDTO dto);
 
     void updateTotalPrice(Long idCustomer);
 
-    void updateStatus();
-
-    void updateCodeDiscount();
-
-    void updateNotes();
+    CartDTO updateTotalPriceAndGetCart(Long idCustomer);
 }
