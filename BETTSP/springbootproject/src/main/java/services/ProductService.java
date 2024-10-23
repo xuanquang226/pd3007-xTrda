@@ -1,5 +1,6 @@
 package services;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -18,4 +19,6 @@ public interface ProductService {
     void deleteOneProduct(Long id);
 
     void deleteManyProduct(List<Long> listId);
+
+    void updateQuantityAfterOrder(HashMap<Long, Long> productIdToQuantityMap);
 }

@@ -14,7 +14,7 @@ public class CartItemDTO extends BaseDTO {
     private Long idCart;
     private Long idProduct;
     private Long quantity;
-    private Long price;
+    private String price;
     private String note;
     private String name;
 }

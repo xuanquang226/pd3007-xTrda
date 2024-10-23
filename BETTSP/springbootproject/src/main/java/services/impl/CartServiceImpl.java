@@ -1,6 +1,7 @@
 package services.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import data.dao.CartDao;
 import data.dao.CartItemDao;
 import data.dto.CartDTO;
 import data.dto.CartItemDTO;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import services.CartService;
 
@@ -23,6 +25,9 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartItemDao cartItemDao;
 
+    @Autowired
+    private EntityManager entityManager;
+
     @Override
     public void createOneCart(CartDTO dto) {
         cartDao.createOneCart(dto);
@@ -34,9 +39,11 @@ public class CartServiceImpl implements CartService {
         return null;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     @Override
     public CartDTO getOneCartByIdCustomer(Long idCustomer) throws EntityNotFoundException {
+        // TODO: Sử dụng security context để lấy name -> lấy id
+        processCart(idCustomer);
         CartDTO cart = cartDao.getOneCartByIdCustomer(idCustomer);
         List<CartItemDTO> listCartItem = cartItemDao.getManyCartItemByIdCart(cart.getId());
         cart.setListCartItem(listCartItem);
@@ -54,7 +61,7 @@ public class CartServiceImpl implements CartService {
             newCart.setCodeDiscount(dto.getCodeDiscount());
         }
         if (dto.getStatus() != null) {
-            newCart.setStatus(dto.getStatus());
+            newCart.setStatus("active");
         }
         if (dto.getListCartItem() != null) {
             newCart.setListCartItem(dto.getListCartItem());
@@ -64,14 +71,43 @@ public class CartServiceImpl implements CartService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public void updateTotalPrice(Long idCustomer) {
-        // CartDTO cart = getOneCartByIdCart(idCustomer); bị null
-        // List<CartItemDTO> listCartItem = cart.getListCartItem();
+    public void processCart(Long idCustomer) {
         CartDTO cart = cartDao.getOneCartByIdCustomer(idCustomer);
         List<CartItemDTO> listCartItem = cartItemDao.getManyCartItemByIdCart(cart.getId());
+        cart.setListCartItem(listCartItem);
+        if (listCartItem.isEmpty()) {
+            throw new IllegalArgumentException("Gio hang trong");
+        } else if ((cart.getStatus().equalsIgnoreCase("inactive") && !listCartItem.isEmpty())) {
+            updateOneCartWithoutTotalPrice(cart);
+            updateTotalPrice(listCartItem, cart, idCustomer);
+        } else if (cart.getStatus().equalsIgnoreCase("active")) {
+            updateTotalPrice(listCartItem, cart, idCustomer);
+        }
+    }
+
+    // @Override
+    // public CartDTO updateTotalPriceAndGetCart(Long idCustomer) {
+    // updateTotalPrice(idCustomer);
+    // return getOneCartByIdCustomer(idCustomer);
+    // }
+
+    @Transactional
+    @Override
+    public void updateCartAfterOrder(Long idCustomer) {
+        CartDTO cartDTO = getOneCartByIdCustomer(idCustomer);
+        cartDTO.setNotes("empty");
+        cartDTO.setStatus("inactive");
+        cartDTO.setTotalPrice("0");
+        cartDTO.setCodeDiscount("0");
+        cartDao.updateCartAfterOrder(cartDTO);
+        List<Long> ids = cartDTO.getListCartItem().stream().map(CartItemDTO::getId).collect(Collectors.toList());
+        cartItemDao.deleteManyCartItem(ids);
+    }
+
+    public void updateTotalPrice(List<CartItemDTO> listCartItem, CartDTO cart, Long idCustomer) {
         Long tempPrice = 0L;
         for (CartItemDTO cartItem : listCartItem) {
-            tempPrice += cartItem.getPrice();
+            tempPrice += Long.parseLong(cartItem.getPrice());
         }
 
         // TODO tim hieu 1 code tuong ung voi phan tram
@@ -81,12 +117,6 @@ public class CartServiceImpl implements CartService {
         Double totalPrice = tempPrice - ((Double.valueOf(codeDiscountToPercent) / 100) * tempPrice);
 
         cartDao.updateTotalPrice(String.valueOf(totalPrice), idCustomer);
+        entityManager.clear();
     }
-
-    @Override
-    public CartDTO updateTotalPriceAndGetCart(Long idCustomer) {
-        updateTotalPrice(idCustomer);
-        return getOneCartByIdCustomer(idCustomer);
-    }
-
 }

@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import data.dao.CartDao;
 import data.dto.CartDTO;
@@ -26,7 +25,6 @@ public class CartDaoImpl implements CartDao {
         return mapper.toDto(repository.findById(id).orElseThrow(() -> new EntityNotFoundException()));
     }
 
-    @Transactional
     @Override
     public CartDTO getOneCartByIdCustomer(Long idCustomer) {
         return mapper.toDto(repository.findByIdCustomer(idCustomer).orElseThrow(() -> new EntityNotFoundException()));
@@ -47,10 +45,19 @@ public class CartDaoImpl implements CartDao {
         repository.save(mapper.toEntity(dto));
     }
 
-    @Transactional
     @Override
     public void updateTotalPrice(String totalPrice, Long idCustomer) {
         repository.updateTotalPriceByIdCustomerAndTotalPrice(totalPrice, idCustomer);
+    }
+
+    @Override
+    public void updateCartAfterOrder(CartDTO dto) {
+        Optional<CartDTO> optional = Optional.ofNullable(getOneCartByIdCart(dto.getId()));
+        if (optional.isPresent()) {
+            repository.save(mapper.toEntity(dto));
+        } else {
+            throw new EntityNotFoundException("Khong tim thay entity de update");
+        }
     }
 
 }

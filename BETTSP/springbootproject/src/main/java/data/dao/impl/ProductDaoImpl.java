@@ -86,4 +86,13 @@ public class ProductDaoImpl implements ProductDao {
         return productMapper.toDto(productRepository.findProductsByIdCategory(id));
     }
 
+    @Override
+    public void updateQuantityAfterOrder(List<ProductDTO> productDTOs) {
+        productRepository.saveAll(productMapper.toEntity(productDTOs));
+    }
+
+    @Override
+    public List<ProductDTO> findProductByIds(List<Long> productIdList) {
+        return productMapper.toDto(productRepository.findProductsByIdIn(productIdList));
+    }
 }

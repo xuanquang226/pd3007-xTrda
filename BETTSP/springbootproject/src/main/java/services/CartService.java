@@ -11,7 +11,9 @@ public interface CartService {
 
     void createOneCart(CartDTO dto);
 
-    void updateTotalPrice(Long idCustomer);
+    void processCart(Long idCustomer);
 
-    CartDTO updateTotalPriceAndGetCart(Long idCustomer);
+    // CartDTO updateTotalPriceAndGetCart(Long idCustomer);
+
+    void updateCartAfterOrder(Long idCustomer);
 }

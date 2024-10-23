@@ -49,7 +49,7 @@ public class CartItemServiceImpl implements CartItemService {
         try {
             productDTO = productDao.getOneProduct(dto.getIdProduct());
             cartItemDTO.setName(productDTO.getName());
-            Long price = Long.parseLong(productDTO.getPrice().toString()) * dto.getQuantity();
+            String price = (Long.parseLong(productDTO.getPrice()) * dto.getQuantity()) + "";
             cartItemDTO.setPrice(price);
         } catch (EntityNotFoundException entityNotFoundException) {
             throw new IllegalArgumentException();
@@ -108,7 +108,7 @@ public class CartItemServiceImpl implements CartItemService {
                 throw new IllegalArgumentException();
             }
             newDto.setQuantity(dto.getQuantity());
-            Long newPrice = Long.parseLong(productDTO.getPrice().toString()) * dto.getQuantity();
+            String newPrice = Long.parseLong(productDTO.getPrice().toString()) * dto.getQuantity() + "";
             newDto.setPrice(newPrice);
         }
         if (dto.getNote() != null) {

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS public.cart(id SERIAL PRIMARY KEY, id_customer BIGINT
                                         ,status VARCHAR(32), code_discount VARCHAR(32), notes VARCHAR(255));       
 CREATE TABLE IF NOT EXISTS public.cart_item(id SERIAL PRIMARY KEY, id_cart BIGINT, id_product BIGINT, quantity BIGINT
                                             , price VARCHAR(32), note VARCHAR(255), name VARCHAR(255));
-CREATE TABLE IF NOT EXISTS public.order(id SERIAL PRIMARY KEY, id_customer BIGINT, total_price VARCHAR(32), status VARCHAR(32)
+CREATE TABLE IF NOT EXISTS public.orders(id SERIAL PRIMARY KEY, id_customer BIGINT, total_price VARCHAR(32), status VARCHAR(32)
                                         ,code_discount VARCHAR(32), notes VARCHAR(255));  
 CREATE TABLE IF NOT EXISTS public.order_line(id SERIAL PRIMARY KEY, id_order BIGINT, id_product BIGINT, name VARCHAR(255)
                                             ,quantity BIGINT, price VARCHAR(32), note VARCHAR(255));  

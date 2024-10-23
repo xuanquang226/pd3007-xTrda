@@ -13,4 +13,6 @@ public interface CartDao {
     void createOneCart(CartDTO dto);
 
     void updateTotalPrice(String totalPrice, Long idCustomer);
+
+    void updateCartAfterOrder(CartDTO dto);
 }

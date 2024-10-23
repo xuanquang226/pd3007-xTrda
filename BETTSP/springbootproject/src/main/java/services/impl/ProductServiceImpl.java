@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -111,4 +112,19 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Override
+    public void updateQuantityAfterOrder(HashMap<Long, Long> productIdToQuantityMap) {
+        List<Long> productIdList = new ArrayList<>();
+        productIdToQuantityMap.forEach((k, v) -> productIdList.add(k));
+
+        List<ProductDTO> productDTOList = productDao.findProductByIds(productIdList);
+
+        for (ProductDTO product : productDTOList) {
+            if (productIdToQuantityMap.containsKey(product.getId())) {
+                Long updatedQuantity = product.getQuantity() - productIdToQuantityMap.get(product.getId());
+                product.setQuantity(updatedQuantity);
+            }
+        }
+        productDao.updateQuantityAfterOrder(productDTOList);
+    }
 }

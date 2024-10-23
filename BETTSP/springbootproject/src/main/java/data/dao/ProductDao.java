@@ -1,5 +1,6 @@
 package data.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import data.dto.ProductDTO;
@@ -20,4 +21,8 @@ public interface ProductDao {
     void deleteManyProduct(List<Long> listId);
 
     List<ProductDTO> findProductByIdCategory(Long id);
+
+    List<ProductDTO> findProductByIds(List<Long> productIdList);
+
+    void updateQuantityAfterOrder(List<ProductDTO> productDTOs);
 }

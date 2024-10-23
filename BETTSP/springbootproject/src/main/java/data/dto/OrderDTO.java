@@ -17,6 +17,6 @@ public class OrderDTO extends BaseDTO {
     private String totalPrice;
     private String status;
     private String codeDiscount;
-    private String note;
+    private String notes;
     private List<OrderLineDTO> listOrderLine;
 }
