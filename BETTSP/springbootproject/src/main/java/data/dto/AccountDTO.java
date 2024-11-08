@@ -1,5 +1,7 @@
 package data.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,4 +17,5 @@ public class AccountDTO extends BaseDTO {
     private String password;
     private String accountType;
     private Long idCustomer;
+    private List<RoleAccountDTO> roleAccountList;
 }
