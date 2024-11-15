@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // import "./globals.css";
 import styles from "./page.module.css";
 import { Children } from "react";
-
+import TopNav from "@/components/top-navigation";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -29,6 +29,7 @@ export default function RootLayout({
         <div className={styles.layout}>
           <Sidebar></Sidebar>
           <main className={styles.mainContent}>
+            <TopNav></TopNav>
             {children}
           </main>
         </div>
@@ -37,4 +38,3 @@ export default function RootLayout({
     </html>
   );
 }
-// children khái niệm của react : thay đổi linh động

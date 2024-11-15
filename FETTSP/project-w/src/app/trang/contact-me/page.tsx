@@ -1,7 +1,7 @@
 'use client';
 import Link from "next/link";
 import styles from "./page.module.css";
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
 import { Mail } from "@/type/mail";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
@@ -22,7 +22,7 @@ export default function contactMe() {
         phone: false
     });
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const fullEmail: string = `${mail.email}@gmail.com`;
@@ -52,9 +52,9 @@ export default function contactMe() {
         } else {
             console.log("Nhap day du du lieu can thiet");
         }
-    };
+    }, [mail]);
 
-    const checkFieldInput = (mail: Mail) => {
+    const checkFieldInput = useCallback((mail: Mail) => {
         let newErrors = { ...errors };
         if (mail.email.length === 0) {
             newErrors.email = true;
@@ -79,16 +79,9 @@ export default function contactMe() {
             newErrors.body = false;
         }
         setErrors(newErrors);
-    };
+    }, []);
 
     const clearForm = () => {
-        // const inputs = document.getElementById('form-id')?.getElementsByTagName('input');
-        // for (let i = 0; inputs?.length; i++) {
-        //     inputs[i].value = '';
-        // }
-
-        // const form = document.getElementById('form-id') as HTMLFormElement | null;
-        // if (form) form.reset();
         setMail({
             id: 0,
             name: '',
@@ -99,13 +92,13 @@ export default function contactMe() {
         })
     }
 
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
 
         if (/^[0-9]*$/.test(value) || value === '') {
             setMail({ ...mail, phone: value });
         }
-    }
+    }, []);
 
     useEffect(() => {
 
