@@ -12,5 +12,5 @@ import data.entities.CartItemEntity;
 public interface CartItemRepository extends JpaRepository<CartItemEntity, Long> {
     Optional<CartItemEntity> findByIdProductAndIdCart(Long idProduct, Long idCart);
 
-    List<CartItemEntity> findAllByIdCart(Long idCart);
+    List<CartItemEntity> findAllByIdCartOrderByIdProductAsc(Long idCart);
 }

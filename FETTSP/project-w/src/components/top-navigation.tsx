@@ -7,6 +7,7 @@ import Cart from "@/type/cart";
 import classNames from "classnames";
 import { Button } from "react-bootstrap";
 import { Product } from "@/type/product";
+import CartItem from "@/type/cart-item";
 
 export default function TopNavigation() {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -23,10 +24,21 @@ export default function TopNavigation() {
         notes: '',
         listCartItem: []
     });
+    const [cartItem, setCartItem] = useState<CartItem>({
+        id: 0,
+        idCart: 0,
+        idProduct: 0,
+        quantity: 0,
+        price: null,
+        note: null,
+        name: null
+    });
 
+    //TODO: Xu ly dang nhap lay id customer
     const [idCustomer, setIdCustomer] = useState<Number>();
     const getCart = useCallback(async () => {
-        const response = await fetch("http://localhost:8082/cart/1", {
+        await delay(800);
+        const response = await fetch("http://localhost:8082/cart/2", {
             method: 'GET'
         });
         if (response.ok) {
@@ -35,19 +47,19 @@ export default function TopNavigation() {
         } else {
             console.error('Failed to fetch');
         }
-    }, []);
+    }, [cartItem]);
 
     useEffect(() => {
         getCart();
-    }, []);
+    }, [getCart]);
 
 
 
-    // Get url image
-    const idProductUrlMap = new Map();
+    // Create map idProduct,Product from productList
+    const idProductToProductMap = new Map();
     const [productList, setProductList] = useState<Product[]>([]);
     productList.forEach(product => {
-        idProductUrlMap.set(product.id, product.imageDTOs[0].url);
+        idProductToProductMap.set(product.id, product);
     });
     const getProductById = useCallback(async () => {
         const idProductList: number[] = new Array();
@@ -73,19 +85,19 @@ export default function TopNavigation() {
 
 
     // Handle quantity of item
-    const [quantities, setQuantities] = useState<Map<number, number>>();
+    const [quantities, setQuantities] = useState<Map<number, number>>(new Map());
     const createQuantities = useCallback(() => {
-        const idProductQuantityMap = new Map();
+        const idProductToQuantityMap = new Map();
         cart.listCartItem.forEach(cartItem => {
-            idProductQuantityMap.set(cartItem.idProduct, cartItem.quantity);
+            idProductToQuantityMap.set(cartItem.idProduct, cartItem.quantity);
         });
-        setQuantities(idProductQuantityMap);
+        setQuantities(idProductToQuantityMap);
     }, [cart]);
     useEffect(() => {
         createQuantities();
     }, [createQuantities]);
 
-    const decreaseQuantityItem = (idProduct: number) => {
+    const decreaseQuantityItem = (idProduct: number, idCart: number) => {
         setQuantities((oldQuantities) => {
             const newQuantities = new Map(oldQuantities);
             if (!newQuantities.has(idProduct)) {
@@ -97,11 +109,12 @@ export default function TopNavigation() {
             }
             const newQuantity = (quantity || 0) - 1;
             newQuantities.set(idProduct, newQuantity);
+            handleTotalPrice(idProduct, idCart, newQuantity);
             return newQuantities;
         });
     };
 
-    const increaseQuantityItem = (idProduct: number) => {
+    const increaseQuantityItem = (idProduct: number, idCart: number) => {
         setQuantities((oldQuantities) => {
             const newQuantities = new Map(oldQuantities);
             if (!newQuantities.has(idProduct)) {
@@ -110,18 +123,42 @@ export default function TopNavigation() {
             const quantity = newQuantities.get(idProduct);
             const newQuantity = (quantity || 0) + 1;
             newQuantities.set(idProduct, newQuantity);
+            handleTotalPrice(idProduct, idCart, newQuantity);
             return newQuantities;
         });
     }
+
+    //Handle total price
+    const handleTotalPrice = (idProduct: number, idCart: number, quantity: number) => {
+        setCartItem((oldCartItem) => {
+            const newCartItem = { ...oldCartItem, idProduct: idProduct, idCart: idCart, quantity: quantity };
+            fetch(`http://localhost:8082/cart-item`, {
+                method: 'PUT',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(newCartItem)
+            });
+            return newCartItem;
+        })
+    };
+
+    //Handle delete item
+    const handleDeleteItem = (idCartItem: number) => {
+        fetch(`http://localhost:8082/cart-item/${idCartItem}`, {
+            method: 'DELETE',
+        });
+        setCartItem({ ...cartItem, id: idCartItem });
+    };
 
     return (
         <div className={styles['top-navigation']}>
             <div className={styles['nav-icons']} onMouseEnter={showPopup} onMouseLeave={hidePopup}>
                 <Link href="" className={styles['icon']}>
-                    <img src="../images/cart.png" alt="cart"></img>
+                    <img src="/images/cart.png" alt="cart"></img>
                 </Link>
                 <Link href="" className={styles['icon']}>
-                    <img src="../images/account.png" alt="account"></img>
+                    <img src="/images/account.png" alt="account"></img>
                 </Link>
 
                 <div className={styles['popup']} style={{ visibility: isPopupVisible ? "visible" : "hidden" }}>
@@ -131,23 +168,23 @@ export default function TopNavigation() {
                                 {cart.listCartItem.map(cartItem => {
                                     return (<li key={cartItem.id}>
                                         <div className={styles['cart-item']}>
-                                            <Link href="#"><img src={idProductUrlMap.get(cartItem.idProduct)} style={{ width: "50px", height: "50px" }} alt="" className={classNames(styles['cart-item__img'], ['cart-item__img--product'])} /></Link>
+                                            <Link href="#"><img src={idProductToProductMap.get(cartItem.idProduct)?.imageDTOs[0].url} style={{ width: "50px", height: "50px" }} alt="" className={classNames(styles['cart-item__img'], ['cart-item__img--product'])} /></Link>
                                             <div className={styles['info-cart-item']}>
                                                 <p>{cartItem.name}</p>
                                                 <p>{cartItem.note}</p>
                                                 <div className={styles['info2-cart-item']}>
                                                     <div className={styles['price-cart-item']}>
-                                                        <p>{cartItem.price}</p>
+                                                        <p>{idProductToProductMap.get(cartItem.idProduct)?.price}</p>
                                                         <p>VNĐ</p>
                                                     </div>
                                                     <div className={styles['quantity']}>
-                                                        <Link href="#" onClick={() => { decreaseQuantityItem(cartItem.idProduct) }}><img src="../images/decrease.png" alt="" /></Link>
+                                                        <Link href="#" onClick={() => { decreaseQuantityItem(cartItem.idProduct, cartItem.idCart) }}><img src="/images/decrease.png" alt="" /></Link>
                                                         <p>{quantities?.get(cartItem.idProduct)}</p>
-                                                        <Link href="#" onClick={() => { increaseQuantityItem(cartItem.idProduct) }}><img src="../images/increase.png" alt="" /></Link>
+                                                        <Link href="#" onClick={() => { increaseQuantityItem(cartItem.idProduct, cartItem.idCart) }}><img src="/images/increase.png" alt="" /></Link>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <Link href="#"><img src="../images/delete.png" alt="" className={classNames(styles['cart-item__img'], ['cart-item__img--icon-delete'])} /></Link>
+                                            <Link href="#" onClick={() => { handleDeleteItem(cartItem.id) }}><img src="/images/delete.png" alt="" className={classNames(styles['cart-item__img'], ['cart-item__img--icon-delete'])} /></Link>
                                         </div>
                                     </li>
                                     )
@@ -167,4 +204,8 @@ export default function TopNavigation() {
             </div>
         </div >
     );
+}
+
+function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }

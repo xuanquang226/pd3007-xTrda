@@ -107,6 +107,6 @@ public class CartItemDaoImpl implements CartItemDao {
 
     @Override
     public List<CartItemDTO> getManyCartItemByIdCart(Long idCart) {
-        return mapper.toDto(repository.findAllByIdCart(idCart));
+        return mapper.toDto(repository.findAllByIdCartOrderByIdProductAsc(idCart));
     }
 }

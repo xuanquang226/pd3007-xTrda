@@ -3,7 +3,7 @@ export default interface CartItem{
     idCart: number;
     idProduct: number;
     quantity: number;
-    price: string;
-    note: string;
-    name: string;
+    price: string|null;
+    note: string|null;
+    name: string|null;
 }

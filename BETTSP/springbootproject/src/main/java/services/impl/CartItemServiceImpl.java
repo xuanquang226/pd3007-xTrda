@@ -3,9 +3,11 @@ package services.impl;
 import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import data.dao.CartItemDao;
 import data.dao.ProductDao;
@@ -41,10 +43,11 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+    @Transactional(rollbackFor = IllegalArgumentException.class)
     public void createOneCartItem(CartItemDTO dto) {
         // Inserting the name of product and price after adding it to the cart
         // Validate the value before creating the cart item
-        CartItemDTO cartItemDTO = dto;
+        CartItemDTO cartItemDTO = filterDuplicateProduct(dto);
         ProductDTO productDTO = null;
         try {
             productDTO = productDao.getOneProduct(dto.getIdProduct());
@@ -120,5 +123,19 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public List<CartItemDTO> getAllCartItemByIdCart(Long idCart) {
         return cartItemDao.getManyCartItemByIdCart(idCart);
+    }
+
+    @Override
+    public CartItemDTO filterDuplicateProduct(CartItemDTO cartItem) {
+        Optional<CartItemDTO> cartItemByIdCartAndIdProduct = Optional.ofNullable(
+                cartItemDao.getOneCartItemByIdProductAndIdCart(cartItem.getIdProduct(), cartItem.getIdCart()));
+        if (!cartItemByIdCartAndIdProduct.isPresent()) {
+            return cartItem;
+        } else {
+            deleteOneCartItem(cartItemByIdCartAndIdProduct.get().getId());
+            Long newQuantity = cartItem.getQuantity() + cartItemByIdCartAndIdProduct.get().getQuantity();
+            cartItem.setQuantity(newQuantity);
+            return cartItem;
+        }
     }
 }

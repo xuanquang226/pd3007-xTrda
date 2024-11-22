@@ -23,8 +23,8 @@ export default function showImageModal(props: propsShowImgModal) {
             >
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
-                    <div className="img-wrapper">
-                        <img src={linkImg} width="100%" height="100%" />
+                    <div className="img-wrapper" style={{ display: 'flex', justifyContent: 'center' }}>
+                        <img src={linkImg} style={{ width: "750px", height: "750px" }} />
                     </div>
                 </Modal.Body>
             </Modal>

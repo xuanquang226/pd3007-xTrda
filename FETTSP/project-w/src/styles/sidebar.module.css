@@ -22,12 +22,14 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    
 }
 
 .nav ul li{
     text-align: center;
     overflow: hidden;
     margin-bottom: 15%;
+    text-decoration: none;
 }
 
 .nav ul li a{

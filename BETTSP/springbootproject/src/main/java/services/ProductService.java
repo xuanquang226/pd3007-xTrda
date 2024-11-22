@@ -12,6 +12,8 @@ public interface ProductService {
 
     ProductDTO getOneProduct(Long id);
 
+    List<ProductDTO> findManyProductByIds(List<Long> idProductList);
+
     void createOneProduct(ProductDTO productDTO, MultipartFile[] files);
 
     void updateOneProduct(ProductDTO productDTO);

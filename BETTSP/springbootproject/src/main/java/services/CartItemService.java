@@ -22,4 +22,6 @@ public interface CartItemService {
     void deleteOneCartItem(Long id);
 
     void deleteManyCartItem(List<Long> ids);
+
+    CartItemDTO filterDuplicateProduct(CartItemDTO cartItem);
 }

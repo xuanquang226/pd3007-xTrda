@@ -1,0 +1,54 @@
+.site-container{
+    position: relative;
+    top: 10px;
+    width: 100%;
+    height: 75vh;
+}
+.site-content{
+    display: grid;
+    grid-template-columns: 4fr 5fr;
+    height: 100%;
+    gap: 20px;
+}
+
+.left-content{
+    display: grid;
+    grid-template-rows: 5fr 3fr;
+    gap: 5px;
+}
+
+.list-images ul{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 1;
+    gap: 10px;
+    justify-content: center;
+}
+
+.list-images ul li{
+    opacity: 0.7;
+    cursor: pointer;
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    border-radius: 5px;
+}
+
+.list-images ul li:hover{
+    transform: scale(1.2);
+    opacity: 1;
+}
+
+.right-content .bottom{
+    position:relative;
+    top: 35%;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.customContainer{
+    max-width: 100%;
+}
+  

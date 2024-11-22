@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import styles from "../styles/sidebar.module.css";
 export default function sidebar() {
 
@@ -6,13 +7,13 @@ export default function sidebar() {
             <div className={styles.logo}>Logo</div>
             <nav className={styles.nav}>
                 <ul>
-                    <li><a href="/trang/home">HOME</a></li>
-                    <li><a href="/trang/digital">DIGITAL</a></li>
-                    <li><a href="/trang/watercolor">WaterColor</a></li>
-                    <li><a href="/trang/comic">Comic</a></li>
-                    <li><a href="/trang/sketch">Sketch</a></li>
-                    <li><a href="/trang/printed-art">PrintedArt</a></li>
-                    <li><a href="/trang/contact-me">ContactMe</a></li>
+                    <li><a href="/home">HOME</a></li>
+                    <li><a href="/category/digital">DIGITAL</a></li>
+                    <li><a href="/category/water-color">WaterColor</a></li>
+                    <li><a href="/category/comic">Comic</a></li>
+                    <li><a href="/category/sketch">Sketch</a></li>
+                    <li><a href="/category/printed-art">PrintedArt</a></li>
+                    <li><a href="/contact-me">ContactMe</a></li>
                 </ul>
             </nav>
         </div>

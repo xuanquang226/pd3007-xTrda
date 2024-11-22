@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,5 +127,22 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         productDao.updateQuantityAfterOrder(productDTOList);
+    }
+
+    @Override
+    public List<ProductDTO> findManyProductByIds(List<Long> idProductList) {
+        List<ProductDTO> productDtoList = productDao.findProductByIds(idProductList);
+        Map<Long, List<ImageDTO>> imageDTOMap = new HashMap<>();
+        for (Long idProduct : idProductList) {
+            imageDTOMap.put(idProduct, imageDao.findImageDTOsByIdProduct(idProduct));
+        }
+
+        productDtoList.forEach(product -> {
+            if (imageDTOMap.containsKey(product.getId())) {
+                product.setImageDTOs(imageDTOMap.get(product.getId()));
+            }
+        });
+
+        return productDtoList;
     }
 }
