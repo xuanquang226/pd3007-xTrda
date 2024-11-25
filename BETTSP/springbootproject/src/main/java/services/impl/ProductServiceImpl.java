@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import data.dao.CategoryDao;
 import data.dao.ImageDao;
 import data.dao.ProductDao;
+import data.dto.CategoryDTO;
 import data.dto.ImageDTO;
 import data.dto.ProductDTO;
 import services.ProductService;
@@ -28,6 +30,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ImageDao imageDao;
+
+    @Autowired
+    private CategoryDao categoryDao;
 
     @Override
     public void createOneProduct(ProductDTO productDTO, MultipartFile[] files) {
@@ -100,11 +105,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDTO getOneProduct(Long id) {
+    public ProductDTO getOneProduct(Long id, String categoryType) {
         List<ImageDTO> imageDTOs = imageDao.findImageDTOsByIdProduct(id);
         ProductDTO productDTO = productDao.getOneProduct(id);
         productDTO.setImageDTOs(imageDTOs);
-        return productDTO;
+
+        CategoryDTO categoryDTO = categoryDao.getOneCategory(productDTO.getIdCategory());
+        if (categoryDTO.getName().equalsIgnoreCase(categoryType)) {
+            return productDTO;
+        } else {
+            return null;
+        }
     }
 
     @Override

@@ -110,6 +110,10 @@ public class CartItemServiceImpl implements CartItemService {
             if (dto.getQuantity() > productDTO.getQuantity()) {
                 throw new IllegalArgumentException();
             }
+            if (dto.getQuantity() == 0) {
+                deleteOneCartItem(newDto.getId());
+                return;
+            }
             newDto.setQuantity(dto.getQuantity());
             String newPrice = Long.parseLong(productDTO.getPrice().toString()) * dto.getQuantity() + "";
             newDto.setPrice(newPrice);
@@ -127,15 +131,20 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItemDTO filterDuplicateProduct(CartItemDTO cartItem) {
-        Optional<CartItemDTO> cartItemByIdCartAndIdProduct = Optional.ofNullable(
-                cartItemDao.getOneCartItemByIdProductAndIdCart(cartItem.getIdProduct(), cartItem.getIdCart()));
-        if (!cartItemByIdCartAndIdProduct.isPresent()) {
-            return cartItem;
-        } else {
-            deleteOneCartItem(cartItemByIdCartAndIdProduct.get().getId());
-            Long newQuantity = cartItem.getQuantity() + cartItemByIdCartAndIdProduct.get().getQuantity();
-            cartItem.setQuantity(newQuantity);
+        try {
+            Optional<CartItemDTO> cartItemByIdCartAndIdProduct = Optional.ofNullable(
+                    cartItemDao.getOneCartItemByIdProductAndIdCart(cartItem.getIdProduct(), cartItem.getIdCart()));
+            if (cartItemByIdCartAndIdProduct.isPresent()) {
+                deleteOneCartItem(cartItemByIdCartAndIdProduct.get().getId());
+                Long newQuantity = cartItem.getQuantity() + cartItemByIdCartAndIdProduct.get().getQuantity();
+                cartItem.setQuantity(newQuantity);
+                return cartItem;
+            } else {
+                throw new EntityNotFoundException();
+            }
+        } catch (EntityNotFoundException exception) {
             return cartItem;
         }
+
     }
 }

@@ -69,6 +69,7 @@ public class CartServiceImpl implements CartService {
         cartDao.updateOneCartWithoutTotalPrice(newCart);
     }
 
+    // See
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public void processCart(Long idCustomer) {
@@ -76,7 +77,12 @@ public class CartServiceImpl implements CartService {
         List<CartItemDTO> listCartItem = cartItemDao.getManyCartItemByIdCart(cart.getId());
         cart.setListCartItem(listCartItem);
         if (listCartItem.isEmpty()) {
-            throw new IllegalArgumentException("Gio hang trong");
+            System.out.println("gio hang trong");
+            cart.setNotes("empty");
+            cart.setStatus("inactive");
+            cart.setTotalPrice("0");
+            cart.setCodeDiscount("0");
+            cartDao.updateCartAfterOrder(cart);
         } else if ((cart.getStatus().equalsIgnoreCase("inactive") && !listCartItem.isEmpty())) {
             updateOneCartWithoutTotalPrice(cart);
             updateTotalPrice(listCartItem, cart, idCustomer);
@@ -84,12 +90,6 @@ public class CartServiceImpl implements CartService {
             updateTotalPrice(listCartItem, cart, idCustomer);
         }
     }
-
-    // @Override
-    // public CartDTO updateTotalPriceAndGetCart(Long idCustomer) {
-    // updateTotalPrice(idCustomer);
-    // return getOneCartByIdCustomer(idCustomer);
-    // }
 
     @Transactional
     @Override

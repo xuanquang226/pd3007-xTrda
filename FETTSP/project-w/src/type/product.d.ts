@@ -5,5 +5,7 @@ export interface Product {
     name: string;
     description: string;
     idCategory: number;
+    price: string;
+    quantity:number;
     imageDTOs: Image[];
 }

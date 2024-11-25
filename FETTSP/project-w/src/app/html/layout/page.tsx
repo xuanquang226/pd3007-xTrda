@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Gallery } from "react-grid-gallery";
 import HandleImage from "../../../components/handle-img"
 import CreateProduct from "@/components/create-product";
+import useCartStore from "@/app/store/state-cart";
+import { Button } from "react-bootstrap";
 
 
 export default function LearnHTMLLayout() {
@@ -76,7 +78,6 @@ export default function LearnHTMLLayout() {
             height: 200,
         }
     ];
-
 
     return (
         <>
