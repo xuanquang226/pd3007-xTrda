@@ -23,5 +23,6 @@ public class CustomerEntity extends BaseEntity {
     private String name;
     private String mail;
     private String location;
+    private String phone;
     private Long idAccount;
 }

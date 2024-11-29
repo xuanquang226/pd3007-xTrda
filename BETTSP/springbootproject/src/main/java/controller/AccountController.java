@@ -30,7 +30,7 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    @PostMapping
+    @PostMapping("/sign-up")
     public ResponseEntity<Void> createAccount(@RequestPart("account") String jsAccount,
             @RequestPart("customer") String jsCustomer) throws JsonProcessingException, JsonMappingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -50,5 +50,10 @@ public class AccountController {
     @GetMapping("/{id}")
     public ResponseEntity<AccountDTO> getAccountByUsername(@PathVariable Long id) {
         return ResponseEntity.ok(accountService.getOneAccountById(id));
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<Boolean> validateExistsUserName(@RequestParam String userName) {
+        return ResponseEntity.ok(accountService.validateExistsUsername(userName));
     }
 }

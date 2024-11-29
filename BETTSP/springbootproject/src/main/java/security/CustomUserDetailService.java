@@ -33,8 +33,8 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AccountDTO account = accountDao.getOneAccountByUserName(username);
         List<RoleAccountDTO> roleAccount = roleAccountDao.getManyRoleAccountByIdAccount(account.getId());
-        account.setRoleAccountList(roleAccount);
-        return new User(account.getUserName(), account.getPassword(), lAuthorities(account.getRoleAccountList()));
+        // account.setRoleAccountList(roleAccount);
+        return new User(account.getUserName(), account.getPassword(), lAuthorities(roleAccount));
     }
 
     public List<GrantedAuthority> lAuthorities(List<RoleAccountDTO> roles) {
