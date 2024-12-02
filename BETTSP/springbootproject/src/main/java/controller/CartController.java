@@ -24,10 +24,10 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
-    @GetMapping("/{idCustomer}")
-    public ResponseEntity<CartDTO> getOneCartByIdCustomer(@PathVariable Long idCustomer) {
+    @GetMapping
+    public ResponseEntity<CartDTO> getOneCartByIdCustomer() {
         try {
-            CartDTO cart = cartService.getOneCartByIdCustomer(idCustomer);
+            CartDTO cart = cartService.getOneCartByIdCustomer();
             return ResponseEntity.ok(cart);
         } catch (EntityNotFoundException entityNotFoundException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -52,9 +52,9 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{idCustomer}")
-    public ResponseEntity<Void> updateCartAfterOrder(@PathVariable Long idCustomer) {
-        cartService.updateCartAfterOrder(idCustomer);
+    @PutMapping("/customer")
+    public ResponseEntity<Void> updateCartAfterOrder() {
+        cartService.updateCartAfterOrder();
         return ResponseEntity.noContent().build();
     }
 

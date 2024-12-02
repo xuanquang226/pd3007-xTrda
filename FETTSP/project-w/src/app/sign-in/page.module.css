@@ -1,11 +1,6 @@
 .customContainer{
     width: 100%;
 }
-
-.site-content{
-    
-}
-
 .site-container{
     font-size: 16px;
 }
@@ -14,10 +9,4 @@
     .site-container{
         font-size: 14px;
     }
-}
-
-.site-contact-social{
-    display: flex;
-    justify-content: flex-end;
-    gap: 50px;
 }

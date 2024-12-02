@@ -4,17 +4,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import data.dao.AccountDao;
 import data.dao.CartDao;
 import data.dao.CartItemDao;
+import data.dto.AccountDTO;
 import data.dto.CartDTO;
 import data.dto.CartItemDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import services.CartService;
+import utils.objects.AccountAuth;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -24,6 +29,9 @@ public class CartServiceImpl implements CartService {
 
     @Autowired
     private CartItemDao cartItemDao;
+
+    @Autowired
+    private AccountAuth accountAuth;
 
     @Autowired
     private EntityManager entityManager;
@@ -41,10 +49,11 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public CartDTO getOneCartByIdCustomer(Long idCustomer) throws EntityNotFoundException {
-        // TODO: Sử dụng security context để lấy name -> lấy id
-        processCart(idCustomer);
-        CartDTO cart = cartDao.getOneCartByIdCustomer(idCustomer);
+    public CartDTO getOneCartByIdCustomer() throws EntityNotFoundException {
+        // TODO: Sử dụng security context để lấy name -> lấy id: Update: OK
+
+        processCart(accountAuth.getAccount().getIdCustomer());
+        CartDTO cart = cartDao.getOneCartByIdCustomer(accountAuth.getAccount().getIdCustomer());
         List<CartItemDTO> listCartItem = cartItemDao.getManyCartItemByIdCart(cart.getId());
         cart.setListCartItem(listCartItem);
         return cart;
@@ -69,6 +78,7 @@ public class CartServiceImpl implements CartService {
         cartDao.updateOneCartWithoutTotalPrice(newCart);
     }
 
+    // See
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public void processCart(Long idCustomer) {
@@ -76,7 +86,12 @@ public class CartServiceImpl implements CartService {
         List<CartItemDTO> listCartItem = cartItemDao.getManyCartItemByIdCart(cart.getId());
         cart.setListCartItem(listCartItem);
         if (listCartItem.isEmpty()) {
-            throw new IllegalArgumentException("Gio hang trong");
+            System.out.println("gio hang trong");
+            cart.setNotes("empty");
+            cart.setStatus("inactive");
+            cart.setTotalPrice("0");
+            cart.setCodeDiscount("0");
+            cartDao.updateCartAfterOrder(cart);
         } else if ((cart.getStatus().equalsIgnoreCase("inactive") && !listCartItem.isEmpty())) {
             updateOneCartWithoutTotalPrice(cart);
             updateTotalPrice(listCartItem, cart, idCustomer);
@@ -85,16 +100,10 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    // @Override
-    // public CartDTO updateTotalPriceAndGetCart(Long idCustomer) {
-    // updateTotalPrice(idCustomer);
-    // return getOneCartByIdCustomer(idCustomer);
-    // }
-
     @Transactional
     @Override
-    public void updateCartAfterOrder(Long idCustomer) {
-        CartDTO cartDTO = getOneCartByIdCustomer(idCustomer);
+    public void updateCartAfterOrder() {
+        CartDTO cartDTO = getOneCartByIdCustomer();
         cartDTO.setNotes("empty");
         cartDTO.setStatus("inactive");
         cartDTO.setTotalPrice("0");
@@ -119,4 +128,5 @@ public class CartServiceImpl implements CartService {
         cartDao.updateTotalPrice(String.valueOf(totalPrice), idCustomer);
         entityManager.clear();
     }
+
 }

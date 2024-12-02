@@ -6,15 +6,21 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import data.dao.AccountDao;
+import data.dao.CartDao;
 import data.dao.CartItemDao;
 import data.dao.ProductDao;
+import data.dto.AccountDTO;
 import data.dto.CartItemDTO;
 import data.dto.ProductDTO;
 import jakarta.persistence.EntityNotFoundException;
 import services.CartItemService;
+import utils.objects.AccountAuth;
 
 @Service
 public class CartItemServiceImpl implements CartItemService {
@@ -24,6 +30,12 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Autowired
+    private CartDao cartDao;
+
+    @Autowired
+    private AccountAuth accountAuth;
 
     @Override
     public void createManyCartItem(List<CartItemDTO> dtos) {
@@ -47,6 +59,8 @@ public class CartItemServiceImpl implements CartItemService {
     public void createOneCartItem(CartItemDTO dto) {
         // Inserting the name of product and price after adding it to the cart
         // Validate the value before creating the cart item
+
+        dto.setIdCart(cartDao.getOneCartByIdCustomer(accountAuth.getAccount().getIdCustomer()).getId());
         CartItemDTO cartItemDTO = filterDuplicateProduct(dto);
         ProductDTO productDTO = null;
         try {
@@ -110,6 +124,10 @@ public class CartItemServiceImpl implements CartItemService {
             if (dto.getQuantity() > productDTO.getQuantity()) {
                 throw new IllegalArgumentException();
             }
+            if (dto.getQuantity() == 0) {
+                deleteOneCartItem(newDto.getId());
+                return;
+            }
             newDto.setQuantity(dto.getQuantity());
             String newPrice = Long.parseLong(productDTO.getPrice().toString()) * dto.getQuantity() + "";
             newDto.setPrice(newPrice);
@@ -127,15 +145,20 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     public CartItemDTO filterDuplicateProduct(CartItemDTO cartItem) {
-        Optional<CartItemDTO> cartItemByIdCartAndIdProduct = Optional.ofNullable(
-                cartItemDao.getOneCartItemByIdProductAndIdCart(cartItem.getIdProduct(), cartItem.getIdCart()));
-        if (!cartItemByIdCartAndIdProduct.isPresent()) {
-            return cartItem;
-        } else {
-            deleteOneCartItem(cartItemByIdCartAndIdProduct.get().getId());
-            Long newQuantity = cartItem.getQuantity() + cartItemByIdCartAndIdProduct.get().getQuantity();
-            cartItem.setQuantity(newQuantity);
+        try {
+            Optional<CartItemDTO> cartItemByIdCartAndIdProduct = Optional.ofNullable(
+                    cartItemDao.getOneCartItemByIdProductAndIdCart(cartItem.getIdProduct(), cartItem.getIdCart()));
+            if (cartItemByIdCartAndIdProduct.isPresent()) {
+                deleteOneCartItem(cartItemByIdCartAndIdProduct.get().getId());
+                Long newQuantity = cartItem.getQuantity() + cartItemByIdCartAndIdProduct.get().getQuantity();
+                cartItem.setQuantity(newQuantity);
+                return cartItem;
+            } else {
+                throw new EntityNotFoundException();
+            }
+        } catch (EntityNotFoundException exception) {
             return cartItem;
         }
+
     }
 }

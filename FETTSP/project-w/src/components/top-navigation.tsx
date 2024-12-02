@@ -8,11 +8,16 @@ import classNames from "classnames";
 import { Button } from "react-bootstrap";
 import { Product } from "@/type/product";
 import CartItem from "@/type/cart-item";
+import useCartStore from "@/app/store/state-cart";
+import fetchWithToken from "@/utils/fetchWithToken";
 
 export default function TopNavigation() {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const showPopup = () => setIsPopupVisible(true);
     const hidePopup = () => setIsPopupVisible(false);
+
+    //State chung cap nhat o component chi tiet san pham
+    const { cartItemStore, addCartItem } = useCartStore();
 
     // Get cart
     const [cart, setCart] = useState<Cart>({
@@ -34,11 +39,9 @@ export default function TopNavigation() {
         name: null
     });
 
-    //TODO: Xu ly dang nhap lay id customer
-    const [idCustomer, setIdCustomer] = useState<Number>();
     const getCart = useCallback(async () => {
-        await delay(800);
-        const response = await fetch("http://localhost:8082/cart/2", {
+        await delay(600);
+        const response = await fetchWithToken("http://localhost:8082/cart", {
             method: 'GET'
         });
         if (response.ok) {
@@ -53,10 +56,12 @@ export default function TopNavigation() {
         getCart();
     }, [getCart]);
 
-
+    useEffect(() => {
+        setCartItem(cartItemStore);
+    }, [cartItemStore]);
 
     // Create map idProduct,Product from productList
-    const idProductToProductMap = new Map();
+    const idProductToProductMap = new Map<number, Product>();
     const [productList, setProductList] = useState<Product[]>([]);
     productList.forEach(product => {
         idProductToProductMap.set(product.id, product);
@@ -66,11 +71,8 @@ export default function TopNavigation() {
         cart.listCartItem.forEach(cartItem => {
             idProductList.push(cartItem.idProduct);
         });
-        const response = await fetch(`http://localhost:8082/product/many`, {
+        const response = await fetchWithToken(`http://localhost:8082/product/many`, {
             method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
             body: JSON.stringify(idProductList)
         });
         if (response.ok) {
@@ -128,28 +130,43 @@ export default function TopNavigation() {
         });
     }
 
+
     //Handle total price
     const handleTotalPrice = (idProduct: number, idCart: number, quantity: number) => {
         setCartItem((oldCartItem) => {
             const newCartItem = { ...oldCartItem, idProduct: idProduct, idCart: idCart, quantity: quantity };
-            fetch(`http://localhost:8082/cart-item`, {
+            fetchWithToken(`http://localhost:8082/cart-item`, {
                 method: 'PUT',
-                headers: {
-                    'Content-type': 'application/json'
-                },
                 body: JSON.stringify(newCartItem)
             });
             return newCartItem;
         })
     };
 
+
     //Handle delete item
     const handleDeleteItem = (idCartItem: number) => {
-        fetch(`http://localhost:8082/cart-item/${idCartItem}`, {
+        fetchWithToken(`http://localhost:8082/cart-item/${idCartItem}`, {
             method: 'DELETE',
         });
         setCartItem({ ...cartItem, id: idCartItem });
     };
+
+
+    //Handle quantity cart
+    const [quantityCart, setQuantityCart] = useState<number>(0);
+    const handleQuantityCart = useCallback(() => {
+        let quantityCart = 0;
+        quantities.forEach(quantity => {
+            quantityCart += quantity;
+        })
+        setQuantityCart(quantityCart);
+    }, [quantities])
+
+    useEffect(() => {
+        handleQuantityCart();
+    }, [handleQuantityCart]);
+
 
     return (
         <div className={styles['top-navigation']}>
@@ -157,6 +174,7 @@ export default function TopNavigation() {
                 <Link href="" className={styles['icon']}>
                     <img src="/images/cart.png" alt="cart"></img>
                 </Link>
+                <p>{quantityCart}</p>
                 <Link href="" className={styles['icon']}>
                     <img src="/images/account.png" alt="account"></img>
                 </Link>
@@ -168,7 +186,11 @@ export default function TopNavigation() {
                                 {cart.listCartItem.map(cartItem => {
                                     return (<li key={cartItem.id}>
                                         <div className={styles['cart-item']}>
-                                            <Link href="#"><img src={idProductToProductMap.get(cartItem.idProduct)?.imageDTOs[0].url} style={{ width: "50px", height: "50px" }} alt="" className={classNames(styles['cart-item__img'], ['cart-item__img--product'])} /></Link>
+                                            <Link
+                                                href={convertIdCategoryToNameCategory((idProductToProductMap.get(cartItem.idProduct)?.idCategory), cartItem.idProduct) ?? ''}
+                                            >
+                                                <img src={idProductToProductMap.get(cartItem.idProduct)?.imageDTOs[0].url} style={{ width: "50px", height: "50px" }} alt="" className={classNames(styles['cart-item__img'], ['cart-item__img--product'])} />
+                                            </Link>
                                             <div className={styles['info-cart-item']}>
                                                 <p>{cartItem.name}</p>
                                                 <p>{cartItem.note}</p>
@@ -208,4 +230,21 @@ export default function TopNavigation() {
 
 function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const convertIdCategoryToNameCategory = (idCategory: number | undefined, idProduct: number) => {
+    switch (idCategory) {
+        case 1:
+            return `/category/comic/picture/${idProduct}`;
+        case 2:
+            return `/category/digital/picture/${idProduct}`;
+        case 3:
+            return `/category/printed-art/picture/${idProduct}`;
+        case 4:
+            return `/category/sketch/picture/${idProduct}`;
+        case 5:
+            return `/category/water-color/picture/${idProduct}`;
+        default:
+            return undefined;
+    }
 }

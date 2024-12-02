@@ -31,6 +31,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/account/login").permitAll()
+                        .requestMatchers("/account/sign-up").permitAll()
+                        // .requestMatchers("/account/**").hasRole("ADMIN")
+                        .requestMatchers("/account/validate").permitAll()
+                        .requestMatchers("/images/many").permitAll()
+                        .requestMatchers("/images-storage/**").permitAll()
+                        .requestMatchers("/category/**").permitAll()
+                        .requestMatchers("/product/**").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

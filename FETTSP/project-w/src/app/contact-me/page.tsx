@@ -111,7 +111,7 @@ export default function contactMe() {
                 <div className={styles['site-container']}>
                     <div className={styles['site-content']}>
                         <Form id="form-id" className="" onSubmit={handleSubmit}>
-                            <div className="form-header" style={{ width: "50%" }}>
+                            <div className="form-header col-lg-6 col-12" >
                                 <Form.Group className="mb-3" controlId="formName">
                                     <Form.Label>Name customer</Form.Label>
                                     <Form.Control

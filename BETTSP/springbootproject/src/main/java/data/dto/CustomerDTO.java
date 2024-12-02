@@ -16,6 +16,7 @@ public class CustomerDTO extends BaseDTO {
     private String name;
     private String mail;
     private String location;
+    private String phone;
     private Long idAccount;
     private List<OrderDTO> listOrder;
 }

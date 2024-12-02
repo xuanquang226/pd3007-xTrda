@@ -6,7 +6,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -38,6 +36,7 @@ import data.dto.AccountDTO;
 import data.dto.CustomerDTO;
 import data.dto.RoleDTO;
 import io.jsonwebtoken.Claims;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import redis.clients.jedis.exceptions.JedisDataException;
 import security.CustomUserDetailService;
@@ -202,7 +201,6 @@ public class AccountServiceImpl implements AccountService {
             } else {
                 infoRefreshTokenList = objectMapper.readValue(jsonValue, new TypeReference<List<InfoRefreshToken>>() {
                 });
-
             }
             infoRefreshTokenList.add(infoRefreshToken);
             jsonValue = objectMapper.writeValueAsString(infoRefreshTokenList);
@@ -218,5 +216,15 @@ public class AccountServiceImpl implements AccountService {
     public TupleToken validateRefreshToken(String refreshToken, HttpServletRequest request) {
 
         return null;
+    }
+
+    @Override
+    public boolean validateExistsUsername(String userName) {
+        try {
+            AccountDTO account = accountDao.getOneAccountByUserName(userName);
+            return true;
+        } catch (EntityNotFoundException entityNotFoundException) {
+            return false;
+        }
     }
 }

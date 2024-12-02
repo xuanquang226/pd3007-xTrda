@@ -10,7 +10,7 @@ import data.dto.ProductDTO;
 public interface ProductService {
     List<ProductDTO> getAllProduct();
 
-    ProductDTO getOneProduct(Long id);
+    ProductDTO getOneProduct(Long id, String categoryType);
 
     List<ProductDTO> findManyProductByIds(List<Long> idProductList);
 

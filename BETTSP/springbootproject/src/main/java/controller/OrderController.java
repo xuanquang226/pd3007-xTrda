@@ -19,9 +19,9 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping("/{idCustomer}")
-    public ResponseEntity<Void> createOrder(@PathVariable Long idCustomer) {
-        orderService.createOrderByIdCustomer(idCustomer);
+    @PostMapping("")
+    public ResponseEntity<Void> createOrder() {
+        orderService.createOrderByIdCustomer();
         return ResponseEntity.noContent().build();
     }
 

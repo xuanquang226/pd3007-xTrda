@@ -25,4 +25,6 @@ public interface AccountService {
     TupleToken loginAccountWithoutToken(String username, String password, HttpServletRequest request);
 
     TupleToken validateRefreshToken(String refreshToken, HttpServletRequest request);
+
+    boolean validateExistsUsername(String userName);
 }

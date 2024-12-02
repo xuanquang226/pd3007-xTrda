@@ -6,8 +6,11 @@ import styles from "./page.module.css";
 import Link from "next/link";
 import { Button } from "react-bootstrap";
 import CartItem from "@/type/cart-item";
+import useCartStore from "@/app/store/state-cart";
+import fetchWithToken from "@/utils/fetchWithToken";
 export default function ProductDetail() {
     const { type, id } = useParams();
+    const { cartItemStore, addCartItem } = useCartStore();
     const [product, setProduct] = useState<Product>();
     const [urlImage, setUrlImage] = useState<string>();
 
@@ -24,16 +27,20 @@ export default function ProductDetail() {
 
     // get cart from param id
     const getProductFromId = useCallback(async () => {
-        const response = await fetch(`http://localhost:8082/product/${id}`, {
+        const response = await fetchWithToken(`http://localhost:8082/product/${id}?categoryType=${type}`, {
             method: 'GET',
         });
         try {
             if (response.ok) {
                 const data = await response.json();
-                setProduct(data);
-                if (urlImage === undefined) {
-                    setUrlImage(data.imageDTOs[0].url);
-                };
+                if (data != null) {
+                    setProduct(data);
+                    if (urlImage === undefined) {
+                        setUrlImage(data.imageDTOs[0].url);
+                    };
+                } else {
+                    console.log("data is null because url invalid");
+                }
             } else {
                 throw new Error(`Failed to fetch ${response.status}`);
             }
@@ -61,18 +68,11 @@ export default function ProductDetail() {
     const handleAddCart = () => {
         const newCartItem = { ...cartItem };
         newCartItem.idProduct = product?.id ?? 0;
-        newCartItem.idCart = 2;
-        fetch("http://localhost:8082/cart-item", {
+        fetchWithToken("http://localhost:8082/cart-item", {
             method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
             body: JSON.stringify(newCartItem)
         });
-
-        fetch("http://localhost:8082/cart/2", {
-            method: 'GET'
-        });
+        addCartItem(newCartItem)
         return newCartItem
     };
 
@@ -83,7 +83,7 @@ export default function ProductDetail() {
                     <div className={styles['site-content']}>
                         <div className={styles['left-content']}>
                             <Link href="#" className={styles['left-content__link']}>
-                                <img src={urlImage} style={{ width: '100%', height: '400px' }} alt="" />
+                                <img src={urlImage} alt="" />
                             </Link>
                             <div className={styles['list-images']}>
                                 <ul>

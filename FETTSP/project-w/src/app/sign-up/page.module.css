@@ -1,9 +1,5 @@
 .customContainer{
-    width: 100%;
-}
-
-.site-content{
-    
+    max-width: 100%;
 }
 
 .site-container{
@@ -16,8 +12,6 @@
     }
 }
 
-.site-contact-social{
-    display: flex;
-    justify-content: flex-end;
-    gap: 50px;
+.site-content{
+
 }

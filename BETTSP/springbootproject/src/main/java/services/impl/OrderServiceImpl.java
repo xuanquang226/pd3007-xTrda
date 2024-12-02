@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import data.dao.AccountDao;
 import data.dao.OrderDao;
+import data.dto.AccountDTO;
 import data.dto.CartDTO;
 import data.dto.OrderDTO;
 import jakarta.transaction.Transactional;
@@ -15,6 +19,7 @@ import services.CartService;
 import services.OrderLineService;
 import services.OrderService;
 import services.ProductService;
+import utils.objects.AccountAuth;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -31,16 +36,19 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private AccountAuth accountAuth;
+
     @Transactional
     @Override
-    public void createOrderByIdCustomer(Long idCustomer) {
+    public void createOrderByIdCustomer() {
         // TODO: them ngay gio tao order
-        CartDTO cart = cartService.getOneCartByIdCustomer(idCustomer);
+        CartDTO cart = cartService.getOneCartByIdCustomer();
         if (cart.getStatus().equalsIgnoreCase("inactive")) {
             throw new IllegalArgumentException("Gio hang trong");
         } else {
             OrderDTO order = new OrderDTO();
-            order.setIdCustomer(idCustomer);
+            order.setIdCustomer(accountAuth.getAccount().getIdCustomer());
             order.setNotes(cart.getNotes());
             order.setTotalPrice(cart.getTotalPrice());
             order.setCodeDiscount(cart.getCodeDiscount());
@@ -48,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
 
             orderDao.createOrderByIdCustomer(order);
 
-            OrderDTO orderAfterSave = orderDao.getOneOrderByIdCustomer(idCustomer);
+            OrderDTO orderAfterSave = orderDao.getOneOrderByIdCustomer(accountAuth.getAccount().getIdCustomer());
             orderLineService.createManyOrderLine(orderAfterSave.getId(),
                     cart.getListCartItem());
 
@@ -78,9 +86,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrderLine(Long idCustomer) {
-        CartDTO cart = cartService.getOneCartByIdCustomer(idCustomer);
-        OrderDTO orderDTO = orderDao.getOneOrderByIdCustomer(idCustomer);
+    public void updateOrderLine() {
+        CartDTO cart = cartService.getOneCartByIdCustomer();
+        OrderDTO orderDTO = orderDao.getOneOrderByIdCustomer(accountAuth.getAccount().getIdCustomer());
         orderLineService.createManyOrderLine(orderDTO.getId(), cart.getListCartItem());
     }
 
