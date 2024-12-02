@@ -5,7 +5,7 @@ import java.util.List;
 import data.dto.OrderDTO;
 
 public interface OrderService {
-    void createOrderByIdCustomer(Long idCustomer);
+    void createOrderByIdCustomer();
 
     OrderDTO getOneOrder(Long id);
 
@@ -13,5 +13,5 @@ public interface OrderService {
 
     void deleteOrder(Long id);
 
-    void updateOrderLine(Long idCustomer);
+    void updateOrderLine();
 }

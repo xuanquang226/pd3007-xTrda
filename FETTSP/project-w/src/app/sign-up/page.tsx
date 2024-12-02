@@ -171,8 +171,8 @@ export default function SignIn() {
                 <div className={styles['site-container']}>
                     <div className={styles['site-content']}>
                         <Form id="form-id" onSubmit={handleSubmit}>
-                            <div className="form-body" style={{ width: "75%" }}>
-                                <Form.Group className="mb-2">
+                            <div className={`${styles.formBody} col-lg-8 col-12`}>
+                                <Form.Group className="mb-lg-2">
                                     <Form.Label>User name</Form.Label>
                                     <InputGroup>
                                         <Form.Control
@@ -185,7 +185,7 @@ export default function SignIn() {
                                     </InputGroup>
                                     <Form.Text className="text-danger" style={{ visibility: isExistsUserName ? "visible" : "hidden" }}>Đã tồn tại user name này</Form.Text>
                                 </Form.Group>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-lg-2">
                                     <Form.Label>Password</Form.Label>
                                     <InputGroup>
                                         <Form.Control
@@ -202,7 +202,7 @@ export default function SignIn() {
                                     <Form.Text className="text-danger" style={{ visibility: isValidPassWord ? "hidden" : "visible" }}>Mật khẩu cần dài hơn 8 ký tự và có một trong các ký tự sau "@" -
                                         "." - "!" - "#" - "," </Form.Text>
                                 </Form.Group>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-lg-2">
                                     <Form.Label>Confirm password</Form.Label>
                                     <InputGroup>
                                         <Form.Control
@@ -215,7 +215,7 @@ export default function SignIn() {
                                     </InputGroup>
                                     <Form.Text className="text-danger" style={{ visibility: isConfirmPassWord ? 'hidden' : 'visible' }} >Bạn cần nhập đúng mật khẩu ở trên</Form.Text>
                                 </Form.Group>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-lg-2">
                                     <Form.Label>Name</Form.Label>
                                     <InputGroup>
                                         <Form.Control
@@ -227,7 +227,7 @@ export default function SignIn() {
                                     </InputGroup>
                                     <Form.Text className="text-danger" style={{ visibility: 'hidden' }} >aaaa</Form.Text>
                                 </Form.Group>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-lg-2">
                                     <Form.Label>Phone</Form.Label>
                                     <InputGroup>
                                         <Form.Control
@@ -240,7 +240,7 @@ export default function SignIn() {
                                     </InputGroup>
                                     <Form.Text className="text-danger" style={{ visibility: isValidPhone ? 'hidden' : 'visible' }} >Số điện thoại không đúng định dạng 0 đầu và 10 số</Form.Text>
                                 </Form.Group>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-lg-2">
                                     <Form.Label>Mail</Form.Label>
                                     <InputGroup>
                                         <Form.Control
@@ -264,7 +264,7 @@ export default function SignIn() {
                                     </InputGroup>
                                     <Form.Text className="text-danger" style={{ visibility: isValidMail ? 'hidden' : 'visible' }} >Bỏ đuôi mail</Form.Text>
                                 </Form.Group>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-lg-2">
                                     <Form.Label>Location</Form.Label>
                                     <InputGroup>
                                         <Form.Control
@@ -276,7 +276,7 @@ export default function SignIn() {
                                     </InputGroup>
                                     <Form.Text className="text-danger" style={{ visibility: 'hidden' }} >aaaa</Form.Text>
                                 </Form.Group>
-                                <Form.Group className="mb-2">
+                                <Form.Group className="mb-lg-2">
                                     <Form.Label>Referral code</Form.Label>
                                     <InputGroup>
                                         <Form.Control

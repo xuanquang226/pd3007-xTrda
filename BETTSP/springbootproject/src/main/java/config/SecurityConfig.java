@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/images/many").permitAll()
                         .requestMatchers("/images-storage/**").permitAll()
                         .requestMatchers("/category/**").permitAll()
-                        .requestMatchers("/product/**").permitAll()
+                        .requestMatchers("/product/**").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

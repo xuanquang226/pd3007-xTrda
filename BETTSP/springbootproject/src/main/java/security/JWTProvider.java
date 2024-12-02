@@ -19,7 +19,7 @@ import io.jsonwebtoken.security.Keys;
 @Scope("prototype")
 public class JWTProvider {
     private final String JWT_SECRET = "quanggggggggggggggggxuangquanggggggggggg";
-    private final long AT_EXPIRE = 600000L;
+    private final long AT_EXPIRE = 700000L;
     private final long RT_EXPIRE = 1200000L;
     private final Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
 

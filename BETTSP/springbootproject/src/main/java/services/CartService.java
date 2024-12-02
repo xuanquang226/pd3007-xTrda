@@ -5,7 +5,7 @@ import data.dto.CartDTO;
 public interface CartService {
     CartDTO getOneCartByIdCart(Long id);
 
-    CartDTO getOneCartByIdCustomer(Long idCustomer);
+    CartDTO getOneCartByIdCustomer();
 
     void updateOneCartWithoutTotalPrice(CartDTO dto);
 
@@ -15,5 +15,6 @@ public interface CartService {
 
     // CartDTO updateTotalPriceAndGetCart(Long idCustomer);
 
-    void updateCartAfterOrder(Long idCustomer);
+    void updateCartAfterOrder();
+
 }

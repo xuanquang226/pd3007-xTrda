@@ -9,6 +9,7 @@ import { Button } from "react-bootstrap";
 import { Product } from "@/type/product";
 import CartItem from "@/type/cart-item";
 import useCartStore from "@/app/store/state-cart";
+import fetchWithToken from "@/utils/fetchWithToken";
 
 export default function TopNavigation() {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -38,11 +39,9 @@ export default function TopNavigation() {
         name: null
     });
 
-    //TODO: Xu ly dang nhap lay id
-    const [idCustomer, setIdCustomer] = useState<Number>();
     const getCart = useCallback(async () => {
         await delay(600);
-        const response = await fetch("http://localhost:8082/cart/2", {
+        const response = await fetchWithToken("http://localhost:8082/cart", {
             method: 'GET'
         });
         if (response.ok) {
@@ -72,11 +71,8 @@ export default function TopNavigation() {
         cart.listCartItem.forEach(cartItem => {
             idProductList.push(cartItem.idProduct);
         });
-        const response = await fetch(`http://localhost:8082/product/many`, {
+        const response = await fetchWithToken(`http://localhost:8082/product/many`, {
             method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
             body: JSON.stringify(idProductList)
         });
         if (response.ok) {
@@ -139,11 +135,8 @@ export default function TopNavigation() {
     const handleTotalPrice = (idProduct: number, idCart: number, quantity: number) => {
         setCartItem((oldCartItem) => {
             const newCartItem = { ...oldCartItem, idProduct: idProduct, idCart: idCart, quantity: quantity };
-            fetch(`http://localhost:8082/cart-item`, {
+            fetchWithToken(`http://localhost:8082/cart-item`, {
                 method: 'PUT',
-                headers: {
-                    'Content-type': 'application/json'
-                },
                 body: JSON.stringify(newCartItem)
             });
             return newCartItem;
@@ -153,7 +146,7 @@ export default function TopNavigation() {
 
     //Handle delete item
     const handleDeleteItem = (idCartItem: number) => {
-        fetch(`http://localhost:8082/cart-item/${idCartItem}`, {
+        fetchWithToken(`http://localhost:8082/cart-item/${idCartItem}`, {
             method: 'DELETE',
         });
         setCartItem({ ...cartItem, id: idCartItem });
