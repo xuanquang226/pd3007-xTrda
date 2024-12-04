@@ -10,14 +10,16 @@ import { Product } from "@/type/product";
 import CartItem from "@/type/cart-item";
 import useCartStore from "@/app/store/state-cart";
 import fetchWithToken from "@/utils/fetchWithToken";
+import Customer from "@/type/customer";
+import UserInterface from "@/components/user-interface";
+import { useRouter } from "next/navigation";
+import useUserStore from "@/app/store/state-user";
 
 export default function TopNavigation() {
-    const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const showPopup = () => setIsPopupVisible(true);
-    const hidePopup = () => setIsPopupVisible(false);
 
     //State chung cap nhat o component chi tiet san pham
     const { cartItemStore, addCartItem } = useCartStore();
+    const { customerStore, addCustomer } = useUserStore();
 
     // Get cart
     const [cart, setCart] = useState<Cart>({
@@ -29,7 +31,7 @@ export default function TopNavigation() {
         notes: '',
         listCartItem: []
     });
-    const [cartItem, setCartItem] = useState<CartItem>({
+    const defaultCartItem = {
         id: 0,
         idCart: 0,
         idProduct: 0,
@@ -37,7 +39,8 @@ export default function TopNavigation() {
         price: null,
         note: null,
         name: null
-    });
+    };
+    const [cartItem, setCartItem] = useState<CartItem>(defaultCartItem);
 
     const getCart = useCallback(async () => {
         await delay(600);
@@ -59,6 +62,20 @@ export default function TopNavigation() {
     useEffect(() => {
         setCartItem(cartItemStore);
     }, [cartItemStore]);
+
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const showPopup = () => {
+        if (cart.id !== 0) {
+            if (isPopupVisible === true) {
+                setIsPopupVisible(false);
+            } else {
+                setIsPopupVisible(true);
+                setIsPopupUserVisible(false);
+            }
+        } else {
+            setIsPopupVisible(false);
+        }
+    };
 
     // Create map idProduct,Product from productList
     const idProductToProductMap = new Map<number, Product>();
@@ -168,19 +185,106 @@ export default function TopNavigation() {
     }, [handleQuantityCart]);
 
 
+    // get info customer after signin
+    const [customer, setCustomer] = useState<Customer>({
+        id: 0,
+        name: '',
+        mail: '',
+        location: '',
+        phone: '',
+        idAccount: 0
+    });
+
+
+    const getCustomer = useCallback(async () => {
+        const response = await fetchWithToken("http://localhost:8082/customer", {
+            method: 'GET'
+        });
+        if (response.ok) {
+            const data = await response.json();
+            setCustomer(data);
+            addCustomer(data);
+        } else {
+            console.log('Failed to fetch');
+        }
+    }, [cart]);
+
+    useEffect(() => {
+        getCustomer();
+    }, [getCustomer]);
+
+
+    //Hide popup when click container
+    const [isPopupUserVisible, setIsPopupUserVisible] = useState<boolean>(false);
+    const popupUserRef = useRef<HTMLAnchorElement>(null);
+    const popupRef = useRef<HTMLAnchorElement>(null);
+    const divPopupRef = useRef<HTMLDivElement>(null);
+
+    const showPopupUser = () => {
+        if (customer.id !== 0) {
+            if (isPopupUserVisible === true) {
+                setIsPopupUserVisible(false);
+            } else {
+                setIsPopupUserVisible(true);
+                setIsPopupVisible(false);
+            }
+        } else {
+            setIsPopupUserVisible(false);
+        }
+
+    };
+
+    const handleClickOutSide = (event: MouseEvent) => {
+        if ((popupRef.current && !popupRef.current.contains(event.target as HTMLElement))
+            && (divPopupRef.current && !divPopupRef.current.contains(event.target as HTMLElement))) {
+            setIsPopupVisible(false);
+        }
+
+        if (popupUserRef.current && !popupUserRef.current.contains(event.target as HTMLElement)) {
+            setIsPopupUserVisible(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener("click", handleClickOutSide);
+        return () => {
+            window.removeEventListener("click", handleClickOutSide);
+        };
+    }, [isPopupUserVisible, isPopupVisible]);
+
+
+    const handleClickCheckOut = async () => {
+        const responseOrder = await fetchWithToken("http://localhost:8082/order", {
+            method: 'POST',
+        });
+        if (responseOrder.ok) {
+            const responseCartAfterOrder = await fetchWithToken("http://localhost:8082/cart/after-order", {
+                method: 'GET',
+            });
+            if (responseCartAfterOrder.ok) {
+                const data = await responseCartAfterOrder.json();
+                setCart(data);
+                setCartItem(defaultCartItem);
+            }
+        }
+    }
+
     return (
         <div className={styles['top-navigation']}>
-            <div className={styles['nav-icons']} onMouseEnter={showPopup} onMouseLeave={hidePopup}>
-                <Link href="" className={styles['icon']}>
+            <div className={styles['nav-icons']} >
+                <Link href={cart.id !== 0 ? '#' : '/sign-in'} ref={popupRef} className={styles['icon']} onClick={showPopup}>
                     <img src="/images/cart.png" alt="cart"></img>
                 </Link>
                 <p>{quantityCart}</p>
-                <Link href="" className={styles['icon']}>
+                <Link href={customer.id !== 0 ? '#' : '/sign-in'} ref={popupUserRef} className={styles['icon']} onClick={showPopupUser}>
                     <img src="/images/account.png" alt="account"></img>
                 </Link>
+                <p>{customer.name}</p>
+
+                <UserInterface info={customer} isPopupUserVisible={isPopupUserVisible}></UserInterface>
 
                 <div className={styles['popup']} style={{ visibility: isPopupVisible ? "visible" : "hidden" }}>
-                    <div className={styles['popup-content']}>
+                    <div ref={divPopupRef} className={styles['popup-content']}>
                         <div className={styles['cart-item-list']} style={{ overflowY: "auto", maxHeight: "90%", backgroundColor: "#ebe6e5" }}>
                             <ul style={{ padding: 0, margin: 0 }}>
                                 {cart.listCartItem.map(cartItem => {
@@ -219,11 +323,12 @@ export default function TopNavigation() {
                                 <p>{cart.totalPrice}</p>
                                 <p>VNĐ</p>
                             </div>
-                            <Button href="#" className={classNames(styles['cart-info__button'])} variant="dark">Checkout</Button>
+                            <Button href="#" onClick={handleClickCheckOut} className={classNames(styles['cart-info__button'])} variant="dark">Checkout</Button>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div >
     );
 }

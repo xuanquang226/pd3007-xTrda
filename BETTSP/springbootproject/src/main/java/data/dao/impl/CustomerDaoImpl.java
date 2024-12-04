@@ -43,4 +43,11 @@ public class CustomerDaoImpl implements CustomerDao {
             repository.save(mapper.toEntity(customerDTO));
         }
     }
+
+    @Override
+    public CustomerDTO getOneCustomerById(Long id) {
+        return mapper.toDto(repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Khong tim thay entity voi id customer = " + id)));
+    }
+
 }

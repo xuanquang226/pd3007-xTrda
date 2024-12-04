@@ -51,7 +51,7 @@ public class OrderDaoImpl implements OrderDao {
     public OrderDTO getOneOrderByIdCustomer(Long idCustomer) {
         Pageable pageable = PageRequest.of(0, 1);
         return orderMapper.toDto(
-                orderRepository.findFirstByIdCustomerOrderByIdAsc(idCustomer, pageable).getContent().get(0));
+                orderRepository.findFirstByIdCustomerOrderByIdDesc(idCustomer, pageable).getContent().get(0));
 
     }
 }

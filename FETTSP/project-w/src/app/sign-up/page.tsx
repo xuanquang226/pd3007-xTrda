@@ -4,8 +4,12 @@ import styles from "./page.module.css";
 import Customer from "@/type/customer";
 import Account from "@/type/account";
 import { Button, Dropdown, DropdownButton, Form, InputGroup } from "react-bootstrap";
-import InputGroupText from "react-bootstrap/esm/InputGroupText";
+import useUserStore from "../store/state-user";
+import { useRouter } from "next/navigation";
+
 export default function SignIn() {
+
+    const router = useRouter();
     const accountDefault = {
         id: 0,
         userName: '',
@@ -27,7 +31,6 @@ export default function SignIn() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        handleReferralCode();
         if (isExistsUserName == false && isConfirmPassWord == true && isValidMail == true && isValidPassWord == true
             && isValidPhone == true && account.userName.length !== 0) {
 
@@ -42,6 +45,7 @@ export default function SignIn() {
             if (response.ok) {
                 alert("Dang ky thanh cong");
                 clearInputField();
+                router.push('/sign-in');
             }
         } else {
             alert("Dang ky that bai, kiem tra cac truong nhap");
@@ -57,7 +61,7 @@ export default function SignIn() {
         });
 
         setConfirmPassword('');
-        setRefferalCode('');
+        setReferralCode('');
     };
 
 
@@ -154,16 +158,25 @@ export default function SignIn() {
         }
     }
 
-    const [refferalCode, setRefferalCode] = useState<string>('');
+    const [referralCode, setReferralCode] = useState<string>('');
     const handleReferralCode = () => {
-        if (refferalCode === '031297') {
+        if (referralCode.trim() === '031297') {
             setAccount({ ...account, accountType: 'ADMIN' })
         } else {
             setAccount({ ...account, accountType: 'USER' })
         }
 
-        if (refferalCode.trim().length === 0) setAccount({ ...account, accountType: 'USER' });
+        if (referralCode.trim().length === 0) setAccount({ ...account, accountType: 'USER' });
     };
+
+    const { customerStore, addCustomer } = useUserStore();
+    const preventAccess = useCallback(() => {
+        if (customerStore.id !== 0) router.push('/home');
+    }, [customerStore.id]);
+
+    useEffect(() => {
+        preventAccess();
+    }, [preventAccess]);
 
     return (
         <div className={`container ${styles.customContainer}`}>
@@ -282,8 +295,9 @@ export default function SignIn() {
                                         <Form.Control
                                             type="text"
                                             placeholder="Input your referral code"
-                                            value={refferalCode}
-                                            onChange={(e) => { setRefferalCode(e.target.value) }}
+                                            value={referralCode}
+                                            onChange={(e) => { setReferralCode(e.target.value) }}
+                                            onBlur={handleReferralCode}
                                         ></Form.Control>
                                     </InputGroup>
                                     <Form.Text className="text-danger" style={{ visibility: 'hidden' }} >aaaa</Form.Text>

@@ -11,5 +11,5 @@ import data.entities.OrderEntity;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     @Transactional
-    Page<OrderEntity> findFirstByIdCustomerOrderByIdAsc(Long idCustomer, Pageable pageable);
+    Page<OrderEntity> findFirstByIdCustomerOrderByIdDesc(Long idCustomer, Pageable pageable);
 }

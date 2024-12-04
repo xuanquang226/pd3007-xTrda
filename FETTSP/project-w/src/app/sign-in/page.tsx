@@ -7,8 +7,13 @@ import { useCallback, useEffect, useState } from "react";
 import { setRefreshTokenToCookie, setTokenToCookie } from "@/utils/token-utils";
 import TupleToken
     from "@/type/tuple-token";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import useUserStore from "../store/state-user";
 
 export default function SignIn() {
+    const { customerStore, addCustomer } = useUserStore();
+    const router = useRouter();
     const defaultAccount: Account = {
         id: 0,
         userName: '',
@@ -38,16 +43,24 @@ export default function SignIn() {
     };
 
     const handleToken = useCallback(() => {
-        setTokenToCookie(tupleToken.accessToken);
-        setRefreshTokenToCookie(tupleToken.refreshToken);
+        if (tupleToken.accessToken !== '' || tupleToken.refreshToken !== '') {
+            setTokenToCookie(tupleToken.accessToken);
+            setRefreshTokenToCookie(tupleToken.refreshToken);
+            router.push('/home?reload=true');
+        }
     }, [tupleToken]);
 
     useEffect(() => {
         handleToken();
     }, [handleToken]);
 
+    const preventAccess = useCallback(() => {
+        if (customerStore.id !== 0) router.push('/home');
+    }, [customerStore.id]);
 
-
+    useEffect(() => {
+        preventAccess();
+    }, [preventAccess]);
 
     return (
         <div className={`container ${styles.customContainer}`}>
@@ -55,7 +68,7 @@ export default function SignIn() {
                 <div className="site-container">
                     <div className="site-content">
                         <Form id="form-id" onSubmit={handleSubmitForm}>
-                            <div className="form-body">
+                            <div className="mb-lg-2 form-body">
                                 <Form.Group>
                                     <Form.Label>User name:</Form.Label>
                                     <Form.Control
@@ -75,6 +88,7 @@ export default function SignIn() {
                             </div>
                             <div className="form-footer">
                                 <Button variant="primary" type="submit">Sign in</Button>
+                                <Link href="/sign-up">Đăng ký</Link>
                             </div>
                         </Form>
                     </div>

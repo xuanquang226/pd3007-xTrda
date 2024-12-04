@@ -15,6 +15,6 @@ public interface CartService {
 
     // CartDTO updateTotalPriceAndGetCart(Long idCustomer);
 
-    void updateCartAfterOrder();
+    CartDTO updateCartAfterOrder();
 
 }

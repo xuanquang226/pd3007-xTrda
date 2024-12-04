@@ -2,19 +2,16 @@ package services.impl;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 
-import data.dao.AccountDao;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import data.dao.OrderDao;
-import data.dto.AccountDTO;
 import data.dto.CartDTO;
 import data.dto.OrderDTO;
-import jakarta.transaction.Transactional;
 import services.CartService;
 import services.OrderLineService;
 import services.OrderService;
@@ -83,13 +80,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO getOneOrder(Long idCustomer) {
         return null;
-    }
-
-    @Override
-    public void updateOrderLine() {
-        CartDTO cart = cartService.getOneCartByIdCustomer();
-        OrderDTO orderDTO = orderDao.getOneOrderByIdCustomer(accountAuth.getAccount().getIdCustomer());
-        orderLineService.createManyOrderLine(orderDTO.getId(), cart.getListCartItem());
     }
 
 }

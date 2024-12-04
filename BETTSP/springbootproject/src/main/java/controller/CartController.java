@@ -52,10 +52,9 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/customer")
-    public ResponseEntity<Void> updateCartAfterOrder() {
-        cartService.updateCartAfterOrder();
-        return ResponseEntity.noContent().build();
+    @GetMapping("/after-order")
+    public ResponseEntity<CartDTO> updateCartAfterOrder() {
+        return ResponseEntity.ok(cartService.updateCartAfterOrder());
     }
 
 }

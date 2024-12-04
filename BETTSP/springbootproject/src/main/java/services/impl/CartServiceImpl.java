@@ -102,7 +102,7 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public void updateCartAfterOrder() {
+    public CartDTO updateCartAfterOrder() {
         CartDTO cartDTO = getOneCartByIdCustomer();
         cartDTO.setNotes("empty");
         cartDTO.setStatus("inactive");
@@ -111,6 +111,7 @@ public class CartServiceImpl implements CartService {
         cartDao.updateCartAfterOrder(cartDTO);
         List<Long> ids = cartDTO.getListCartItem().stream().map(CartItemDTO::getId).collect(Collectors.toList());
         cartItemDao.deleteManyCartItem(ids);
+        return cartDTO;
     }
 
     public void updateTotalPrice(List<CartItemDTO> listCartItem, CartDTO cart, Long idCustomer) {

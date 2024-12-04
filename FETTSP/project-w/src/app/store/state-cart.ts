@@ -18,10 +18,6 @@ const useCartStore = create<CartStore>((set) => ({
     },
 
     addCartItem: (cartItem) => set(({cartItemStore:cartItem})),
-
-    // addCartItem(cartItem) {
-    //     set(({cartItemStore: cartItem}))
-    // },
 }));
 
 export default useCartStore;

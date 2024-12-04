@@ -33,6 +33,7 @@ import data.dao.CustomerDao;
 import data.dao.RoleAccountDao;
 import data.dao.RoleDao;
 import data.dto.AccountDTO;
+import data.dto.CartDTO;
 import data.dto.CustomerDTO;
 import data.dto.RoleDTO;
 import io.jsonwebtoken.Claims;
@@ -42,6 +43,7 @@ import redis.clients.jedis.exceptions.JedisDataException;
 import security.CustomUserDetailService;
 import security.JWTProvider;
 import services.AccountService;
+import services.CartService;
 import services.DeviceService;
 import utils.RedisUtils;
 import utils.TupleToken;
@@ -77,9 +79,12 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private DeviceService deviceService;
 
+    @Autowired
+    private CartService cartService;
+
     @Override
     public void createAccount(AccountDTO accountDTO, CustomerDTO customerDTO) {
-
+        // create account, customer and cart
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         String password = accountDTO.getPassword();
         String passwordEncode = passwordEncoder.encode(password);
@@ -96,6 +101,14 @@ public class AccountServiceImpl implements AccountService {
         }
         customerDTO.setIdAccount(account.getId());
         customerDao.createOneCustomer(customerDTO);
+        CustomerDTO customer = customerDao.getOneCustomerByIdAccount(account.getId());
+
+        CartDTO cart = new CartDTO();
+        cart.setIdCustomer(customer.getId());
+        cart.setNotes("empty");
+        cart.setStatus("inactive");
+        cartService.createOneCart(cart);
+
         updateAccount(account);
     }
 
