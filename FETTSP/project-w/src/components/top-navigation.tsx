@@ -20,7 +20,7 @@ export default function TopNavigation() {
     //State chung cap nhat o component chi tiet san pham
     const { cartItemStore, addCartItem } = useCartStore();
     const { customerStore, addCustomer } = useUserStore();
-
+    const [autoRetry, setAutoRetry] = useState<boolean>(false);
     // Get cart
     const [cart, setCart] = useState<Cart>({
         id: 0,
@@ -46,8 +46,8 @@ export default function TopNavigation() {
         await delay(600);
         const response = await fetchWithToken("http://localhost:8082/cart", {
             method: 'GET'
-        });
-        if (response.ok) {
+        }, autoRetry);
+        if (response && response.ok) {
             const data = await response.json();
             setCart(data);
         } else {
@@ -91,8 +91,8 @@ export default function TopNavigation() {
         const response = await fetchWithToken(`http://localhost:8082/product/many`, {
             method: 'POST',
             body: JSON.stringify(idProductList)
-        });
-        if (response.ok) {
+        }, autoRetry);
+        if (response && response.ok) {
             const data = await response.json();
             setProductList(data);
         }
@@ -155,7 +155,7 @@ export default function TopNavigation() {
             fetchWithToken(`http://localhost:8082/cart-item`, {
                 method: 'PUT',
                 body: JSON.stringify(newCartItem)
-            });
+            }, autoRetry);
             return newCartItem;
         })
     };
@@ -165,7 +165,7 @@ export default function TopNavigation() {
     const handleDeleteItem = (idCartItem: number) => {
         fetchWithToken(`http://localhost:8082/cart-item/${idCartItem}`, {
             method: 'DELETE',
-        });
+        }, autoRetry);
         setCartItem({ ...cartItem, id: idCartItem });
     };
 
@@ -195,19 +195,18 @@ export default function TopNavigation() {
         idAccount: 0
     });
 
-
     const getCustomer = useCallback(async () => {
         const response = await fetchWithToken("http://localhost:8082/customer", {
             method: 'GET'
-        });
-        if (response.ok) {
+        }, autoRetry);
+        if (response && response.ok) {
             const data = await response.json();
             setCustomer(data);
             addCustomer(data);
         } else {
             console.log('Failed to fetch');
         }
-    }, [cart]);
+    }, [cart, autoRetry]);
 
     useEffect(() => {
         getCustomer();
@@ -230,8 +229,8 @@ export default function TopNavigation() {
             }
         } else {
             setIsPopupUserVisible(false);
+            setAutoRetry(true);
         }
-
     };
 
     const handleClickOutSide = (event: MouseEvent) => {
@@ -256,18 +255,22 @@ export default function TopNavigation() {
     const handleClickCheckOut = async () => {
         const responseOrder = await fetchWithToken("http://localhost:8082/order", {
             method: 'POST',
-        });
-        if (responseOrder.ok) {
+        }, autoRetry);
+        if (responseOrder && responseOrder.ok) {
             const responseCartAfterOrder = await fetchWithToken("http://localhost:8082/cart/after-order", {
                 method: 'GET',
-            });
-            if (responseCartAfterOrder.ok) {
+            }, autoRetry);
+            if (responseCartAfterOrder && responseCartAfterOrder.ok) {
                 const data = await responseCartAfterOrder.json();
                 setCart(data);
                 setCartItem(defaultCartItem);
             }
         }
     }
+
+    const noAction = () => {
+
+    };
 
     return (
         <div className={styles['top-navigation']}>
@@ -288,7 +291,12 @@ export default function TopNavigation() {
                         <div className={styles['cart-item-list']} style={{ overflowY: "auto", maxHeight: "90%", backgroundColor: "#ebe6e5" }}>
                             <ul style={{ padding: 0, margin: 0 }}>
                                 {cart.listCartItem.map(cartItem => {
-                                    return (<li key={cartItem.id}>
+                                    const product = idProductToProductMap.get(cartItem.idProduct);
+                                    let productIsAvailable = false;
+                                    if (product && product.quantity && product.quantity >= 1) {
+                                        productIsAvailable = true;
+                                    }
+                                    return (<li key={cartItem.id} style={productIsAvailable ? {} : { opacity: 0.55 }}>
                                         <div className={styles['cart-item']}>
                                             <Link
                                                 href={convertIdCategoryToNameCategory((idProductToProductMap.get(cartItem.idProduct)?.idCategory), cartItem.idProduct) ?? ''}
@@ -304,9 +312,9 @@ export default function TopNavigation() {
                                                         <p>VNĐ</p>
                                                     </div>
                                                     <div className={styles['quantity']}>
-                                                        <Link href="#" onClick={() => { decreaseQuantityItem(cartItem.idProduct, cartItem.idCart) }}><img src="/images/decrease.png" alt="" /></Link>
+                                                        <Link href="#" onClick={() => { productIsAvailable ? decreaseQuantityItem(cartItem.idProduct, cartItem.idCart) : noAction }}><img src="/images/decrease.png" alt="" /></Link>
                                                         <p>{quantities?.get(cartItem.idProduct)}</p>
-                                                        <Link href="#" onClick={() => { increaseQuantityItem(cartItem.idProduct, cartItem.idCart) }}><img src="/images/increase.png" alt="" /></Link>
+                                                        <Link href="#" onClick={() => { productIsAvailable ? increaseQuantityItem(cartItem.idProduct, cartItem.idCart) : noAction }}><img src="/images/increase.png" alt="" /></Link>
                                                     </div>
                                                 </div>
                                             </div>

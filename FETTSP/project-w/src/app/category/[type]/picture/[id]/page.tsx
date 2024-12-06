@@ -8,11 +8,14 @@ import { Button } from "react-bootstrap";
 import CartItem from "@/type/cart-item";
 import useCartStore from "@/app/store/state-cart";
 import fetchWithToken from "@/utils/fetchWithToken";
+import classNames from "classnames";
 export default function ProductDetail() {
     const { type, id } = useParams();
     const { cartItemStore, addCartItem } = useCartStore();
     const [product, setProduct] = useState<Product>();
     const [urlImage, setUrlImage] = useState<string>();
+
+    const [autoRetry, setAutoRetry] = useState<boolean>(false);
 
     const [cartItem, setCartItem] = useState<CartItem>({
         id: 0,
@@ -25,13 +28,13 @@ export default function ProductDetail() {
     }
     );
 
-    // get cart from param id
+    // get product from param id
     const getProductFromId = useCallback(async () => {
         const response = await fetchWithToken(`http://localhost:8082/product/${id}?categoryType=${type}`, {
             method: 'GET',
-        });
+        }, autoRetry);
         try {
-            if (response.ok) {
+            if (response && response.ok) {
                 const data = await response.json();
                 if (data != null) {
                     setProduct(data);
@@ -42,7 +45,7 @@ export default function ProductDetail() {
                     console.log("data is null because url invalid");
                 }
             } else {
-                throw new Error(`Failed to fetch ${response.status}`);
+                throw new Error(`Failed to fetch ${response?.status}`);
             }
         } catch (error) {
             console.log(error);
@@ -66,21 +69,39 @@ export default function ProductDetail() {
 
     // handle on click add cart
     const handleAddCart = () => {
-        const newCartItem = { ...cartItem };
-        newCartItem.idProduct = product?.id ?? 0;
-        fetchWithToken("http://localhost:8082/cart-item", {
-            method: 'POST',
-            body: JSON.stringify(newCartItem)
-        });
-        addCartItem(newCartItem)
-        return newCartItem
+        if (isAvailable) {
+            const newCartItem = { ...cartItem };
+            newCartItem.idProduct = product?.id ?? 0;
+            fetchWithToken("http://localhost:8082/cart-item", {
+                method: 'POST',
+                body: JSON.stringify(newCartItem)
+            }, autoRetry);
+            addCartItem(newCartItem);
+        } else {
+            alert('Het hang');
+            console.log("Product is unavailable");
+        }
     };
+
+
+
+    const [isAvailable, setIsAvailable] = useState<boolean>(true);
+    const checkQuantityOfProduct = useCallback(() => {
+        if (product && product.quantity < 1) {
+            setIsAvailable(false);
+            setCartItem({ ...cartItem, quantity: 0 });
+        }
+    }, [product]);
+
+    useEffect(() => {
+        checkQuantityOfProduct();
+    }, [checkQuantityOfProduct]);
 
     return (
         <div className={`container ${styles.customContainer}`}>
             <div className="site-wrapper">
                 <div className={styles['site-container']}>
-                    <div className={styles['site-content']}>
+                    <div className={styles['site-content']} style={!isAvailable ? { opacity: 0.55 } : {}}>
                         <div className={styles['left-content']}>
                             <Link href="#" className={styles['left-content__link']}>
                                 <img src={urlImage} alt="" />
@@ -101,7 +122,7 @@ export default function ProductDetail() {
                                 <p>{product?.description}</p>
                             </div>
                             <div className={styles['bottom']}>
-                                <input type="number" placeholder="1" value={cartItem.quantity} style={{ width: '50px' }} min="1" max="100" onChange={handleChangeQuantity} />
+                                <input type="number" value={cartItem.quantity} style={{ width: '50px' }} min={isAvailable ? "1" : "0"} max={isAvailable ? product?.quantity : "0"} onChange={handleChangeQuantity} />
                                 <Button variant="primary" onClick={handleAddCart}>Thêm hàng</Button>
                             </div>
                         </div>

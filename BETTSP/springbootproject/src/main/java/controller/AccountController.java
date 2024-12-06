@@ -56,4 +56,9 @@ public class AccountController {
     public ResponseEntity<Boolean> validateExistsUserName(@RequestParam String userName) {
         return ResponseEntity.ok(accountService.validateExistsUsername(userName));
     }
+
+    @GetMapping("/auth")
+    public ResponseEntity<TupleToken> validateRefreshToken(HttpServletRequest request) {
+        return ResponseEntity.ok(accountService.validateRefreshToken(request));
+    }
 }

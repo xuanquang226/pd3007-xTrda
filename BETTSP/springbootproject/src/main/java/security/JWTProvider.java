@@ -19,8 +19,8 @@ import io.jsonwebtoken.security.Keys;
 @Scope("prototype")
 public class JWTProvider {
     private final String JWT_SECRET = "quanggggggggggggggggxuangquanggggggggggg";
-    private final long AT_EXPIRE = 700000L;
-    private final long RT_EXPIRE = 1200000L;
+    private final long AT_EXPIRE = 85000L;
+    private final long RT_EXPIRE = 120000000L;
     private final Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
 
     public String generateAccessToken(String subject, List<GrantedAuthority> role) {

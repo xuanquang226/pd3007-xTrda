@@ -23,10 +23,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import services.AccountService;
 
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JWTProvider jwtProvider;
+
+    @Autowired
+    private AccountService accountService;
 
     // @Autowired
     // private CustomUserDetailService customUserDetailService;
@@ -59,6 +63,11 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                 System.getLogger(JWTAuthenticationFilter.class.getName()).log(Level.INFO, "Expired token", ex);
                 // hết hạn yêu cầu đăng nhập lại
                 // gần hết hạn sẽ sử dụng refresh token để cấp lại cặp token mới
+                // response.addHeader("Access-Token-Expires", "true");
+
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN); // tra ve cho frontend status code 403
+                response.getWriter().write("JWT token has expired.");
+                return;
 
             } catch (NullPointerException ex) {
                 System.getLogger(JWTAuthenticationFilter.class.getName()).log(Level.INFO, ex);

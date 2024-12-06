@@ -159,7 +159,7 @@ public class AccountServiceImpl implements AccountService {
                     + jwtProvider.generateAccessToken(sc.getAuthentication().getName(), listAuthorities);
             String refreshToken = jwtProvider.generateRefreshToken(sc.getAuthentication().getName());
             try {
-                createInfoRefreshToken(username, request);
+                createInfoRefreshToken(sc.getAuthentication().getName(), request, refreshToken);
             } catch (JsonMappingException ex) {
 
             } catch (JsonProcessingException ex) {
@@ -175,11 +175,10 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    public void createInfoRefreshToken(String username, HttpServletRequest request)
+    public void createInfoRefreshToken(String username, HttpServletRequest request, String refreshToken)
             throws JsonMappingException, JsonProcessingException {
         InfoRefreshToken infoRefreshToken = new InfoRefreshToken();
 
-        String refreshToken = jwtProvider.generateRefreshToken(username);
         Claims claims = jwtProvider.validateToken(refreshToken);
 
         Date dateCreated = claims.getIssuedAt();
@@ -226,9 +225,58 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public TupleToken validateRefreshToken(String refreshToken, HttpServletRequest request) {
+    public TupleToken validateRefreshToken(HttpServletRequest request) {
+        String deviceType = deviceService.detectDevice(request);
+        String refreshToken = request.getHeader("Authorization2");
+        Claims claims = jwtProvider.validateToken(refreshToken);
+        // TODO: Xử lý thêm hết hạn refresh token bắt đăng nhập lại
+        TupleToken tupleToken = new TupleToken();
+        if (claims != null) {
+            String userName = claims.getSubject();
+            String jsonValue = redisUtils.getValue(userName, deviceType, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // Đăng ký module cho java.time
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Không ghi ngày dưới dạng timestamp
 
-        return null;
+            try {
+                List<InfoRefreshToken> infoRefreshTokenList = objectMapper.readValue(jsonValue,
+                        new TypeReference<List<InfoRefreshToken>>() {
+                        });
+
+                List<String> refreshTokenList = infoRefreshTokenList.stream().map(InfoRefreshToken::getRefreshToken)
+                        .collect(Collectors.toList());
+                if (refreshTokenList.contains(refreshToken)) {
+                    if ((infoRefreshTokenList.get(infoRefreshTokenList.size() - 1)).getRefreshToken()
+                            .equalsIgnoreCase(refreshToken)) {
+                        System.out.println("Refresh token moi nhat hop le de tra ve bo token moi");
+
+                        UserDetails user = customUserDetailService.loadUserByUsername(userName);
+                        List<GrantedAuthority> listAuthorities = user.getAuthorities().stream()
+                                .collect(Collectors.toList());
+                        String newAccessToken = "Bearer "
+                                + jwtProvider.generateAccessToken(userName, listAuthorities);
+                        String newRefreshToken = jwtProvider.generateRefreshToken(userName);
+
+                        tupleToken.setAccessToken(newAccessToken);
+                        tupleToken.setRefreshToken(newRefreshToken);
+
+                        createInfoRefreshToken(userName, request, newRefreshToken); // Luu info vao redis
+
+                    } else {
+                        System.out.println("Yeu cau dang nhap lai vi refresh token da cu");
+                        tupleToken.setAccessToken("empty");
+                        tupleToken.setRefreshToken("empty");
+                    }
+                } else {
+                    System.out.println("Khong co refresh token nay trong bo nho refresh token da bi ban");
+                }
+
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return tupleToken;
     }
 
     @Override

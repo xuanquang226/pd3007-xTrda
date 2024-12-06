@@ -110,6 +110,8 @@ public class ProductServiceImpl implements ProductService {
         ProductDTO productDTO = productDao.getOneProduct(id);
         productDTO.setImageDTOs(imageDTOs);
 
+        // Kiem tra neu dung ten category moi tra ve product duoc lay tu id tren. Con
+        // nhap url tam bay thi khong cho :D
         CategoryDTO categoryDTO = categoryDao.getOneCategory(productDTO.getIdCategory());
         if (categoryDTO.getName().equalsIgnoreCase(categoryType)) {
             return productDTO;
