@@ -12,6 +12,8 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private CategoryDao categoryDao;
+
+    @Value("${HOST}")
+    private String host;
 
     @Override
     public void createOneProduct(ProductDTO productDTO, MultipartFile[] files) {
@@ -74,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
         if (iListIterator.hasPrevious()) {
             latestProductDTO = iListIterator.previous();
             List<ImageDTO> imageDTOs = new ArrayList<>();
-            String urlResource = "http://localhost:8082/images-storage/";
+            String urlResource = "http://" + host + ":8082/images-storage/";
             for (ImageDTO imageDTO : productDTO.getImageDTOs()) {
                 String imgUrl = urlResource + imageDTO.getDescription();
                 imageDTO.setIdProduct(latestProductDTO.getId());

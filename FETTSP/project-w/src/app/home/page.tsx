@@ -2,16 +2,17 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 import ShowImageModal from '@/components/show-image.modal'
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Image } from "@/type/image";
 import { useRouter, useSearchParams } from "next/navigation";
-export default function homeTrang() {
+export default function HomeTrang() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
     const [linkImg, setLinkImg] = useState<string>("");
     const [showImgModal, setShowImgModal] = useState<boolean>(false);
     const [images, setImages] = useState<Image[]>();
 
     useEffect(() => {
-        fetch("http://localhost:8082/images/many")
+        fetch(`http://${url}:8082/images/many`)
             .then(res => res.json())
             .then(data => setImages(data));
     }, []);
@@ -33,7 +34,7 @@ export default function homeTrang() {
                     <div className={styles['site-content__list-image']}>
                         <div className={styles['grid-main']}>
                             {images?.map((image) => (
-                                <div className={styles['grid-item']} >
+                                <div className={styles['grid-item']} key={image.id}>
                                     <img src={image.url} alt=""
                                         onClick={() => {
                                             setLinkImg(image.url);
@@ -53,3 +54,9 @@ export default function homeTrang() {
         </div>
     )
 }
+
+const SuspendedHomePage = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+        <HomeTrang />
+    </Suspense>
+);

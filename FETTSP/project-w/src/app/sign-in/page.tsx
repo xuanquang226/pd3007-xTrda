@@ -1,5 +1,4 @@
 'use client';
-import classNames from "classnames";
 import styles from "./page.module.css";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import Account from "@/type/account";
@@ -12,6 +11,7 @@ import Link from "next/link";
 import useUserStore from "../store/state-user";
 
 export default function SignIn() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
     const { customerStore, addCustomer } = useUserStore();
     const router = useRouter();
     const defaultAccount: Account = {
@@ -30,7 +30,7 @@ export default function SignIn() {
 
     const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const response = await fetch(`http://localhost:8082/account/login?username=${account.userName}&password=${account.password}`, {
+        const response = await fetch(`http://${url}:8082/account/login?username=${account.userName}&password=${account.password}`, {
             method: 'GET'
         })
         if (response.ok) {

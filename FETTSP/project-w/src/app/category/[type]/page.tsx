@@ -6,6 +6,7 @@ import { Category } from "@/type/category";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 export default function Type() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
     const [linkUrl, setLink] = useState<string>("");
     const [showImgModal, setShowImgModal] = useState<boolean>(false);
 
@@ -44,7 +45,7 @@ export default function Type() {
 
     useEffect(() => {
         if (categoryId > 0) {
-            fetch(`http://localhost:8082/category/one/${categoryId}`)
+            fetch(`http://${url}:8082/category/one/${categoryId}`)
                 .then((res) => res.json())
                 .then((data) => {
                     setCategory(data);
@@ -62,8 +63,8 @@ export default function Type() {
                         <div className={styles['site-content__list-image']}>
                             <div className={styles['grid-main']}>
                                 {category?.productDTOs.map((product) => (
-                                    <div className={styles['grid-item']} >
-                                        <Link href={`http://localhost:3000/category/${categoryType}/picture/${product.id}`}>
+                                    <div key={product.id} className={styles['grid-item']} >
+                                        <Link href={`http://${url}:3000/category/${categoryType}/picture/${product.id}`}>
                                             <img src={product.imageDTOs[0].url} alt=""
                                                 onClick={() => {
                                                 }} style={{ height: "100%", maxWidth: "100%", padding: "20px" }}

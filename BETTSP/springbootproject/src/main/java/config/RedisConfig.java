@@ -1,5 +1,6 @@
 package config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +22,12 @@ public class RedisConfig {
     // template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
     // return template;
     // }
+    @Value("${HOST_REDIS}")
+    private String hostRedis;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration("localhost", 6379);
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration(hostRedis, 6379);
         return new JedisConnectionFactory(configuration);
     }
 

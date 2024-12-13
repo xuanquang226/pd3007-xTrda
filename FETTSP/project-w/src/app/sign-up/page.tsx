@@ -8,7 +8,7 @@ import useUserStore from "../store/state-user";
 import { useRouter } from "next/navigation";
 
 export default function SignIn() {
-
+    const url = process.env.NEXT_PUBLIC_API_URL;
     const router = useRouter();
     const accountDefault = {
         id: 0,
@@ -38,7 +38,7 @@ export default function SignIn() {
             const formData = new FormData();
             formData.append('account', JSON.stringify(account));
             formData.append('customer', JSON.stringify(customer));
-            const response = await fetch("http://localhost:8082/account/sign-up", {
+            const response = await fetch("http://${url}:8082/account/sign-up", {
                 method: 'POST',
                 body: formData
             });
@@ -74,7 +74,7 @@ export default function SignIn() {
 
     const [isExistsUserName, setIsExistUserName] = useState<boolean>(false);
     const handleUserName = useCallback(async () => {
-        const response = await fetch(`http://localhost:8082/account/validate?userName=${account.userName}`, {
+        const response = await fetch(`http://${url}:8082/account/validate?userName=${account.userName}`, {
             method: 'GET'
         });
         if (response.ok) {
@@ -209,11 +209,12 @@ export default function SignIn() {
                                             onBlur={handlePassWord}
                                         ></Form.Control>
                                         <Button onClick={showPassWord} style={{ backgroundColor: "transparent", border: "none" }}>
-                                            <img src="/images/view.png" />
+                                            <img alt="" src="/images/view.png" />
                                         </Button>
                                     </InputGroup>
-                                    <Form.Text className="text-danger" style={{ visibility: isValidPassWord ? "hidden" : "visible" }}>Mật khẩu cần dài hơn 8 ký tự và có một trong các ký tự sau "@" -
-                                        "." - "!" - "#" - "," </Form.Text>
+                                    <Form.Text className="text-danger" style={{ visibility: isValidPassWord ? "hidden" : "visible" }}>
+                                        Mật khẩu cần dài hơn 8 ký tự và có một trong các ký tự sau &quot;@&quot; - &quot;.&quot; - &quot;!&quot; - &quot;#&quot; - &quot;,&quot;
+                                    </Form.Text>
                                 </Form.Group>
                                 <Form.Group className="mb-lg-2">
                                     <Form.Label>Confirm password</Form.Label>

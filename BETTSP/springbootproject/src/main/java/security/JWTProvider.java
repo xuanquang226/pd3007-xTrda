@@ -4,7 +4,10 @@ import java.security.Key;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -14,14 +17,22 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
 @Component
 @Scope("prototype")
 public class JWTProvider {
-    private final String JWT_SECRET = "quanggggggggggggggggxuangquanggggggggggg";
+
+    @Value("${SECRET_KEY}")
+    private String JWT_SECRET_KEY;
     private final long AT_EXPIRE = 85000L;
     private final long RT_EXPIRE = 120000000L;
-    private final Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(JWT_SECRET_KEY.getBytes());
+    }
 
     public String generateAccessToken(String subject, List<GrantedAuthority> role) {
         Date currentDate = new Date();

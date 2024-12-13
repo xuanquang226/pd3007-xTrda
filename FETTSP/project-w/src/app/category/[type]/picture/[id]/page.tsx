@@ -14,6 +14,7 @@ export default function ProductDetail() {
     const { cartItemStore, addCartItem } = useCartStore();
     const [product, setProduct] = useState<Product>();
     const [urlImage, setUrlImage] = useState<string>();
+    const url = process.env.NEXT_PUBLIC_API_URL;
 
     const [autoRetry, setAutoRetry] = useState<boolean>(false);
 
@@ -30,7 +31,7 @@ export default function ProductDetail() {
 
     // get product from param id
     const getProductFromId = useCallback(async () => {
-        const response = await fetchWithToken(`http://localhost:8082/product/${id}?categoryType=${type}`, {
+        const response = await fetchWithToken(`http://${url}:8082/product/${id}?categoryType=${type}`, {
             method: 'GET',
         }, autoRetry);
         try {
@@ -72,7 +73,7 @@ export default function ProductDetail() {
         if (isAvailable) {
             const newCartItem = { ...cartItem };
             newCartItem.idProduct = product?.id ?? 0;
-            fetchWithToken("http://localhost:8082/cart-item", {
+            fetchWithToken(`http://${url}:8082/cart-item`, {
                 method: 'POST',
                 body: JSON.stringify(newCartItem)
             }, autoRetry);
@@ -109,7 +110,7 @@ export default function ProductDetail() {
                             <div className={styles['list-images']}>
                                 <ul>
                                     {product?.imageDTOs.map((image) => (
-                                        <li>
+                                        <li key={image.id}>
                                             <img src={image.url} alt="" onClick={() => handleChooseImage(image.url)} style={{ width: "75px", height: "75px" }} />
                                         </li>
                                     ))}

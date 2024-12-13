@@ -1,13 +1,13 @@
-'use-client'
+'use client'
 import { useEffect, useState } from "react";
 import styles from "../styles/handle-img.module.css"
-import { mutate } from "swr";
 
-export default function handleImg() {
+export default function HandleImg() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
     const [files, setFile] = useState<File[]>();
     const [data, setData] = useState<string>('');
     const tempURLs: any = [];
-    useEffect(function () {
+    useEffect(() => {
         const form = document.getElementById(`form-input-file`) as HTMLFormElement;
         if (!form) console.log("form not found");
         const handleSubmit = async (event: Event) => {
@@ -16,7 +16,7 @@ export default function handleImg() {
             setFile(formData.getAll("file") as File[]);
 
             try {
-                const response = await fetch("http://localhost:8082/images/upload2", {
+                const response = await fetch(`http://${url}:8082/images/upload2`, {
                     method: "POST",
                     body: formData
                 });
@@ -52,13 +52,11 @@ export default function handleImg() {
 
             <div className="random-content">
                 <img src={data} />
-                {files?.map((file) => (
-                    <h4>{file.name}</h4>
-                ))}
-                {/* {tempURLs?.map((tempURL: any) => (
-                    <img src={tempURL} width={300} height={200} style={{ display: "flex", flexDirection: "column" }} />
-                ))} */}
-
+                {files?.map((file) => {
+                    let idFile = 0;
+                    return (<h4 key={idFile + 1}>{file.name}</h4>)
+                }
+                )}
             </div>
         </div>
     );

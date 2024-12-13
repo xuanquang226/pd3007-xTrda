@@ -3,15 +3,16 @@ import { Image } from "@/type/image";
 import { Product } from "@/type/product";
 import { useEffect, useState } from "react";
 
-
-
 export default function CreateProduct() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
     const [product, setProduct] = useState<Product>({
         id: 0,
         name: '',
         description: '',
         idCategory: 1,
-        imageDTOs: []
+        imageDTOs: [],
+        price: '',
+        quantity: 0
     });
 
     const [files, setFiles] = useState<FileList | null>(null);
@@ -47,7 +48,7 @@ export default function CreateProduct() {
             formData.append('product', JSON.stringify(updatedProduct));
 
             try {
-                const response = await fetch("http://localhost:8082/product", {
+                const response = await fetch(`http://${url}:8082/product`, {
                     method: "POST",
                     // headers: {
                     //     'Content-Type': 'application/json',

@@ -2,7 +2,6 @@
 import { Button } from 'react-bootstrap';
 import Table from 'react-bootstrap/Table'
 import CreateModal from './create.modal';
-import UpdateModal from './update.modal';
 import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 interface Books {
@@ -10,7 +9,6 @@ interface Books {
 }
 export default function Body(arrBook: Books) {
     const [book, setBook] = useState<Book | null>(null);
-    const [showModalUpdate, setShowModalUpdate] = useState<boolean>(false);
     const [showModalCreate, setShowModalCreate] = useState<boolean>(false);
     return (
         <>
@@ -39,7 +37,6 @@ export default function Body(arrBook: Books) {
                                     <Button variant='danger' className='mx-3'>Delete</Button>
                                     <Button variant='warning' onClick={() => {
                                         setBook(item);
-                                        setShowModalUpdate(true);
                                     }}>Edit</Button>
                                 </td>
                             </tr>
@@ -50,12 +47,6 @@ export default function Body(arrBook: Books) {
             <CreateModal
                 showModalCreate={showModalCreate}
                 setShowModalCreate={setShowModalCreate}
-            />
-            <UpdateModal
-                showModalUpdate={showModalUpdate}
-                setShowModalUpdate={setShowModalUpdate}
-                book={book}
-                setBook={setBook}
             />
             <ToastContainer
                 position="bottom-center"

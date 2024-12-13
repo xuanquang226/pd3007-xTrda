@@ -5,7 +5,8 @@ import React, { FormEvent, useCallback, useEffect, useState } from "react";
 import { Mail } from "@/type/mail";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
-export default function contactMe() {
+export default function ContactMe() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
     const [mail, setMail] = useState<Mail>({
         id: 0,
         name: '',
@@ -35,7 +36,7 @@ export default function contactMe() {
             const formData = new FormData();
             formData.append('mail', JSON.stringify(updatedMail));
             try {
-                const response = await fetch("http://localhost:8082/mail", {
+                const response = await fetch(`http://${url}:8082/mail`, {
                     method: 'POST',
                     body: formData
                 });

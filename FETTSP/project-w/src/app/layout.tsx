@@ -8,7 +8,7 @@ import Container from "react-bootstrap/Container";
 import 'react-toastify/dist/ReactToastify.css';
 // import "./globals.css";
 import styles from "./page.module.css";
-import { Children } from "react";
+import { Children, Suspense } from "react";
 import TopNav from "@/components/top-navigation";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,7 +30,9 @@ export default function RootLayout({
           <Sidebar></Sidebar>
           <main className={styles.mainContent}>
             <TopNav></TopNav>
-            {children}
+            <Suspense fallback={<div>Loading...</div>}>
+              {children}
+            </Suspense>
           </main>
         </div>
         {/* <Footer /> */}

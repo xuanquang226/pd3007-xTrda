@@ -21,6 +21,6 @@ public class ProjectW {
 		// Configurable conflict with flyway
 		// ConfigurableApplicationContext context = new
 		// AnnotationConfigApplicationContext("com.quangxuan.springakafka");
-		System.out.println("trangdepgai");
+
 	}
 }
