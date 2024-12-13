@@ -20,8 +20,6 @@ import services.BookService;
 @RequestMapping("/api/book")
 public class BookController {
 
-    // @Autowired
-    // private KafkaTemplate kafkaTemplate;
     @Autowired
     private BookService services;
 
@@ -37,7 +35,6 @@ public class BookController {
 
     @PostMapping
     public BookDTO createOneBook(@RequestBody BookDTO book) {
-        // kafkaTemplate.send("notification", book);
         return services.createOneBook(book);
     }
 
