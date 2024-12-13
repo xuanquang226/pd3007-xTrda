@@ -36,7 +36,7 @@ export default function ContactMe() {
             const formData = new FormData();
             formData.append('mail', JSON.stringify(updatedMail));
             try {
-                const response = await fetch(`http://${url}:8080/api/mail`, {
+                const response = await fetch(`http://${url}/api/mail`, {
                     method: 'POST',
                     body: formData
                 });

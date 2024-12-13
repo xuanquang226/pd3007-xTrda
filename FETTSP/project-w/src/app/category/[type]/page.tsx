@@ -45,7 +45,7 @@ export default function Type() {
 
     useEffect(() => {
         if (categoryId > 0) {
-            fetch(`http://${url}:8080/api/category/one/${categoryId}`)
+            fetch(`http://${url}/api/category/one/${categoryId}`)
                 .then((res) => res.json())
                 .then((data) => {
                     setCategory(data);

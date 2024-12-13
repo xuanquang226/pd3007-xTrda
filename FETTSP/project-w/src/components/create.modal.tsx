@@ -21,7 +21,7 @@ export default function CreateModal(props: IProps) {
             toast.error("Name or author is not empty");
             return;
         }
-        fetch(`http://${url}:8080/api/book`, {
+        fetch(`http://${url}/api/book`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
@@ -32,7 +32,7 @@ export default function CreateModal(props: IProps) {
             .then(res => res.json())
             .then(data => {
                 toast.success("Add success");
-                mutate(`http://${url}:8080/api/book`);
+                mutate(`http://${url}/api/book`);
                 handleCloseModal();
             })
     }

@@ -12,7 +12,7 @@ export default function HomeTrang() {
     const [images, setImages] = useState<Image[]>();
 
     useEffect(() => {
-        fetch(`http://${url}:8080/api/images/many`)
+        fetch(`http://${url}/api/images/many`)
             .then(res => res.json())
             .then(data => setImages(data));
     }, []);

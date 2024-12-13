@@ -50,7 +50,7 @@ export default function CreateProduct() {
             formData.append('product', JSON.stringify(updatedProduct));
 
             try {
-                const response = await fetch(`http://${url}:8080/api/product`, {
+                const response = await fetch(`http://${url}/api/product`, {
                     method: "POST",
                     headers: {
                         Authorization: token ?? ""
