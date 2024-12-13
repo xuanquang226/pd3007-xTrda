@@ -44,7 +44,7 @@ export default function TopNavigation() {
 
     const getCart = useCallback(async () => {
         await delay(600);
-        const response = await fetchWithToken(`http://${url}:8082/cart`, {
+        const response = await fetchWithToken(`http://${url}:8080/api/cart`, {
             method: 'GET'
         }, autoRetry);
         if (response && response.ok) {
@@ -88,7 +88,7 @@ export default function TopNavigation() {
         cart.listCartItem.forEach(cartItem => {
             idProductList.push(cartItem.idProduct);
         });
-        const response = await fetchWithToken(`http://${url}:8082/product/many`, {
+        const response = await fetchWithToken(`http://${url}:8080/api/product/many`, {
             method: 'POST',
             body: JSON.stringify(idProductList)
         }, autoRetry);
@@ -152,7 +152,7 @@ export default function TopNavigation() {
     const handleTotalPrice = (idProduct: number, idCart: number, quantity: number) => {
         setCartItem((oldCartItem) => {
             const newCartItem = { ...oldCartItem, idProduct: idProduct, idCart: idCart, quantity: quantity };
-            fetchWithToken(`http://${url}:8082/cart-item`, {
+            fetchWithToken(`http://${url}:8080/api/cart-item`, {
                 method: 'PUT',
                 body: JSON.stringify(newCartItem)
             }, autoRetry);
@@ -163,7 +163,7 @@ export default function TopNavigation() {
 
     //Handle delete item
     const handleDeleteItem = (idCartItem: number) => {
-        fetchWithToken(`http://${url}:8082/cart-item/${idCartItem}`, {
+        fetchWithToken(`http://${url}:8080/api/cart-item/${idCartItem}`, {
             method: 'DELETE',
         }, autoRetry);
         setCartItem({ ...cartItem, id: idCartItem });
@@ -196,7 +196,7 @@ export default function TopNavigation() {
     });
 
     const getCustomer = useCallback(async () => {
-        const response = await fetchWithToken(`http://${url}:8082/customer`, {
+        const response = await fetchWithToken(`http://${url}:8080/api/customer`, {
             method: 'GET'
         }, autoRetry);
         if (response && response.ok) {
@@ -253,11 +253,11 @@ export default function TopNavigation() {
 
 
     const handleClickCheckOut = async () => {
-        const responseOrder = await fetchWithToken(`http://${url}:8082/order`, {
+        const responseOrder = await fetchWithToken(`http://${url}:8080/api/order`, {
             method: 'POST',
         }, autoRetry);
         if (responseOrder && responseOrder.ok) {
-            const responseCartAfterOrder = await fetchWithToken(`http://${url}:8082/cart/after-order`, {
+            const responseCartAfterOrder = await fetchWithToken(`http://${url}:8080/api/cart/after-order`, {
                 method: 'GET',
             }, autoRetry);
             if (responseCartAfterOrder && responseCartAfterOrder.ok) {

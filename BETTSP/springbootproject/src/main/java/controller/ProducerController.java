@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import services.ProducerService;
 
 @RestController
-@RequestMapping("/orders")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/orders")
 public class ProducerController {
 
     @Autowired

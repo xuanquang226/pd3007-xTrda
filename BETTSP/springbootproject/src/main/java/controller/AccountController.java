@@ -24,8 +24,7 @@ import services.AccountService;
 import utils.TupleToken;
 
 @RestController
-@RequestMapping("/account")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/account")
 public class AccountController {
     @Autowired
     private AccountService accountService;

@@ -17,8 +17,7 @@ import data.dto.BookDTO;
 import services.BookService;
 
 @RestController
-@RequestMapping("/book")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/book")
 public class BookController {
 
     // @Autowired

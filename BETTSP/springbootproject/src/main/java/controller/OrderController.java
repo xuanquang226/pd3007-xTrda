@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import services.OrderService;
 
 @RestController
-@RequestMapping("/order")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/order")
 public class OrderController {
 
     @Autowired

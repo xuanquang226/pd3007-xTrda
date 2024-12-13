@@ -31,7 +31,7 @@ export default function ProductDetail() {
 
     // get product from param id
     const getProductFromId = useCallback(async () => {
-        const response = await fetchWithToken(`http://${url}:8082/product/${id}?categoryType=${type}`, {
+        const response = await fetchWithToken(`http://${url}:8080/api/product/${id}?categoryType=${type}`, {
             method: 'GET',
         }, autoRetry);
         try {
@@ -73,7 +73,7 @@ export default function ProductDetail() {
         if (isAvailable) {
             const newCartItem = { ...cartItem };
             newCartItem.idProduct = product?.id ?? 0;
-            fetchWithToken(`http://${url}:8082/cart-item`, {
+            fetchWithToken(`http://${url}:8080/api/cart-item`, {
                 method: 'POST',
                 body: JSON.stringify(newCartItem)
             }, autoRetry);

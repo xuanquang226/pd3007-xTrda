@@ -18,8 +18,7 @@ import data.dto.OrderLineDTO;
 import services.OrderLineService;
 
 @RestController
-@RequestMapping("/order-line")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/order-line")
 public class OrderLineController {
     @Autowired
     private OrderLineService orderLineService;

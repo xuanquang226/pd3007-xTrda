@@ -1,8 +1,9 @@
 'use client'
 import { Image } from "@/type/image";
 import { Product } from "@/type/product";
+import fetchWithToken from "@/utils/fetchWithToken";
 import { useEffect, useState } from "react";
-
+import { getTokenFromCookie } from "@/utils/token-utils";
 export default function CreateProduct() {
     const url = process.env.NEXT_PUBLIC_API_URL;
     const [product, setProduct] = useState<Product>({
@@ -25,6 +26,7 @@ export default function CreateProduct() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        const token = getTokenFromCookie();
 
         const formData = new FormData();
 
@@ -48,15 +50,15 @@ export default function CreateProduct() {
             formData.append('product', JSON.stringify(updatedProduct));
 
             try {
-                const response = await fetch(`http://${url}:8082/product`, {
+                const response = await fetch(`http://${url}:8080/api/product`, {
                     method: "POST",
-                    // headers: {
-                    //     'Content-Type': 'application/json',
-                    // khong can khi gui formdata },
+                    headers: {
+                        Authorization: token ?? ""
+                    },
                     body: formData
                 });
 
-                if (response.ok) {
+                if (response && response.ok) {
                     console.log("Succeed");
                 } else {
                     console.error("Failed to upload image");

@@ -16,7 +16,7 @@ export default function HandleImg() {
             setFile(formData.getAll("file") as File[]);
 
             try {
-                const response = await fetch(`http://${url}:8082/images/upload2`, {
+                const response = await fetch(`http://${url}:8080/api/images/upload2`, {
                     method: "POST",
                     body: formData
                 });

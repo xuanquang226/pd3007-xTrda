@@ -11,8 +11,7 @@ import data.dto.CustomerDTO;
 import services.CustomerService;
 
 @RestController
-@RequestMapping("/customer")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/customer")
 public class CustomerController {
 
     @Autowired

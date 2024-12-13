@@ -38,7 +38,7 @@ export default function SignIn() {
             const formData = new FormData();
             formData.append('account', JSON.stringify(account));
             formData.append('customer', JSON.stringify(customer));
-            const response = await fetch("http://${url}:8082/account/sign-up", {
+            const response = await fetch("http://${url}:8080/api/account/sign-up", {
                 method: 'POST',
                 body: formData
             });
@@ -74,7 +74,7 @@ export default function SignIn() {
 
     const [isExistsUserName, setIsExistUserName] = useState<boolean>(false);
     const handleUserName = useCallback(async () => {
-        const response = await fetch(`http://${url}:8082/account/validate?userName=${account.userName}`, {
+        const response = await fetch(`http://${url}:8080/api/account/validate?userName=${account.userName}`, {
             method: 'GET'
         });
         if (response.ok) {

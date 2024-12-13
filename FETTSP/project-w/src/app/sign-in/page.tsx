@@ -30,7 +30,7 @@ export default function SignIn() {
 
     const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const response = await fetch(`http://${url}:8082/account/login?username=${account.userName}&password=${account.password}`, {
+        const response = await fetch(`http://${url}:8080/api/account/login?username=${account.userName}&password=${account.password}`, {
             method: 'GET'
         })
         if (response.ok) {

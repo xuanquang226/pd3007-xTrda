@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/images")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/images")
 public class ImageController {
 
     @Autowired
