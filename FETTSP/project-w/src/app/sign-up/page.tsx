@@ -38,7 +38,7 @@ export default function SignIn() {
             const formData = new FormData();
             formData.append('account', JSON.stringify(account));
             formData.append('customer', JSON.stringify(customer));
-            const response = await fetch("http://${url}/api/account/sign-up", {
+            const response = await fetch(`http://${url}/api/account/sign-up`, {
                 method: 'POST',
                 body: formData
             });
