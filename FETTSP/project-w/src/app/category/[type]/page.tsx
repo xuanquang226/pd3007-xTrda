@@ -64,7 +64,7 @@ export default function Type() {
                             <div className={styles['grid-main']}>
                                 {category?.productDTOs.map((product) => (
                                     <div key={product.id} className={styles['grid-item']} >
-                                        <Link href={`http://${url}:3000/category/${categoryType}/picture/${product.id}`}>
+                                        <Link href={`http://${url}/category/${categoryType}/picture/${product.id}`}>
                                             <img src={product.imageDTOs[0].url} alt=""
                                                 onClick={() => {
                                                 }} style={{ height: "100%", maxWidth: "100%", padding: "20px" }}

@@ -1,94 +1,62 @@
-import Image from "next/image";
+'use client';
+import Link from "next/link";
 import styles from "./page.module.css";
+import ShowImageModal from '@/components/show-image.modal'
+import { Suspense, useEffect, useState } from "react";
+import { Image } from "@/type/image";
+import { useRouter, useSearchParams } from "next/navigation";
+export default function HomeTrang() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    const [linkImg, setLinkImg] = useState<string>("");
+    const [showImgModal, setShowImgModal] = useState<boolean>(false);
+    const [images, setImages] = useState<Image[]>();
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Hello world - NextJS - xq226
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    useEffect(() => {
+        fetch(`http://${url}/api/images/many`)
+            .then(res => res.json())
+            .then(data => setImages(data));
+    }, []);
+
+    const searchParams = useSearchParams();
+    const reload = searchParams.get('reload');
+
+    useEffect(() => {
+        // const reload = new URLSearchParams(window.location.search).get('reload');
+        if (reload === 'true') {
+            window.location.replace('/home');
+        }
+    }, [reload]);
+
+    return (
+        <div className={`container ${styles.customContainer}`}>
+            <div className={styles['site-container']}>
+                <div className={styles['site-content']}>
+                    <div className={styles['site-content__list-image']}>
+                        <div className={styles['grid-main']}>
+                            {images?.map((image) => (
+                                <div className={styles['grid-item']} key={image.id}>
+                                    <img src={image.url} alt=""
+                                        onClick={() => {
+                                            setLinkImg(image.url);
+                                            setShowImgModal(true);
+                                        }} style={{ maxWidth: "100%", maxHeight: "70%" }}
+                                    />
+                                </div>))}
+                        </div>
+                    </div>
+                </div>
+            </div >
+            <ShowImageModal
+                linkImg={linkImg}
+                showImgModal={showImgModal}
+                setShowImgModal={setShowImgModal}
+            ></ShowImageModal>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    )
 }
+
+const SuspendedHomePage = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+        <HomeTrang />
+    </Suspense>
+);

@@ -7,7 +7,7 @@ export default function sidebar() {
             <div className={styles.logo}>Logo</div>
             <nav className={styles.nav}>
                 <ul>
-                    <li><a href="/home">HOME</a></li>
+                    <li><a href="/">HOME</a></li>
                     <li><a href="/category/digital">DIGITAL</a></li>
                     <li><a href="/category/water-color">WaterColor</a></li>
                     <li><a href="/category/comic">Comic</a></li>
