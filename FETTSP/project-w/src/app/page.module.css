@@ -98,4 +98,14 @@
 }
 
 
+.layout{
+  display: flex;
+  margin-left: 10%;
+  margin-right: 10%;
+}
 
+.mainContent{
+  flex-grow: 1;
+  padding: 20px;
+  width: 80%;
+}
