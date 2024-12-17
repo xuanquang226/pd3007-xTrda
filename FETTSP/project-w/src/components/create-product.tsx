@@ -90,6 +90,17 @@ export default function CreateProduct() {
                     placeholder="input idCategory"
                     onChange={(e) => setProduct({ ...product, idCategory: Number(e.target.value) })}
                 />
+                <input
+                    type="number"
+                    placeholder="input quantity"
+                    onChange={(e) => setProduct({ ...product, quantity: Number(e.target.value) })}
+                />
+
+                <input
+                    type="text"
+                    placeholder="input price"
+                    onChange={(e) => setProduct({ ...product, price: e.target.value })}
+                />
 
                 <input type="file" multiple onChange={handleFileChange} />
                 <input type="submit" value="Submit" />
