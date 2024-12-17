@@ -23,7 +23,7 @@ export default function HomeTrang() {
     useEffect(() => {
         // const reload = new URLSearchParams(window.location.search).get('reload');
         if (reload === 'true') {
-            window.location.replace('/home');
+            window.location.replace('/');
         }
     }, [reload]);
 

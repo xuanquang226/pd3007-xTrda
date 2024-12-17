@@ -46,7 +46,7 @@ export default function SignIn() {
         if (tupleToken.accessToken !== '' || tupleToken.refreshToken !== '') {
             setTokenToCookie(tupleToken.accessToken);
             setRefreshTokenToCookie(tupleToken.refreshToken);
-            router.push('/home?reload=true');
+            router.push('/?reload=true');
         }
     }, [tupleToken]);
 
@@ -55,7 +55,7 @@ export default function SignIn() {
     }, [handleToken]);
 
     const preventAccess = useCallback(() => {
-        if (customerStore.id !== 0) router.push('/home');
+        if (customerStore.id !== 0) router.push('/');
     }, [customerStore.id]);
 
     useEffect(() => {
