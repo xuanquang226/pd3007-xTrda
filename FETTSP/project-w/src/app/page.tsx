@@ -7,6 +7,7 @@ import { Image } from "@/type/image";
 import { useRouter, useSearchParams } from "next/navigation";
 export default function HomeTrang() {
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     const [linkImg, setLinkImg] = useState<string>("");
     const [showImgModal, setShowImgModal] = useState<boolean>(false);
     const [images, setImages] = useState<Image[]>();

@@ -22,7 +22,7 @@ export default async function fetchWithToken(url:string, options: RequestOptions
 
     // Kiem tra response ngoai le jwtexpired
     if (response.status === 403 && autoRetry) {
-            const responseValidateRefreshToken = await fetch(`http://${url}/api/account/auth`, {
+            const responseValidateRefreshToken = await fetch(`http://localhost:8082/api/account/auth`, {
                 method: 'GET',
                 headers: {
                     "Authorization2": `${getRefreshTokenFromCookie()}`,

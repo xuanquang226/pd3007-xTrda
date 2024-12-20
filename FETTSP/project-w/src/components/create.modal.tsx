@@ -11,7 +11,8 @@ interface IProps {
 }
 
 export default function CreateModal(props: IProps) {
-    const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = process.env.NEXT_PUBLIC_API_URL;
+    const url = 'localhost:8082';
     const { showModalCreate, setShowModalCreate } = props;
     const [name, setName] = useState<string>("");
     const [author, setAuthor] = useState<string>("");

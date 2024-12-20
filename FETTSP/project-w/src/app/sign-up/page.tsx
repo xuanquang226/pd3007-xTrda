@@ -6,9 +6,12 @@ import Account from "@/type/account";
 import { Button, Dropdown, DropdownButton, Form, InputGroup } from "react-bootstrap";
 import useUserStore from "../store/state-user";
 import { useRouter } from "next/navigation";
+import { notifyError, notifySuccess } from "@/utils/notify";
+import { ToastContainer } from "react-toastify";
 
 export default function SignIn() {
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     const router = useRouter();
     const accountDefault = {
         id: 0,
@@ -32,9 +35,9 @@ export default function SignIn() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (isExistsUserName == false && isConfirmPassWord == true && isValidMail == true && isValidPassWord == true
-            && isValidPhone == true && account.userName.length !== 0) {
+            && isValidPhone == true && account.userName.length !== 0 && account.password.length !== 0 && customer.name.length !== 0
+            && customer.phone.length !== 0 && customer.mail.length !== 0) {
 
-            handleMail();
             const formData = new FormData();
             formData.append('account', JSON.stringify(account));
             formData.append('customer', JSON.stringify(customer));
@@ -43,12 +46,13 @@ export default function SignIn() {
                 body: formData
             });
             if (response.ok) {
-                alert("Dang ky thanh cong");
+                notifySuccess("Đăng ký thành công");
+                await delay(1500);
                 clearInputField();
                 router.push('/sign-in');
             }
         } else {
-            alert("Dang ky that bai, kiem tra cac truong nhap");
+            notifyError("Đăng ký thất bại kiểm tra các trường nhập");
         }
     };
 
@@ -137,24 +141,24 @@ export default function SignIn() {
         }
     };
 
-    const [tailMail, setTailMail] = useState<string>('');
-    const handleSelect = (eventKey: string | null) => {
-        setTailMail(eventKey ?? '');
-    };
+    // const [tailMail, setTailMail] = useState<string>('');
+    // const handleSelect = (eventKey: string | null) => {
+    //     setTailMail(eventKey ?? '');
+    // };
 
-    const handleMail = () => {
-        let updatedMail = customer.mail + tailMail;
-        setCustomer({ ...customer, mail: updatedMail });
-    };
+    // const handleMail = () => {
+    //     let updatedMail = customer.mail + tailMail;
+    //     setCustomer({ ...customer, mail: updatedMail });
+    // };
 
 
     const [isValidMail, setIsValidMail] = useState<boolean>(true);
     const checkMail = (event: React.FocusEvent<HTMLInputElement>) => {
         let mail: string = event.target.value;
         if (mail.includes('@')) {
-            setIsValidMail(false);
-        } else {
             setIsValidMail(true);
+        } else {
+            setIsValidMail(false);
         }
     }
 
@@ -171,7 +175,7 @@ export default function SignIn() {
 
     const { customerStore, addCustomer } = useUserStore();
     const preventAccess = useCallback(() => {
-        if (customerStore.id !== 0) router.push('/home');
+        if (customerStore.id !== 0) router.push('/');
     }, [customerStore.id]);
 
     useEffect(() => {
@@ -180,6 +184,7 @@ export default function SignIn() {
 
     return (
         <div className={`container ${styles.customContainer}`}>
+            <ToastContainer />
             <div className="wrapper">
                 <div className={styles['site-container']}>
                     <div className={styles['site-content']}>
@@ -264,7 +269,7 @@ export default function SignIn() {
                                             onChange={(e) => { setCustomer({ ...customer, mail: e.target.value }) }}
                                             onBlur={checkMail}
                                         ></Form.Control>
-                                        <DropdownButton
+                                        {/* <DropdownButton
                                             variant="outline-secondary"
                                             title={tailMail}
                                             id="dropdown-basic-button"
@@ -274,9 +279,9 @@ export default function SignIn() {
                                             <Dropdown.Item eventKey="@outlook.com">@outlook.com</Dropdown.Item>
                                             <Dropdown.Item eventKey="@yahoo.com">@yahoo.com</Dropdown.Item>
                                             <Dropdown.Item eventKey="@icloud.com">@icloud.com</Dropdown.Item>
-                                        </DropdownButton>
+                                        </DropdownButton> */}
                                     </InputGroup>
-                                    <Form.Text className="text-danger" style={{ visibility: isValidMail ? 'hidden' : 'visible' }} >Bỏ đuôi mail</Form.Text>
+                                    <Form.Text className="text-danger" style={{ visibility: isValidMail ? 'hidden' : 'visible' }} >Cần nhập mail đúng định dạng</Form.Text>
                                 </Form.Group>
                                 <Form.Group className="mb-lg-2">
                                     <Form.Label>Location</Form.Label>
@@ -313,4 +318,8 @@ export default function SignIn() {
             </div>
         </div>
     )
+}
+
+function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }

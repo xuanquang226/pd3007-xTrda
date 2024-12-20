@@ -43,8 +43,8 @@ export default function User(props: Props) {
                 </div>
                 <div className={styles['user-functions']}>
                     <Link href="#" className={styles['custom-link']}>Quản lý tài khoản</Link>
-                    <Link href="#" className={styles['custom-link']}>Đơn hàng</Link>
-                    <Link href="/home" className={styles['custom-link']} onClick={handleLogout}>Đăng xuất</Link>
+                    <Link href="/list-order" className={styles['custom-link']}>Đơn hàng</Link>
+                    <Link href="/" className={styles['custom-link']} onClick={handleLogout}>Đăng xuất</Link>
                 </div>
             </div>
         </div>

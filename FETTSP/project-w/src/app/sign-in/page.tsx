@@ -9,9 +9,12 @@ import TupleToken
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import useUserStore from "../store/state-user";
+import { notifyError, notifySuccess } from "@/utils/notify";
+import { ToastContainer } from "react-toastify";
 
 export default function SignIn() {
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     const { customerStore, addCustomer } = useUserStore();
     const router = useRouter();
     const defaultAccount: Account = {
@@ -36,9 +39,8 @@ export default function SignIn() {
         if (response.ok) {
             const data = await response.json();
             setTupleToken(data);
-            alert('Dang nhap thanh cong');
         } else {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            notifyError("Đăng nhập thất bại");
         }
     };
 
@@ -64,6 +66,8 @@ export default function SignIn() {
 
     return (
         <div className={`container ${styles.customContainer}`}>
+            <ToastContainer
+            />
             <div className="wrapper">
                 <div className="site-container">
                     <div className="site-content">

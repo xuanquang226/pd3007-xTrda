@@ -4,6 +4,7 @@ import styles from "../styles/handle-img.module.css"
 
 export default function HandleImg() {
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     const [files, setFile] = useState<File[]>();
     const [data, setData] = useState<string>('');
     const tempURLs: any = [];

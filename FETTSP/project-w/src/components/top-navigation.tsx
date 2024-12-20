@@ -17,6 +17,7 @@ import useUserStore from "@/app/store/state-user";
 
 export default function TopNavigation() {
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     //State chung cap nhat o component chi tiet san pham
     const { cartItemStore, addCartItem } = useCartStore();
     const { customerStore, addCustomer } = useUserStore();

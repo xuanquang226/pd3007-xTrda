@@ -7,6 +7,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 export default function Type() {
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
+    // const url2 = 'localhost:3000';
     const [linkUrl, setLink] = useState<string>("");
     const [showImgModal, setShowImgModal] = useState<boolean>(false);
 
@@ -67,8 +69,9 @@ export default function Type() {
                                         <Link href={`http://${url}/category/${categoryType}/picture/${product.id}`}>
                                             <img src={product.imageDTOs[0].url} alt=""
                                                 onClick={() => {
-                                                }} style={{ height: "100%", maxWidth: "100%", padding: "20px" }}
-                                            /></Link>
+                                                }} style={{ maxWidth: "100%", padding: "5px" }}
+                                            />
+                                        </Link>
                                     </div>))}
                             </div>
                         </div>

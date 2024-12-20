@@ -5,8 +5,11 @@ import React, { FormEvent, useCallback, useEffect, useState } from "react";
 import { Mail } from "@/type/mail";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
+import { notifyError, notifySuccess } from "@/utils/notify";
+import { ToastContainer } from "react-toastify";
 export default function ContactMe() {
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     const [mail, setMail] = useState<Mail>({
         id: 0,
         name: '',
@@ -20,7 +23,8 @@ export default function ContactMe() {
         name: false,
         email: false,
         body: false,
-        phone: false
+        phone: false,
+        subject: false,
     });
 
     const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
@@ -31,10 +35,14 @@ export default function ContactMe() {
             ...mail,
             email: fullEmail
         }
-        checkFieldInput(mail);
-        if (errors.email === false && errors.body === false && errors.phone === false) {
+        // checkFieldInput(mail);
+        if (errors.email === false && errors.body === false && errors.phone === false && mail.name.length !== 0
+            && mail.body.length !== 0 && mail.email.length !== 0 && mail.subject.length !== 0 && mail.phone.length !== 0
+        ) {
             const formData = new FormData();
             formData.append('mail', JSON.stringify(updatedMail));
+            notifySuccess("Yêu cầu của bạn đã được gửi đi thành công");
+            clearForm();
             try {
                 const response = await fetch(`http://${url}/api/mail`, {
                     method: 'POST',
@@ -42,45 +50,41 @@ export default function ContactMe() {
                 });
                 if (response.ok) {
                     console.log("Send mail succeed");
-
-                } else {
-                    console.log("Send mail error");
                 }
             } catch (error) {
                 console.log("Send mail error", error);
             }
-            clearForm();
         } else {
-            console.log("Nhap day du du lieu can thiet");
+            notifyError("Nhập đầy đủ các trường");
         }
-    }, [mail]);
+    }, [mail, errors]);
 
-    const checkFieldInput = useCallback((mail: Mail) => {
-        let newErrors = { ...errors };
-        if (mail.email.length === 0) {
-            newErrors.email = true;
-        } else {
-            newErrors.email = false;
-        }
+    // const checkFieldInput = useCallback((mail: Mail) => {
+    //     let newErrors = { ...errors };
+    //     if (mail.email.length === 0) {
+    //         newErrors.email = true;
+    //     } else {
+    //         newErrors.email = false;
+    //     }
 
-        if (mail.name.length === 0) {
-            newErrors.name = true;
-        } else {
-            newErrors.name = false;
-        }
+    //     if (mail.name.length === 0) {
+    //         newErrors.name = true;
+    //     } else {
+    //         newErrors.name = false;
+    //     }
 
-        if (mail.phone.length === 0) {
-            newErrors.phone = true;
-        } else {
-            newErrors.phone = false;
-        }
-        if (mail.body.length === 0) {
-            newErrors.body = true;
-        } else {
-            newErrors.body = false;
-        }
-        setErrors(newErrors);
-    }, []);
+    //     if (mail.phone.length === 0) {
+    //         newErrors.phone = true;
+    //     } else {
+    //         newErrors.phone = false;
+    //     }
+    //     if (mail.body.length === 0) {
+    //         newErrors.body = true;
+    //     } else {
+    //         newErrors.body = false;
+    //     }
+    //     setErrors(newErrors);
+    // }, [mail, errors]);
 
     const clearForm = () => {
         setMail({
@@ -99,15 +103,59 @@ export default function ContactMe() {
         if (/^[0-9]*$/.test(value) || value === '') {
             setMail({ ...mail, phone: value });
         }
-    }, []);
+    }, [mail]);
 
     useEffect(() => {
 
 
     }, []);
 
+    // Check focus event of input field
+    const focusNameCustomer = useCallback(() => {
+        if (mail.name.length === 0) {
+            setErrors({ ...errors, name: true });
+        } else {
+            setErrors({ ...errors, name: false });
+        }
+    }, [errors, mail]);
+
+    const focusMailCustomer = useCallback(() => {
+        if (mail.email.length === 0) {
+            setErrors({ ...errors, email: true });
+        } else {
+            setErrors({ ...errors, email: false });
+        }
+    }, [errors, mail]);
+
+    const focusBodyCustomer = useCallback(() => {
+        if (mail.body.length === 0) {
+            setErrors({ ...errors, body: true });
+        } else {
+            setErrors({ ...errors, body: false });
+        }
+    }, [errors, mail]);
+
+    const focusPhoneCustomer = useCallback(() => {
+        if (mail.phone.length === 0) {
+            setErrors({ ...errors, phone: true });
+        } else {
+            setErrors({ ...errors, phone: false });
+        }
+    }, [errors, mail]);
+
+    const focusSubjectCustomer = useCallback(() => {
+        if (mail.subject.length === 0) {
+            setErrors({ ...errors, subject: true });
+        } else {
+            setErrors({ ...errors, subject: false });
+        }
+    }, [errors, mail]);
+
+
+
     return (
         <div className={`container ${styles.customContainer}`}>
+            <ToastContainer />
             <div className={styles['site-wrapper']}>
                 <div className={styles['site-container']}>
                     <div className={styles['site-content']}>
@@ -120,6 +168,7 @@ export default function ContactMe() {
                                         placeholder="Input your name"
                                         value={mail.name}
                                         onChange={(e) => setMail({ ...mail, name: e.target.value })}
+                                        onBlur={focusNameCustomer}
                                     ></Form.Control>
                                 </Form.Group>
                                 <Form.Text className="text-danger" style={{ visibility: errors.name ? "visible" : "hidden" }}>Không được để trống</Form.Text>
@@ -131,6 +180,7 @@ export default function ContactMe() {
                                             placeholder="Input your mail"
                                             value={mail.email}
                                             onChange={(e) => setMail({ ...mail, email: e.target.value })}
+                                            onBlur={focusMailCustomer}
                                         ></Form.Control>
                                         <InputGroupText>@gmail.com</InputGroupText>
                                     </InputGroup>
@@ -143,6 +193,7 @@ export default function ContactMe() {
                                         placeholder="Input your phone number"
                                         value={mail.phone}
                                         onChange={handlePhoneChange}
+                                        onBlur={focusPhoneCustomer}
                                     ></Form.Control>
                                 </Form.Group>
                                 <Form.Text className="text-danger" style={{ visibility: errors.phone ? "visible" : "hidden" }}>Không được để trống</Form.Text>
@@ -165,6 +216,7 @@ export default function ContactMe() {
                                         value={mail.body}
                                         onChange={(e) => setMail({ ...mail, body: e.target.value })}
                                         style={{ height: '25vh', resize: "none" }}
+                                        onBlur={focusBodyCustomer}
                                     />
                                 </Form.Group>
                                 <Form.Text className="text-danger" style={{ visibility: errors.body ? "visible" : "hidden" }}>Không được để trống</Form.Text>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getTokenFromCookie } from "@/utils/token-utils";
 export default function CreateProduct() {
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     const [product, setProduct] = useState<Product>({
         id: 0,
         name: '',
@@ -50,7 +51,7 @@ export default function CreateProduct() {
             formData.append('product', JSON.stringify(updatedProduct));
 
             try {
-                const response = await fetch(`http://${url}/api/product`, {
+                const response = await fetch(`http://${url}/api/product/admin`, {
                     method: "POST",
                     headers: {
                         Authorization: token ?? ""

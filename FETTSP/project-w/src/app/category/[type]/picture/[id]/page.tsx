@@ -8,13 +8,16 @@ import { Button } from "react-bootstrap";
 import CartItem from "@/type/cart-item";
 import useCartStore from "@/app/store/state-cart";
 import fetchWithToken from "@/utils/fetchWithToken";
+import { notifyError, notifySuccess } from "@/utils/notify";
 import classNames from "classnames";
+import { ToastContainer } from "react-toastify";
 export default function ProductDetail() {
     const { type, id } = useParams();
     const { cartItemStore, addCartItem } = useCartStore();
     const [product, setProduct] = useState<Product>();
     const [urlImage, setUrlImage] = useState<string>();
     const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
 
     const [autoRetry, setAutoRetry] = useState<boolean>(false);
 
@@ -31,7 +34,7 @@ export default function ProductDetail() {
 
     // get product from param id
     const getProductFromId = useCallback(async () => {
-        const response = await fetchWithToken(`http://${url}:80/api/product/${id}?categoryType=${type}`, {
+        const response = await fetchWithToken(`http://${url}/api/product/${id}?categoryType=${type}`, {
             method: 'GET',
         }, autoRetry);
         try {
@@ -79,7 +82,7 @@ export default function ProductDetail() {
             }, autoRetry);
             addCartItem(newCartItem);
         } else {
-            alert('Het hang');
+            notifyError('Hết hàng');
             console.log("Product is unavailable");
         }
     };
@@ -100,6 +103,7 @@ export default function ProductDetail() {
 
     return (
         <div className={`container ${styles.customContainer}`}>
+            <ToastContainer />
             <div className="site-wrapper">
                 <div className={styles['site-container']}>
                     <div className={styles['site-content']} style={!isAvailable ? { opacity: 0.55 } : {}}>
@@ -121,6 +125,7 @@ export default function ProductDetail() {
                             <div className="top">
                                 <p>{product?.name}</p>
                                 <p>{product?.description}</p>
+                                <p>{product?.price} đ</p>
                             </div>
                             <div className={styles['bottom']}>
                                 <input type="number" value={cartItem.quantity} style={{ width: '50px' }} min={isAvailable ? "1" : "0"} max={isAvailable ? product?.quantity : "0"} onChange={handleChangeQuantity} />
