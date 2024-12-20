@@ -8,6 +8,7 @@ interface RequestOptions {
 }
 
 export default async function fetchWithToken(url:string, options: RequestOptions = {}, autoRetry: boolean){
+    const url2 = process.env.NEXT_PUBLIC_API_URL;
     const token = getTokenFromCookie();
     const headers = {
         ...options.headers,
@@ -22,7 +23,7 @@ export default async function fetchWithToken(url:string, options: RequestOptions
 
     // Kiem tra response ngoai le jwtexpired
     if (response.status === 403 && autoRetry) {
-            const responseValidateRefreshToken = await fetch(`http://localhost:8082/api/account/auth`, {
+            const responseValidateRefreshToken = await fetch(`http://${url2}/api/account/auth`, {
                 method: 'GET',
                 headers: {
                     "Authorization2": `${getRefreshTokenFromCookie()}`,
