@@ -14,6 +14,7 @@ import Customer from "@/type/customer";
 import UserInterface from "@/components/user-interface";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/app/store/state-user";
+import Sidebar from "./sidebar";
 
 export default function TopNavigation() {
     const url = process.env.NEXT_PUBLIC_API_URL;
@@ -273,6 +274,32 @@ export default function TopNavigation() {
 
     };
 
+    // const [isShowSidebar, setIsShowbar] = useState<boolean>(false);
+    // const handleShowSidebar = useCallback(() => {
+    //     if (isShowSidebar) {
+    //         setIsShowbar(false);
+    //     } else {
+    //         setIsShowbar(true);
+    //     }
+    // }, [isShowSidebar]);
+
+    // useEffect(() => {
+    //     // Hàm kiểm tra kích thước màn hình
+    //     const handleResize = () => {
+    //         if (window.innerWidth >= 768) {
+    //             setIsShowbar(false); // Tắt sidebar khi màn hình lớn hơn 768px
+    //         }
+    //     };
+
+    //     // Gọi hàm ngay khi component mount
+    //     handleResize();
+
+    //     // Lắng nghe sự kiện resize
+    //     window.addEventListener('resize', handleResize);
+
+    //     // Cleanup listener khi unmount
+    //     return () => window.removeEventListener('resize', handleResize);
+    // }, []);
     return (
         <div className={styles['top-navigation']}>
             <div className={styles['nav-icons']} >
@@ -284,7 +311,6 @@ export default function TopNavigation() {
                     <img src="/images/account.png" alt="account"></img>
                 </Link>
                 <p>{customer.name}</p>
-
                 <UserInterface info={customer} isPopupUserVisible={isPopupUserVisible}></UserInterface>
 
                 <div className={styles['popup']} style={{ visibility: isPopupVisible ? "visible" : "hidden" }}>

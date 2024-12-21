@@ -30,15 +30,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/account/login").permitAll()
-                        .requestMatchers("/account/sign-up").permitAll()
+                        .requestMatchers("/api/account/login").permitAll()
+                        .requestMatchers("/api/account/sign-up").permitAll()
                         // .requestMatchers("/account/**").hasRole("ADMIN")
-                        .requestMatchers("/account/validate").permitAll()
-                        .requestMatchers("/images/many").permitAll()
+                        .requestMatchers("/api/account/validate").permitAll()
+                        .requestMatchers("/api/images/many").permitAll()
+                        .requestMatchers("/api/images/many2").permitAll()
+                        .requestMatchers("/api/images-storage/**").permitAll()
+                        .requestMatchers("/api/category/**").permitAll()
+                        .requestMatchers("/api/product/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/product/**").authenticated()
+                        .requestMatchers("/api/account/auth").permitAll()
+                        .requestMatchers("/api/mail").permitAll()
                         .requestMatchers("/images-storage/**").permitAll()
-                        .requestMatchers("/category/**").permitAll()
-                        .requestMatchers("/product/**").authenticated()
-                        .requestMatchers("/account/auth").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

@@ -25,7 +25,7 @@ public class JWTProvider {
 
     @Value("${SECRET_KEY}")
     private String JWT_SECRET_KEY;
-    private final long AT_EXPIRE = 85000L;
+    private final long AT_EXPIRE = 450000L;
     private final long RT_EXPIRE = 120000000L;
     private Key key;
 

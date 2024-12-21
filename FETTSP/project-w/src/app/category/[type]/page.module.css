@@ -95,4 +95,17 @@
   max-width: 100%;
 }
 
+@media (max-width:768px){
+  .grid-item{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    min-height: 100%;
+    flex-basis: 100%;
+    background-color: #f0e2d3;
+    border: solid 1px #d9cdc1;
+    border-radius: 5px;
+  }
+}
 

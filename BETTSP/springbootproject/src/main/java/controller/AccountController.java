@@ -1,6 +1,7 @@
 package controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +44,12 @@ public class AccountController {
     public ResponseEntity<TupleToken> loginAccount(@RequestParam String username, @RequestParam String password,
             HttpServletRequest request) {
         TupleToken tupleToken = accountService.loginAccountWithoutToken(username, password, request);
-        return ResponseEntity.ok(tupleToken);
+        if (tupleToken != null) {
+            return ResponseEntity.ok(tupleToken);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
     }
 
     @GetMapping("/{id}")

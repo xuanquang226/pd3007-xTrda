@@ -39,7 +39,7 @@ export default function User(props: Props) {
                     <Link href="#">
                         <img src="/images/user.png" alt="" />
                     </Link>
-                    <h4>{customer.mail}</h4>
+                    <p>{customer.mail}</p>
                 </div>
                 <div className={styles['user-functions']}>
                     <Link href="#" className={styles['custom-link']}>Quản lý tài khoản</Link>

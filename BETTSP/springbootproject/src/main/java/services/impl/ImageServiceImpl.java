@@ -3,6 +3,7 @@ package services.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import data.dao.ImageDao;
@@ -45,4 +46,8 @@ public class ImageServiceImpl implements ImageService {
         dao.deleteManyImage(listId);
     }
 
+    @Override
+    public Page<ImageDTO> findManyImage(int page, int size) {
+        return dao.findManyImageOrderByIdDesc(page, size);
+    }
 }

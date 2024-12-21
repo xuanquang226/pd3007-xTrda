@@ -51,5 +51,7 @@
     margin: 5px;
 }
 @media (max-width: 768px) {
-    
+    .site-content {
+        font-size: small;
+    }
 }

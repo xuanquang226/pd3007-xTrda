@@ -10,19 +10,60 @@ export default function HomeTrang() {
     // const url = 'localhost:8082';
     const [linkImg, setLinkImg] = useState<string>("");
     const [showImgModal, setShowImgModal] = useState<boolean>(false);
-    const [images, setImages] = useState<Image[]>();
+    const [images, setImages] = useState<Image[]>([]);
+
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    const fetchProducts = async () => {
+        if (loading) return; // Không gọi API khi đang tải dữ liệu
+        setLoading(true);
+
+        try {
+            const response = await fetch(`http://${url}/api/images/many2?page=${page}&size=5`);
+            const data = await response.json();
+            const newImages = data.content;
+            setImages((prev) => [...prev, ...newImages]);
+            setHasMore(data.hasNext);
+            setPage((prev) => prev + 1);
+        } catch (error) {
+            console.error("Kiểm tra request", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        fetch(`http://${url}/api/images/many`)
-            .then(res => res.json())
-            .then(data => setImages(data));
+        fetchProducts();
     }, []);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (
+                window.innerHeight + document.documentElement.scrollTop !==
+                document.documentElement.offsetHeight ||
+                loading
+            )
+                return;
+            fetchProducts();
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [loading]);
+
+    // useEffect(() => {
+    //     fetch(`http://${url}/api/images/many`)
+    //         .then(res => res.json())
+    //         .then(data => setImages(data));
+    // }, []);
 
     const searchParams = useSearchParams();
     const reload = searchParams.get('reload');
 
     useEffect(() => {
-        // const reload = new URLSearchParams(window.location.search).get('reload');
         if (reload === 'true') {
             window.location.replace('/');
         }
@@ -40,11 +81,13 @@ export default function HomeTrang() {
                                         onClick={() => {
                                             setLinkImg(image.url);
                                             setShowImgModal(true);
-                                        }} style={{ maxWidth: "100%", maxHeight: "70%" }}
+                                        }} style={{ maxWidth: "100%", padding: "5px" }}
                                     />
                                 </div>))}
                         </div>
                     </div>
+                    {loading && <h3>Đang tải...</h3>}
+                    {!hasMore && <h3>Hết hình để tải...</h3>}
                 </div>
             </div >
             <ShowImageModal

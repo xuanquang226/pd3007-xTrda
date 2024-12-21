@@ -81,6 +81,7 @@ export default function ProductDetail() {
                 body: JSON.stringify(newCartItem)
             }, autoRetry);
             addCartItem(newCartItem);
+            notifySuccess('Thêm hàng thành công');
         } else {
             notifyError('Hết hàng');
             console.log("Product is unavailable");
@@ -125,7 +126,7 @@ export default function ProductDetail() {
                             <div className="top">
                                 <p>{product?.name}</p>
                                 <p>{product?.description}</p>
-                                <p>{product?.price} đ</p>
+                                <p>{product?.price}</p>
                             </div>
                             <div className={styles['bottom']}>
                                 <input type="number" value={cartItem.quantity} style={{ width: '50px' }} min={isAvailable ? "1" : "0"} max={isAvailable ? product?.quantity : "0"} onChange={handleChangeQuantity} />

@@ -23,4 +23,6 @@ public interface ProductService {
     void deleteManyProduct(List<Long> listId);
 
     void updateQuantityAfterOrder(HashMap<Long, Long> productIdToQuantityMap);
+
+    ProductDTO getOneProduct(Long id);
 }
