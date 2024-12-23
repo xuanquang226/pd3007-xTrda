@@ -230,13 +230,13 @@ export default function ContactMe() {
                         </Form>
                     </div>
                     <div className={styles['site-contact-social']}>
-                        <Link href="https://www.facebook.com/daumummim.tlc">
+                        <Link href="https://www.instagram.com/trada._/">
                             <img src="../images/instagram.png" alt="Contact" style={{ width: '30px', height: '30px' }} />
                         </Link>
-                        <Link href="https://www.facebook.com/daumummim.tlc">
+                        <Link href="https://www.tiktok.com/@xiaotrada">
                             <img src="../images/tiktok.png" alt="Contact" style={{ width: '30px', height: '30px' }} />
                         </Link>
-                        <Link href="https://www.facebook.com/daumummim.tlc">
+                        <Link href="https://www.facebook.com/tradaxiao/">
                             <img src="../images/facebook.png" alt="Contact" style={{ width: '30px', height: '30px' }} />
                         </Link>
 
