@@ -44,7 +44,7 @@ export default function ContactMe() {
             notifySuccess("Yêu cầu của bạn đã được gửi đi thành công");
             clearForm();
             try {
-                const response = await fetch(`http://${url}/api/mail`, {
+                const response = await fetch(`https://${url}/api/mail`, {
                     method: 'POST',
                     body: formData
                 });

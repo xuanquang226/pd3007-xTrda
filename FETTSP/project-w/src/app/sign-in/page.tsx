@@ -33,7 +33,7 @@ export default function SignIn() {
 
     const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const response = await fetch(`http://${url}/api/account/login?username=${account.userName}&password=${account.password}`, {
+        const response = await fetch(`https://${url}/api/account/login?username=${account.userName}&password=${account.password}`, {
             method: 'GET'
         })
         if (response.ok) {
@@ -92,7 +92,7 @@ export default function SignIn() {
                             </div>
                             <div className="form-footer">
                                 <Button variant="primary" type="submit">Sign in</Button>
-                                <Link href="/sign-up">Đăng ký</Link>
+                                <Link href="/sign-up">Sign up</Link>
                             </div>
                         </Form>
                     </div>

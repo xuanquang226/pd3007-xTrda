@@ -21,7 +21,7 @@ export default function HomeTrang() {
         setLoading(true);
 
         try {
-            const response = await fetch(`http://${url}/api/images/many2?page=${page}&size=8`);
+            const response = await fetch(`https://${url}/api/images/many2?page=${page}&size=8`);
             const data = await response.json();
             const newImages = data.content;
             setImages((prev) => [...prev, ...newImages]);

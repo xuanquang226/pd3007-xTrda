@@ -20,7 +20,7 @@ export default function ListOrder() {
 
     // Get order
     const getOrder = useCallback(async () => {
-        const response = await fetchWithToken(`http://${url}/api/order?page=${page}&size=5`, {
+        const response = await fetchWithToken(`https://${url}/api/order?page=${page}&size=5`, {
             method: 'GET'
         }, autoRetry);
         if (response && response.ok) {
@@ -51,7 +51,7 @@ export default function ListOrder() {
 
     const [productList, setProductList] = useState<Product[]>([]);
     const getProductList = useCallback(async () => {
-        const response = await fetchWithToken(`http://${url}/api/product/many`, {
+        const response = await fetchWithToken(`https://${url}/api/product/many`, {
             method: 'POST',
             body: JSON.stringify(idProductList),
         }, autoRetry);

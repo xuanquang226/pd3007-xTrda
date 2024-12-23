@@ -47,7 +47,7 @@ export default function Type() {
 
     useEffect(() => {
         if (categoryId > 0) {
-            fetch(`http://${url}/api/category/one/${categoryId}`)
+            fetch(`https://${url}/api/category/one/${categoryId}`)
                 .then((res) => res.json())
                 .then((data) => {
                     setCategory(data);
@@ -66,7 +66,7 @@ export default function Type() {
                             <div className={styles['grid-main']}>
                                 {category?.productDTOs.map((product) => (
                                     <div key={product.id} className={styles['grid-item']} >
-                                        <Link href={`http://${url}/category/${categoryType}/picture/${product.id}`}>
+                                        <Link href={`https://${url}/category/${categoryType}/picture/${product.id}`}>
                                             <img src={product.imageDTOs[0].url} alt=""
                                                 onClick={() => {
                                                 }} style={{ maxWidth: "100%", padding: "5px" }}
