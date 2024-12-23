@@ -21,6 +21,9 @@
     width: 100%;
     height:400px;
 }
+.list-images{
+    overflow-x: scroll;
+}
 
 .list-images ul{
     list-style-type: none;
