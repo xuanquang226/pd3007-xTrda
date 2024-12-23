@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { notifyError, notifySuccess } from "@/utils/notify";
 import { ToastContainer } from "react-toastify";
 
-export default function SignIn() {
+export default function SignUp() {
     const url = process.env.NEXT_PUBLIC_API_URL;
     // const url = 'localhost:8082';
     const router = useRouter();
@@ -43,6 +43,9 @@ export default function SignIn() {
             formData.append('customer', JSON.stringify(customer));
             const response = await fetch(`https://${url}/api/account/sign-up`, {
                 method: 'POST',
+                headers: {
+                    "Content-type": "multipart/form-data",
+                },
                 body: formData
             });
             if (response.ok) {

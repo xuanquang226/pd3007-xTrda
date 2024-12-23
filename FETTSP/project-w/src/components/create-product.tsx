@@ -54,7 +54,8 @@ export default function CreateProduct() {
                 const response = await fetch(`https://${url}/api/product/admin`, {
                     method: "POST",
                     headers: {
-                        Authorization: token ?? ""
+                        Authorization: token ?? "",
+                        "Content-type": "multipart/form-data",
                     },
                     body: formData
                 });
