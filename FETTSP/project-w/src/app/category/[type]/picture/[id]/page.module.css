@@ -23,6 +23,7 @@
 }
 .list-images{
     overflow-x: scroll;
+    overflow-y: hidden;
 }
 
 .list-images ul{
