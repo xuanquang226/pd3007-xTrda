@@ -55,7 +55,6 @@ export default function CreateProduct() {
                     method: "POST",
                     headers: {
                         Authorization: token ?? "",
-                        "Content-type": "multipart/form-data",
                     },
                     body: formData
                 });

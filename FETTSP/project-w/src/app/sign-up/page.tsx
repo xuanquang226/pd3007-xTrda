@@ -43,9 +43,6 @@ export default function SignUp() {
             formData.append('customer', JSON.stringify(customer));
             const response = await fetch(`https://${url}/api/account/sign-up`, {
                 method: 'POST',
-                headers: {
-                    "Content-type": "multipart/form-data",
-                },
                 body: formData
             });
             if (response.ok) {
