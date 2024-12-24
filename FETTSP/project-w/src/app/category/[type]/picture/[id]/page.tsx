@@ -94,8 +94,6 @@ export default function ProductDetail() {
         }
     };
 
-
-
     const [isAvailable, setIsAvailable] = useState<boolean>(true);
     const checkQuantityOfProduct = useCallback(() => {
         if (product && product.quantity < 1) {
@@ -107,6 +105,17 @@ export default function ProductDetail() {
     useEffect(() => {
         checkQuantityOfProduct();
     }, [checkQuantityOfProduct]);
+
+    const [priceAfterHandle, setPriceAfterHandle] = useState<string>('');
+    const handlePrice = useCallback(() => {
+        const price = product?.price ?? '';
+        const priceAfter = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        setPriceAfterHandle(priceAfter + ' đ');
+    }, [product]);
+
+    useEffect(() => {
+        handlePrice();
+    }, [handlePrice]);
 
     return (
         <div className={`container ${styles.customContainer}`}>
@@ -132,7 +141,7 @@ export default function ProductDetail() {
                             <div className="top">
                                 <p>{product?.name}</p>
                                 <p>{product?.description}</p>
-                                <p>{product?.price}</p>
+                                <p>{priceAfterHandle}</p>
                             </div>
                             <div className={styles['bottom']}>
                                 <input type="number" value={cartItem.quantity} style={{ width: '50px' }} min={isAvailable ? "1" : "0"} max={isAvailable ? product?.quantity : "0"} onChange={handleChangeQuantity} />
