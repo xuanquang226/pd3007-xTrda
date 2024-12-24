@@ -1,6 +1,6 @@
 'use client'
 import { Product } from "@/type/product";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { notifyError, notifySuccess } from "@/utils/notify";
 import classNames from "classnames";
 import { ToastContainer } from "react-toastify";
 export default function ProductDetail() {
+    const router = useRouter();
     const { type, id } = useParams();
     const { cartItemStore, addCartItem } = useCartStore();
     const [product, setProduct] = useState<Product>();
@@ -34,9 +35,9 @@ export default function ProductDetail() {
 
     // get product from param id
     const getProductFromId = useCallback(async () => {
-        const response = await fetchWithToken(`https://${url}/api/product/${id}?categoryType=${type}`, {
+        const response = await fetch(`https://${url}/api/product/${id}?categoryType=${type}`, {
             method: 'GET',
-        }, autoRetry);
+        });
         try {
             if (response && response.ok) {
                 const data = await response.json();
@@ -72,16 +73,21 @@ export default function ProductDetail() {
     }
 
     // handle on click add cart
-    const handleAddCart = () => {
+    const handleAddCart = async () => {
         if (isAvailable) {
             const newCartItem = { ...cartItem };
             newCartItem.idProduct = product?.id ?? 0;
-            fetchWithToken(`https://${url}/api/cart-item`, {
+            const response = await fetchWithToken(`https://${url}/api/cart-item`, {
                 method: 'POST',
                 body: JSON.stringify(newCartItem)
             }, autoRetry);
-            addCartItem(newCartItem);
-            notifySuccess('Thêm hàng thành công');
+            if (response && response.ok) {
+                addCartItem(newCartItem);
+                notifySuccess('Thêm hàng thành công');
+            } else {
+                notifyError('Đăng nhập để đặt hàng');
+                router.push('/sign-in');
+            }
         } else {
             notifyError('Hết hàng');
             console.log("Product is unavailable");
