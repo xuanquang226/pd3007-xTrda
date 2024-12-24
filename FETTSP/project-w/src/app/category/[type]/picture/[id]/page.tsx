@@ -139,7 +139,7 @@ export default function ProductDetail() {
                         </div>
                         <div className={styles['right-content']}>
                             <div className="top">
-                                <p>{product?.name}</p>
+                                <h4>{product?.name}</h4>
                                 <p>{product?.description}</p>
                                 <p>{priceAfterHandle}</p>
                             </div>
