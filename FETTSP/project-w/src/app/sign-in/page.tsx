@@ -34,7 +34,10 @@ export default function SignIn() {
     const handleSubmitForm = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const response = await fetch(`https://${url}/api/account/login`, {
-            method: 'GET',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(account),
         });
         if (response.ok) {
