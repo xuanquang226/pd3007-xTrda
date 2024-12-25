@@ -31,18 +31,19 @@ export default function SignIn() {
         refreshToken: ''
     });
 
-    const handleSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmitForm = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const response = await fetch(`https://${url}/api/account/login?username=${account.userName}&password=${account.password}`, {
-            method: 'GET'
-        })
+        const response = await fetch(`https://${url}/api/account/login`, {
+            method: 'GET',
+            body: JSON.stringify(account),
+        });
         if (response.ok) {
             const data = await response.json();
             setTupleToken(data);
         } else {
             notifyError("Đăng nhập thất bại");
         }
-    };
+    }, [account]);
 
     const handleToken = useCallback(() => {
         if (tupleToken.accessToken !== '' || tupleToken.refreshToken !== '') {
