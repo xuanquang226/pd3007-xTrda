@@ -1,6 +1,10 @@
 package controller;
 
+import java.net.URI;
+
+import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,16 +44,16 @@ public class AccountController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<TupleToken> loginAccount(@RequestParam String username, @RequestParam String password,
+    @PostMapping("/login")
+    public ResponseEntity<TupleToken> loginAccount(@RequestBody AccountDTO accountDTO,
             HttpServletRequest request) {
-        TupleToken tupleToken = accountService.loginAccountWithoutToken(username, password, request);
+        TupleToken tupleToken = accountService.loginAccountWithoutToken(accountDTO.getUserName(),
+                accountDTO.getPassword(), request);
         if (tupleToken != null) {
             return ResponseEntity.ok(tupleToken);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
     }
 
     @GetMapping("/{id}")
@@ -65,5 +69,17 @@ public class AccountController {
     @GetMapping("/auth")
     public ResponseEntity<TupleToken> validateRefreshToken(HttpServletRequest request) {
         return ResponseEntity.ok(accountService.validateRefreshToken(request));
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> updateAccountVerify(@RequestParam String token) {
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.badRequest().body("Token is missing or invalid");
+        }
+        accountService.verifyAccount(token);
+        // Trả về 302 Redirect
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("https://xiaotrada.com/")); // URL trang chủ của bạn
+        return new ResponseEntity<>(headers, HttpStatus.FOUND); // HTTP 302 Found
     }
 }

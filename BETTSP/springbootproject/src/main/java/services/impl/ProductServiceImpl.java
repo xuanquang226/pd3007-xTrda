@@ -53,26 +53,17 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         productDao.createOneProduct(productDTO);
-        List<ProductDTO> listProductDTOByName = productDao.findOneProductByName(productDTO.getName());
-        listProductDTOByName.sort(Comparator.comparingLong((product) -> product.getId()));
+        ProductDTO latestProductDTO = productDao.getProductLatest(productDTO.getName());
 
-        // Dat con tro o phan tu cuoi cung lay idproduct thuc su roi set cho image tao
-        // lien ket
-        ListIterator<ProductDTO> iListIterator = listProductDTOByName.listIterator(listProductDTOByName.size());
-        ProductDTO latestProductDTO = new ProductDTO();
-        if (iListIterator.hasPrevious()) {
-            latestProductDTO = iListIterator.previous();
-            List<ImageDTO> imageDTOs = new ArrayList<>();
-            String urlResource = "http://" + host + "/images-storage/";
-            for (ImageDTO imageDTO : productDTO.getImageDTOs()) {
-                String imgUrl = urlResource + imageDTO.getDescription();
-                imageDTO.setIdProduct(latestProductDTO.getId());
-                imageDTO.setUrl(imgUrl);
-                imageDTOs.add(imageDTO);
-            }
-            imageDao.createManyImage(imageDTOs);
+        List<ImageDTO> imageDTOs = new ArrayList<>();
+        String urlResource = "https://" + host + "/images-storage/";
+        for (ImageDTO imageDTO : productDTO.getImageDTOs()) {
+            String imgUrl = urlResource + imageDTO.getDescription();
+            imageDTO.setIdProduct(latestProductDTO.getId());
+            imageDTO.setUrl(imgUrl);
+            imageDTOs.add(imageDTO);
         }
-
+        imageDao.createManyImage(imageDTOs);
     }
 
     @Override

@@ -41,6 +41,10 @@
     justify-content: space-between;
 }
 
+.order__body__info{
+    margin-left: 5px;
+}
+
 .site-pagination {
     display: flex;
     justify-content: center;
@@ -50,8 +54,21 @@
 .site-pagination .page-item {
     margin: 5px;
 }
+
+.order__body a img{
+    width: 75px;
+    height: 75px;
+}
 @media (max-width: 768px) {
     .site-content {
         font-size: small;
+    }
+    .order__body a img{
+        width: 50px;
+        height: 50px;
+    }
+
+    .site-content{
+        width: 90%;
     }
 }

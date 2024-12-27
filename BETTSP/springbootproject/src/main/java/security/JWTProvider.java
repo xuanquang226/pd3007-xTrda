@@ -26,6 +26,7 @@ public class JWTProvider {
     @Value("${SECRET_KEY}")
     private String JWT_SECRET_KEY;
     private final long AT_EXPIRE = 450000L;
+    private final long VT_EXPIRE = 600000L;
     private final long RT_EXPIRE = 120000000L;
     private Key key;
 
@@ -33,6 +34,18 @@ public class JWTProvider {
     public void init() {
         this.key = Keys.hmacShaKeyFor(JWT_SECRET_KEY.getBytes());
     }
+
+    public String generateVerifyToken(String mail) {
+        Date currentDate = new Date();
+        Date expiredDate = new Date(currentDate.getTime() + VT_EXPIRE);
+
+        return Jwts.builder()
+                .setSubject(mail)
+                .setIssuedAt(currentDate)
+                .setExpiration(expiredDate)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    };
 
     public String generateAccessToken(String subject, List<GrantedAuthority> role) {
         Date currentDate = new Date();

@@ -91,13 +91,13 @@ export default function ListOrder() {
                             return (<div key={order.id} className={styles['order']}>
                                 <div className={styles['order__header']}>
                                     <p>Mã đơn: {order.id}</p>
-                                    <p>Trạng thái: {order.status}</p>
+                                    <p style={{ marginLeft: "5px" }}>Trạng thái: {order.status}</p>
                                 </div>
                                 <div className={styles['order__body']}>
-                                    <Link href='#'><img src={idOrderToProductMap?.get(order.id)?.imageDTOs[0].url} alt={idOrderToProductMap?.get(order.id)?.imageDTOs[0].description} width="75px" height="75px" /></Link>
-                                    <div className='content-body'>
+                                    <Link href='#'><img src={idOrderToProductMap?.get(order.id)?.imageDTOs[0].url} alt={idOrderToProductMap?.get(order.id)?.imageDTOs[0].description} /></Link>
+                                    <div className={styles['order__body__info']}>
                                         <p>{idOrderToProductMap?.get(order.id)?.name}</p>
-                                        <p>Tổng tiền: {order.totalPrice} đ</p>
+                                        <p>Tổng tiền: {order.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')} đ</p>
                                     </div>
                                 </div>
                                 <div className='order__footer'>

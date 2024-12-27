@@ -19,7 +19,8 @@ export default function SignUp() {
         password: '',
         accountType: '',
         idCustomer: 0,
-        roleAccountList: []
+        roleAccountList: [],
+        status: 'inactive'
     };
     const customerDefault = {
         id: 0,
@@ -31,30 +32,6 @@ export default function SignUp() {
     };
     const [account, setAccount] = useState<Account>(accountDefault);
     const [customer, setCustomer] = useState<Customer>(customerDefault);
-
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if (isExistsUserName == false && isConfirmPassWord == true && isValidMail == true && isValidPassWord == true
-            && isValidPhone == true && account.userName.length !== 0 && account.password.length !== 0 && customer.name.length !== 0
-            && customer.phone.length !== 0 && customer.mail.length !== 0) {
-
-            const formData = new FormData();
-            formData.append('account', JSON.stringify(account));
-            formData.append('customer', JSON.stringify(customer));
-            const response = await fetch(`https://${url}/api/account/sign-up`, {
-                method: 'POST',
-                body: formData
-            });
-            if (response.ok) {
-                notifySuccess("Đăng ký thành công");
-                await delay(1500);
-                clearInputField();
-                router.push('/sign-in');
-            }
-        } else {
-            notifyError("Đăng ký thất bại kiểm tra các trường nhập");
-        }
-    };
 
     const clearInputField = () => {
         setAccount((oldAccount) => {
@@ -77,7 +54,12 @@ export default function SignUp() {
 
 
     const [isExistsUserName, setIsExistUserName] = useState<boolean>(false);
+    const [lengthUserName, setLengthUserName] = useState<string>('defaultUserName');
     const handleUserName = useCallback(async () => {
+        setLengthUserName(account.userName);
+        if (lengthUserName.length < 8) {
+            return;
+        };
         const response = await fetch(`https://${url}/api/account/validate?userName=${account.userName}`, {
             method: 'GET'
         });
@@ -86,7 +68,7 @@ export default function SignUp() {
             const isExists = data ? true : false;
             setIsExistUserName(isExists);
         }
-    }, [account]);
+    }, [account.userName, lengthUserName]);
 
     const [isConfirmPassWord, setIsConfirmPassWord] = useState<boolean>(true);
     const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -141,6 +123,8 @@ export default function SignUp() {
         }
     };
 
+
+
     // const [tailMail, setTailMail] = useState<string>('');
     // const handleSelect = (eventKey: string | null) => {
     //     setTailMail(eventKey ?? '');
@@ -152,15 +136,45 @@ export default function SignUp() {
     // };
 
 
-    const [isValidMail, setIsValidMail] = useState<boolean>(true);
-    const checkMail = (event: React.FocusEvent<HTMLInputElement>) => {
-        let mail: string = event.target.value;
-        if (mail.includes('@')) {
-            setIsValidMail(true);
-        } else {
-            setIsValidMail(false);
+    const [isUnValidMail, setIsUnValidMail] = useState<boolean>(false);
+    const [isExistsMail, setIsExistMail] = useState<boolean>(false);
+
+    const handleMail = useCallback(async (event: React.FocusEvent<HTMLInputElement>) => {
+        const mail: string = event.target.value.trim();
+        const validDomains = ['gmail.com', 'outlook.com', 'icloud.com', 'yahoo.com'];
+
+        if (!mail.includes('@')) {
+            setIsUnValidMail(true);
+            setIsExistMail(false);
+            return;
         }
-    }
+
+        const domain = mail.split('@')[1];
+        if (!validDomains.includes(domain)) {
+            setIsUnValidMail(true);
+            setIsExistMail(false);
+            return;
+        }
+
+        setIsUnValidMail(false);
+
+        try {
+            const response = await fetch(`https://${url}/api/customer/validate?mail=${mail}`, {
+                method: 'GET',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setIsExistMail(!!data);
+            } else {
+                setIsExistMail(false);
+            }
+        } catch (error) {
+            console.error("API call failed", error);
+            setIsExistMail(false);
+        }
+
+    }, [customer.mail]);
 
     const [referralCode, setReferralCode] = useState<string>('');
     const handleReferralCode = () => {
@@ -172,6 +186,30 @@ export default function SignUp() {
 
         if (referralCode.trim().length === 0) setAccount({ ...account, accountType: 'USER' });
     };
+
+    const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (isExistsUserName == false && isExistsMail == false && isConfirmPassWord == true && isUnValidMail == false && isValidPassWord == true
+            && isValidPhone == true && account.userName.length !== 0 && account.password.length !== 0 && customer.name.length !== 0
+            && customer.phone.length !== 0 && customer.mail.length !== 0) {
+
+            notifySuccess("Đăng ký thành công");
+            await delay(800);
+            const formData = new FormData();
+            formData.append('account', JSON.stringify(account));
+            formData.append('customer', JSON.stringify(customer));
+            router.push('/sign-in');
+            const response = await fetch(`https://${url}/api/account/sign-up`, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                clearInputField();
+            }
+        } else {
+            notifyError("Đăng ký thất bại kiểm tra các trường nhập");
+        }
+    }, [lengthUserName, isExistsUserName, isExistsMail, isConfirmPassWord, isUnValidMail, isValidPassWord, isValidPhone, account, customer]);
 
     const { customerStore, addCustomer } = useUserStore();
     const preventAccess = useCallback(() => {
@@ -201,7 +239,9 @@ export default function SignUp() {
                                             onBlur={handleUserName}
                                         ></Form.Control>
                                     </InputGroup>
-                                    <Form.Text className="text-danger" style={{ visibility: isExistsUserName ? "visible" : "hidden" }}>Đã tồn tại user name này</Form.Text>
+                                    <Form.Text className="text-danger" style={{ visibility: (lengthUserName.length < 8) || isExistsUserName ? "visible" : "hidden" }}>
+                                        {(lengthUserName.length < 8) ? 'Tên tài khoản quá ngắn' : isExistsUserName ? 'Tài khoản đã tồn tại' : ''}
+                                    </Form.Text>
                                 </Form.Group>
                                 <Form.Group className="mb-lg-2">
                                     <Form.Label>Password</Form.Label>
@@ -267,7 +307,7 @@ export default function SignUp() {
                                             placeholder="Input your mail"
                                             value={customer.mail}
                                             onChange={(e) => { setCustomer({ ...customer, mail: e.target.value }) }}
-                                            onBlur={checkMail}
+                                            onBlur={handleMail}
                                         ></Form.Control>
                                         {/* <DropdownButton
                                             variant="outline-secondary"
@@ -281,7 +321,16 @@ export default function SignUp() {
                                             <Dropdown.Item eventKey="@icloud.com">@icloud.com</Dropdown.Item>
                                         </DropdownButton> */}
                                     </InputGroup>
-                                    <Form.Text className="text-danger" style={{ visibility: isValidMail ? 'hidden' : 'visible' }} >Cần nhập mail đúng định dạng</Form.Text>
+                                    <Form.Text
+                                        className="text-danger"
+                                        style={{ visibility: isUnValidMail || isExistsMail ? 'visible' : 'hidden' }}
+                                    >
+                                        {isUnValidMail
+                                            ? 'Nhập đúng định dạng'
+                                            : isExistsMail
+                                                ? 'Đã tồn tại mail'
+                                                : ''}
+                                    </Form.Text>
                                 </Form.Group>
                                 <Form.Group className="mb-lg-2">
                                     <Form.Label>Location</Form.Label>
@@ -315,8 +364,8 @@ export default function SignUp() {
                         </Form>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import data.dao.ProductDao;
@@ -77,7 +79,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<ProductDTO> findOneProductByName(String name) {
+    public List<ProductDTO> findListProductByName(String name) {
         return productMapper.toDto(productRepository.findByName(name));
     }
 
@@ -94,5 +96,10 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public List<ProductDTO> findProductByIds(List<Long> productIdList) {
         return productMapper.toDto(productRepository.findProductsByIdIn(productIdList));
+    }
+
+    @Override
+    public ProductDTO getProductLatest(String name) {
+        return productMapper.toDto(productRepository.findFirstByNameOrderByIdDesc(name));
     }
 }

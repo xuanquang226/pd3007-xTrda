@@ -1,14 +1,17 @@
-@media (max-width:768px){
-    .img-wrapper img{
-        width: 60%;
-        height: 300px;
+@media (max-width: 768px) {
+    .img-wrapper img {
+        width: 90%; 
+        max-height: 300px; 
+        object-fit: contain;
+        margin: auto; 
     }
 }
 
-@media (min-width:768px){
-    .img-wrapper img{
-        width: 100%;
-        height: 750px;
+@media (min-width: 768px) {
+    .img-wrapper img {
+        width: 70%;
+        max-height: 600px; 
+        object-fit: contain; 
+        margin: auto; 
     }
 }
-

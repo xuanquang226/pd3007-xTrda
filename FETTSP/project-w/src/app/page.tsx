@@ -55,7 +55,7 @@ export default function HomeTrang() {
     }, [loading]);
 
     // useEffect(() => {
-    //     fetch(`http://${url}/api/images/many`)
+    //     fetch(`https://${url}/api/images/many`)
     //         .then(res => res.json())
     //         .then(data => setImages(data));
     // }, []);

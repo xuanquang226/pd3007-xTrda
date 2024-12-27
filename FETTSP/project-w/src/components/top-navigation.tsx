@@ -335,8 +335,8 @@ export default function TopNavigation() {
                                                 <p>{cartItem.note}</p>
                                                 <div className={styles['info2-cart-item']}>
                                                     <div className={styles['price-cart-item']}>
-                                                        <p>{idProductToProductMap.get(cartItem.idProduct)?.price}</p>
-                                                        <p>VNĐ</p>
+                                                        <p>{idProductToProductMap.get(cartItem.idProduct)?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+                                                        <p>đ</p>
                                                     </div>
                                                     <div className={styles['quantity']}>
                                                         <Link href="#" onClick={() => { productIsAvailable ? decreaseQuantityItem(cartItem.idProduct, cartItem.idCart) : noAction }}><img src="/images/decrease.png" alt="" /></Link>
@@ -355,8 +355,8 @@ export default function TopNavigation() {
                         <div className={styles['cart-info']}>
                             <div className={styles['total-price']}>
                                 <p>Total price: </p>
-                                <p>{cart.totalPrice}</p>
-                                <p>VNĐ</p>
+                                <p>{cart.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+                                <p>đ</p>
                             </div>
                             <Button href="#" onClick={handleClickCheckOut} className={classNames(styles['cart-info__button'])} variant="dark">Checkout</Button>
                         </div>

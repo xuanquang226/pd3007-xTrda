@@ -23,7 +23,8 @@ export default function SignIn() {
         password: '',
         accountType: '',
         idCustomer: 0,
-        roleAccountList: []
+        roleAccountList: [],
+        status: ''
     }
     const [account, setAccount] = useState<Account>(defaultAccount);
     const [tupleToken, setTupleToken] = useState<TupleToken>({

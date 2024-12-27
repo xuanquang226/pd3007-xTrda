@@ -9,6 +9,7 @@ import CartItem from "@/type/cart-item";
 import useCartStore from "@/app/store/state-cart";
 import fetchWithToken from "@/utils/fetchWithToken";
 import { notifyError, notifySuccess } from "@/utils/notify";
+import ShowImageModal from "@/components/show-image.modal";
 import classNames from "classnames";
 import { ToastContainer } from "react-toastify";
 export default function ProductDetail() {
@@ -117,15 +118,27 @@ export default function ProductDetail() {
         handlePrice();
     }, [handlePrice]);
 
+    const [linkImg, setLinkImg] = useState<string>("");
+    const [showImgModal, setShowImgModal] = useState<boolean>(false);
+
     return (
         <div className={`container ${styles.customContainer}`}>
             <ToastContainer />
+            <ShowImageModal
+                linkImg={linkImg}
+                showImgModal={showImgModal}
+                setShowImgModal={setShowImgModal}
+            ></ShowImageModal>
             <div className="site-wrapper">
                 <div className={styles['site-container']}>
                     <div className={styles['site-content']} style={!isAvailable ? { opacity: 0.55 } : {}}>
                         <div className={styles['left-content']}>
                             <Link href="#" className={styles['left-content__link']}>
-                                <img src={urlImage} alt="" />
+                                <img src={urlImage} alt="" onClick={() => {
+                                    setLinkImg(urlImage ?? '');
+                                    setShowImgModal(true);
+                                }
+                                } />
                             </Link>
                             <div className={styles['list-images']}>
                                 <ul>

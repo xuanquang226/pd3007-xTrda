@@ -119,12 +119,12 @@ public class CartServiceImpl implements CartService {
         for (CartItemDTO cartItem : listCartItem) {
             tempPrice += Long.parseLong(cartItem.getPrice());
         }
-
-        // TODO tim hieu 1 code tuong ung voi phan tram
         String codeDiscount = cart.getCodeDiscount();
         Long codeDiscountToPercent = Long.parseLong(codeDiscount);
 
-        Double totalPrice = tempPrice - ((Double.valueOf(codeDiscountToPercent) / 100) * tempPrice);
+        // Tính tổng giá trị với kiểu Long
+        Long discountAmount = (tempPrice * codeDiscountToPercent) / 100;
+        Long totalPrice = tempPrice - discountAmount;
 
         cartDao.updateTotalPrice(String.valueOf(totalPrice), idCustomer);
         entityManager.clear();

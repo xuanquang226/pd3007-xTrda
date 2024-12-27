@@ -10,4 +10,6 @@ import data.entities.CustomerEntity;
 @Repository
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> {
     Optional<CustomerEntity> findByIdAccount(Long idAccount);
+
+    Optional<CustomerEntity> findFirstByMailOrderByIdDesc(String mail);
 }

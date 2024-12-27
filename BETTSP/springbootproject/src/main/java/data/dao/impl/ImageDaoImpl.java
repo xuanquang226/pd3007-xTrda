@@ -46,9 +46,7 @@ public class ImageDaoImpl implements ImageDao {
 
     @Override
     public void createManyImage(List<ImageDTO> imageDTOs) {
-        for (ImageDTO imageDTO : imageDTOs) {
-            imageRepository.save(imageMapper.toEntity(imageDTO));
-        }
+        imageRepository.saveAll(imageMapper.toEntity(imageDTOs));
     }
 
     @Override

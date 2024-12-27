@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class MailServiceImpl implements MailService {
     private MailDao mailDao;
     @Autowired
     private JavaMailSender mailSender;
+
+    @Value("${HOST}")
+    private String host;
 
     @Override
     public void sendEmail(MailDTO mailDTO) {
@@ -51,4 +55,17 @@ public class MailServiceImpl implements MailService {
         mailSender.send(mailMessage2);
     }
 
+    @Override
+    public void sendEmailVerification(String email, String token) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(email);
+        mailMessage.setSubject("Xác thực tài khoản Xiaotrada của bạn");
+
+        String contentMail = """
+                Nhấn vào link sau để xác thực tài khoản của bạn:
+                http://%s/api/account/verify?token=%s
+                """.formatted(host, token);
+        mailMessage.setText(contentMail);
+        mailSender.send(mailMessage);
+    }
 }

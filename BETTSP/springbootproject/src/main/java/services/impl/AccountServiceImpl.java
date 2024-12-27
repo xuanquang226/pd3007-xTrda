@@ -45,6 +45,7 @@ import security.JWTProvider;
 import services.AccountService;
 import services.CartService;
 import services.DeviceService;
+import services.MailService;
 import utils.RedisUtils;
 import utils.TupleToken;
 import utils.objects.InfoRefreshToken;
@@ -82,6 +83,9 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private MailService mailService;
+
     @Override
     public void createAccount(AccountDTO accountDTO, CustomerDTO customerDTO) {
         // create account, customer and cart
@@ -110,6 +114,7 @@ public class AccountServiceImpl implements AccountService {
         cartService.createOneCart(cart);
 
         updateAccount(account);
+        mailService.sendEmailVerification(customer.getMail(), jwtProvider.generateVerifyToken(customer.getMail()));
     }
 
     @Override
@@ -151,6 +156,9 @@ public class AccountServiceImpl implements AccountService {
                     .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
             UserDetails user = customUserDetailService.loadUserByUsername(username);
+            if (user == null) {
+                return null;
+            }
             List<GrantedAuthority> listAuthorities = user.getAuthorities().stream().collect(Collectors.toList());
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(auth);
@@ -287,5 +295,14 @@ public class AccountServiceImpl implements AccountService {
         } catch (EntityNotFoundException entityNotFoundException) {
             return false;
         }
+    }
+
+    @Override
+    public void verifyAccount(String token) {
+        Claims claims = jwtProvider.validateToken(token);
+        CustomerDTO customer = customerDao.getOneCustomerByMail(claims.getSubject());
+        AccountDTO account = accountDao.getOneAccountByIdCustomer(customer.getId());
+        account.setStatus("active");
+        accountDao.updateAccount(account);
     }
 }

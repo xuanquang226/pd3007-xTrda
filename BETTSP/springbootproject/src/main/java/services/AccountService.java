@@ -27,4 +27,6 @@ public interface AccountService {
     TupleToken validateRefreshToken(HttpServletRequest request);
 
     boolean validateExistsUsername(String userName);
+
+    void verifyAccount(String token);
 }
