@@ -139,7 +139,7 @@ export default function ResetPassword() {
                                 </Form.Group>
                             </div>
                             <div className="form-footer">
-                                <Button variant="primary" type="submit">Sign up</Button>
+                                <Button variant="primary" type="submit">Reset</Button>
                             </div>
                         </Form>
                     </div>
