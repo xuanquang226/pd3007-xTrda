@@ -69,13 +69,16 @@ export default function SignIn() {
         preventAccess();
     }, [preventAccess]);
 
+
+    const [showIdentifyModal, setShowIdentifyModal] = useState<boolean>(false);
+
     return (
         <div className={`container ${styles.customContainer}`}>
             <ToastContainer
             />
             <div className="wrapper">
                 <div className="site-container">
-                    <div className="site-content">
+                    <div className={styles['site-content']}>
                         <Form id="form-id" onSubmit={handleSubmitForm}>
                             <div className="mb-lg-2 form-body">
                                 <Form.Group>
@@ -95,14 +98,21 @@ export default function SignIn() {
                                     </Form.Control>
                                 </Form.Group>
                             </div>
-                            <div className="form-footer">
-                                <Button variant="primary" type="submit">Sign in</Button>
-                                <Link href="/sign-up">Sign up</Link>
+                            <div className={styles['form-footer']}>
+                                <div className={styles['form-footer-left']}>
+                                    <Button variant="primary" type="submit">Sign in</Button>
+                                    <Link href="/sign-up">Sign up</Link>
+                                </div>
+                                <div className={styles['form-footer-right']}>
+                                    <Link href="/forgot-password" onClick={() => {
+                                        setShowIdentifyModal(true);
+                                    }}>Forgot password?</Link>
+                                </div>
                             </div>
                         </Form>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
