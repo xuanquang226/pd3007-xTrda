@@ -36,6 +36,9 @@ public class SecurityConfig {
                         // .requestMatchers("/account/**").hasRole("ADMIN")
                         .requestMatchers("/api/account/validate").permitAll()
                         .requestMatchers("/api/account/verify").permitAll()
+                        .requestMatchers("/api/account/auth").permitAll()
+                        .requestMatchers("/api/account/forgot-password").permitAll()
+                        .requestMatchers("/api/account/verify-token-reset").permitAll()
                         .requestMatchers("/api/customer/validate").permitAll()
                         .requestMatchers("/api/images/many").permitAll()
                         .requestMatchers("/api/images/many2").permitAll()
@@ -43,7 +46,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/category/**").permitAll()
                         .requestMatchers("/api/product/admin").hasRole("ADMIN")
                         .requestMatchers("/api/product/**").permitAll()
-                        .requestMatchers("/api/account/auth").permitAll()
                         .requestMatchers("/api/mail").permitAll()
                         .requestMatchers("/images-storage/**").permitAll()
 

@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import data.dao.MailDao;
+import data.dto.AccountDTO;
 import data.dto.MailDTO;
 import services.MailService;
 
@@ -63,7 +65,21 @@ public class MailServiceImpl implements MailService {
 
         String contentMail = """
                 Nhấn vào link sau để xác thực tài khoản của bạn:
-                http://%s/api/account/verify?token=%s
+                https://%s/api/account/verify?token=%s
+                """.formatted(host, token);
+        mailMessage.setText(contentMail);
+        mailSender.send(mailMessage);
+    }
+
+    @Async
+    @Override
+    public void sendEmailForgotPassword(String mail, String token) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(mail);
+        mailMessage.setSubject("Thay đổi mật khẩu Xiaotrada");
+        String contentMail = """
+                Nhấn vào link sau để đặt lại mật khẩu:
+                https://%s/api/account/verify-token-reset?tokenReset=%s
                 """.formatted(host, token);
         mailMessage.setText(contentMail);
         mailSender.send(mailMessage);

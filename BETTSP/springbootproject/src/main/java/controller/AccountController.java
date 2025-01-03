@@ -2,11 +2,11 @@ package controller;
 
 import java.net.URI;
 
-import org.json.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -27,6 +28,7 @@ import data.dto.CustomerDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import services.AccountService;
 import utils.TupleToken;
+import utils.objects.AccessTokenAndIdAccount;
 
 @RestController
 @RequestMapping("/api/account")
@@ -81,5 +83,38 @@ public class AccountController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("https://xiaotrada.com/")); // URL trang chủ của bạn
         return new ResponseEntity<>(headers, HttpStatus.FOUND); // HTTP 302 Found
+    }
+
+    @GetMapping("/forgot-password")
+    public ResponseEntity<Boolean> forgotPassword(@RequestParam String email) {
+        return ResponseEntity.ok(accountService.forgotPassword(email));
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<Void> updateAccountToResetPassword(@RequestBody AccountDTO accountDTO) {
+        accountService.updateAccountToResetPassword(accountDTO);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/verify-token-reset")
+    public ResponseEntity<Void> verifyTokenReset(@RequestParam String tokenReset) {
+        AccessTokenAndIdAccount result = accountService.verifyTokenReset(tokenReset);
+
+        if (result == null) {
+            String errorUrl = UriComponentsBuilder.fromHttpUrl("https://xiaotrada.com/error")
+                    .queryParam("errorMessage", "token_expired")
+                    .toUriString();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create(errorUrl));
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        } else {
+            String redirectUrl = UriComponentsBuilder.fromHttpUrl("https://xiaotrada.com/reset-password")
+                    .queryParam("token", result.getAccessToken())
+                    .queryParam("idAccount", result.getIdAccount())
+                    .toUriString();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create(redirectUrl));
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        }
     }
 }
