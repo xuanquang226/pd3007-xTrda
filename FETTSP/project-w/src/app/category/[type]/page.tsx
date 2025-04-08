@@ -57,6 +57,7 @@ export default function Type() {
         }
     }, [categoryId]);
 
+    //TODO: sửa url thành url2 ở thẻ link khi chạy local và ngược lại
     return (
         <div className={`container ${styles.customContainer}`}>
             <div className="site-wrapper">
@@ -65,7 +66,7 @@ export default function Type() {
                         <div className={styles['site-content__list-image']}>
                             <div className={styles['grid-main']}>
                                 {category?.productDTOs.map((product) => (
-                                    <div key={product.id} className={styles['grid-item']} >
+                                    <div key={product.id} className={styles['grid-item']} > 
                                         <Link href={`https://${url}/category/${categoryType}/picture/${product.id}`}>
                                             <img src={product.imageDTOs[0].url} alt=""
                                                 onClick={() => {
