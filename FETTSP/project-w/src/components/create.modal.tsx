@@ -11,6 +11,8 @@ interface IProps {
 }
 
 export default function CreateModal(props: IProps) {
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     const { showModalCreate, setShowModalCreate } = props;
     const [name, setName] = useState<string>("");
     const [author, setAuthor] = useState<string>("");
@@ -20,7 +22,7 @@ export default function CreateModal(props: IProps) {
             toast.error("Name or author is not empty");
             return;
         }
-        fetch("http://localhost:8082/book", {
+        fetch(`https://${url}/api/book`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json",
@@ -31,7 +33,7 @@ export default function CreateModal(props: IProps) {
             .then(res => res.json())
             .then(data => {
                 toast.success("Add success");
-                mutate("http://localhost:8082/book");
+                mutate(`https://${url}/api/book`);
                 handleCloseModal();
             })
     }

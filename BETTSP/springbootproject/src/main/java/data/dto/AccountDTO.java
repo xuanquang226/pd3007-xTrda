@@ -18,4 +18,5 @@ public class AccountDTO extends BaseDTO {
     private String accountType;
     private Long idCustomer;
     private List<RoleAccountDTO> roleAccountList;
+    private String status;
 }

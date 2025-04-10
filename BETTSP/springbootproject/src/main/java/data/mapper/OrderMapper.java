@@ -9,6 +9,7 @@ import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 
 import data.dto.OrderDTO;
 import data.entities.OrderEntity;

@@ -5,11 +5,17 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import data.dao.ImageDao;
 import data.dto.ImageDTO;
+import data.dto.OrderDTO;
+import data.entities.ImageEntity;
+import data.entities.OrderEntity;
 import data.mapper.ImageMapper;
 import data.repositories.ImageRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,9 +46,7 @@ public class ImageDaoImpl implements ImageDao {
 
     @Override
     public void createManyImage(List<ImageDTO> imageDTOs) {
-        for (ImageDTO imageDTO : imageDTOs) {
-            imageRepository.save(imageMapper.toEntity(imageDTO));
-        }
+        imageRepository.saveAll(imageMapper.toEntity(imageDTOs));
     }
 
     @Override
@@ -119,5 +123,13 @@ public class ImageDaoImpl implements ImageDao {
     @Override
     public void deleteImagesByIdProduct(Long id) {
         imageRepository.deleteImagesByIdProduct(id);
+    }
+
+    @Override
+    public Page<ImageDTO> findManyImageOrderByIdDesc(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ImageEntity> pageEntity = imageRepository.findAllByOrderByIdAsc(pageable);
+        Page<ImageDTO> pageDtoPage = pageEntity.map(imageMapper::toDto);
+        return pageDtoPage;
     }
 }

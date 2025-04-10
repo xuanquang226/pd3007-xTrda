@@ -2,6 +2,8 @@ package data.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import data.dto.OrderDTO;
 
 public interface OrderDao {
@@ -14,4 +16,8 @@ public interface OrderDao {
     List<OrderDTO> getManyOrder();
 
     void deleteOrder(Long id);
+
+    List<OrderDTO> getManyOrderByIdCustomer(Long idCustomer);
+
+    Page<OrderDTO> getManyOrderByIdCustomer(Long idCustomer, int page, int size);
 }

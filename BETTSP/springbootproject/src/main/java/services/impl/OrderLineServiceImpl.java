@@ -40,4 +40,8 @@ public class OrderLineServiceImpl implements OrderLineService {
         return orderLineDao.getManyOrderLine(idOrder);
     }
 
+    @Override
+    public List<OrderLineDTO> getManyOrderLineByIdOrderList(List<Long> idOrderList) {
+        return orderLineDao.getManyOrderLineByIdOrderList(idOrderList);
+    }
 }

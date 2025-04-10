@@ -7,6 +7,8 @@ public interface CustomerDao {
 
     CustomerDTO getOneCustomerById(Long id);
 
+    CustomerDTO getOneCustomerByMail(String mail);
+
     void createOneCustomer(CustomerDTO customerDTO);
 
     void updateCustomer(CustomerDTO customerDTO);

@@ -14,9 +14,11 @@ import Customer from "@/type/customer";
 import UserInterface from "@/components/user-interface";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/app/store/state-user";
+import Sidebar from "./sidebar";
 
 export default function TopNavigation() {
-
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     //State chung cap nhat o component chi tiet san pham
     const { cartItemStore, addCartItem } = useCartStore();
     const { customerStore, addCustomer } = useUserStore();
@@ -44,7 +46,7 @@ export default function TopNavigation() {
 
     const getCart = useCallback(async () => {
         await delay(600);
-        const response = await fetchWithToken("http://localhost:8082/cart", {
+        const response = await fetchWithToken(`https://${url}/api/cart`, {
             method: 'GET'
         }, autoRetry);
         if (response && response.ok) {
@@ -88,7 +90,7 @@ export default function TopNavigation() {
         cart.listCartItem.forEach(cartItem => {
             idProductList.push(cartItem.idProduct);
         });
-        const response = await fetchWithToken(`http://localhost:8082/product/many`, {
+        const response = await fetchWithToken(`https://${url}/api/product/many`, {
             method: 'POST',
             body: JSON.stringify(idProductList)
         }, autoRetry);
@@ -152,7 +154,7 @@ export default function TopNavigation() {
     const handleTotalPrice = (idProduct: number, idCart: number, quantity: number) => {
         setCartItem((oldCartItem) => {
             const newCartItem = { ...oldCartItem, idProduct: idProduct, idCart: idCart, quantity: quantity };
-            fetchWithToken(`http://localhost:8082/cart-item`, {
+            fetchWithToken(`https://${url}/api/cart-item`, {
                 method: 'PUT',
                 body: JSON.stringify(newCartItem)
             }, autoRetry);
@@ -163,7 +165,7 @@ export default function TopNavigation() {
 
     //Handle delete item
     const handleDeleteItem = (idCartItem: number) => {
-        fetchWithToken(`http://localhost:8082/cart-item/${idCartItem}`, {
+        fetchWithToken(`https://${url}/api/cart-item/${idCartItem}`, {
             method: 'DELETE',
         }, autoRetry);
         setCartItem({ ...cartItem, id: idCartItem });
@@ -196,7 +198,7 @@ export default function TopNavigation() {
     });
 
     const getCustomer = useCallback(async () => {
-        const response = await fetchWithToken("http://localhost:8082/customer", {
+        const response = await fetchWithToken(`https://${url}/api/customer`, {
             method: 'GET'
         }, autoRetry);
         if (response && response.ok) {
@@ -253,11 +255,11 @@ export default function TopNavigation() {
 
 
     const handleClickCheckOut = async () => {
-        const responseOrder = await fetchWithToken("http://localhost:8082/order", {
+        const responseOrder = await fetchWithToken(`https://${url}/api/order`, {
             method: 'POST',
         }, autoRetry);
         if (responseOrder && responseOrder.ok) {
-            const responseCartAfterOrder = await fetchWithToken("http://localhost:8082/cart/after-order", {
+            const responseCartAfterOrder = await fetchWithToken(`https://${url}/api/cart/after-order`, {
                 method: 'GET',
             }, autoRetry);
             if (responseCartAfterOrder && responseCartAfterOrder.ok) {
@@ -272,6 +274,32 @@ export default function TopNavigation() {
 
     };
 
+    // const [isShowSidebar, setIsShowbar] = useState<boolean>(false);
+    // const handleShowSidebar = useCallback(() => {
+    //     if (isShowSidebar) {
+    //         setIsShowbar(false);
+    //     } else {
+    //         setIsShowbar(true);
+    //     }
+    // }, [isShowSidebar]);
+
+    // useEffect(() => {
+    //     // Hàm kiểm tra kích thước màn hình
+    //     const handleResize = () => {
+    //         if (window.innerWidth >= 768) {
+    //             setIsShowbar(false); // Tắt sidebar khi màn hình lớn hơn 768px
+    //         }
+    //     };
+
+    //     // Gọi hàm ngay khi component mount
+    //     handleResize();
+
+    //     // Lắng nghe sự kiện resize
+    //     window.addEventListener('resize', handleResize);
+
+    //     // Cleanup listener khi unmount
+    //     return () => window.removeEventListener('resize', handleResize);
+    // }, []);
     return (
         <div className={styles['top-navigation']}>
             <div className={styles['nav-icons']} >
@@ -283,7 +311,6 @@ export default function TopNavigation() {
                     <img src="/images/account.png" alt="account"></img>
                 </Link>
                 <p>{customer.name}</p>
-
                 <UserInterface info={customer} isPopupUserVisible={isPopupUserVisible}></UserInterface>
 
                 <div className={styles['popup']} style={{ visibility: isPopupVisible ? "visible" : "hidden" }}>
@@ -308,8 +335,8 @@ export default function TopNavigation() {
                                                 <p>{cartItem.note}</p>
                                                 <div className={styles['info2-cart-item']}>
                                                     <div className={styles['price-cart-item']}>
-                                                        <p>{idProductToProductMap.get(cartItem.idProduct)?.price}</p>
-                                                        <p>VNĐ</p>
+                                                        <p>{idProductToProductMap.get(cartItem.idProduct)?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+                                                        <p>đ</p>
                                                     </div>
                                                     <div className={styles['quantity']}>
                                                         <Link href="#" onClick={() => { productIsAvailable ? decreaseQuantityItem(cartItem.idProduct, cartItem.idCart) : noAction }}><img src="/images/decrease.png" alt="" /></Link>
@@ -328,8 +355,8 @@ export default function TopNavigation() {
                         <div className={styles['cart-info']}>
                             <div className={styles['total-price']}>
                                 <p>Total price: </p>
-                                <p>{cart.totalPrice}</p>
-                                <p>VNĐ</p>
+                                <p>{cart.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+                                <p>đ</p>
                             </div>
                             <Button href="#" onClick={handleClickCheckOut} className={classNames(styles['cart-info__button'])} variant="dark">Checkout</Button>
                         </div>

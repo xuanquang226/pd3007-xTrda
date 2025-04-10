@@ -20,4 +20,5 @@ public interface AccountDao {
     void deleteAccount(Long id);
 
     void updateIdCustomerById(Long idCustomer, Long id);
+
 }

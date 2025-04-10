@@ -6,6 +6,7 @@ import data.dto.AccountDTO;
 import data.dto.CustomerDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import utils.TupleToken;
+import utils.objects.AccessTokenAndIdAccount;
 
 public interface AccountService {
     void createAccount(AccountDTO accountDTO, CustomerDTO customerDTO);
@@ -27,4 +28,12 @@ public interface AccountService {
     TupleToken validateRefreshToken(HttpServletRequest request);
 
     boolean validateExistsUsername(String userName);
+
+    void verifyAccount(String token);
+
+    Boolean forgotPassword(String email);
+
+    void updateAccountToResetPassword(AccountDTO accountDTO);
+
+    AccessTokenAndIdAccount verifyTokenReset(String tokenReset);
 }

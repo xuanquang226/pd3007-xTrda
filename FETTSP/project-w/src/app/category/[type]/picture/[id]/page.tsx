@@ -1,6 +1,6 @@
 'use client'
 import { Product } from "@/type/product";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
@@ -8,12 +8,18 @@ import { Button } from "react-bootstrap";
 import CartItem from "@/type/cart-item";
 import useCartStore from "@/app/store/state-cart";
 import fetchWithToken from "@/utils/fetchWithToken";
+import { notifyError, notifySuccess } from "@/utils/notify";
+import ShowImageModal from "@/components/show-image.modal";
 import classNames from "classnames";
+import { ToastContainer } from "react-toastify";
 export default function ProductDetail() {
+    const router = useRouter();
     const { type, id } = useParams();
     const { cartItemStore, addCartItem } = useCartStore();
     const [product, setProduct] = useState<Product>();
     const [urlImage, setUrlImage] = useState<string>();
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
 
     const [autoRetry, setAutoRetry] = useState<boolean>(false);
 
@@ -30,9 +36,9 @@ export default function ProductDetail() {
 
     // get product from param id
     const getProductFromId = useCallback(async () => {
-        const response = await fetchWithToken(`http://localhost:8082/product/${id}?categoryType=${type}`, {
+        const response = await fetch(`https://${url}/api/product/${id}?categoryType=${type}`, {
             method: 'GET',
-        }, autoRetry);
+        });
         try {
             if (response && response.ok) {
                 const data = await response.json();
@@ -68,22 +74,26 @@ export default function ProductDetail() {
     }
 
     // handle on click add cart
-    const handleAddCart = () => {
+    const handleAddCart = async () => {
         if (isAvailable) {
             const newCartItem = { ...cartItem };
             newCartItem.idProduct = product?.id ?? 0;
-            fetchWithToken("http://localhost:8082/cart-item", {
+            const response = await fetchWithToken(`https://${url}/api/cart-item`, {
                 method: 'POST',
                 body: JSON.stringify(newCartItem)
             }, autoRetry);
-            addCartItem(newCartItem);
+            if (response && response.ok) {
+                addCartItem(newCartItem);
+                notifySuccess('Thêm hàng thành công');
+            } else {
+                notifyError('Đăng nhập để đặt hàng');
+                router.push('/sign-in');
+            }
         } else {
-            alert('Het hang');
+            notifyError('Hết hàng');
             console.log("Product is unavailable");
         }
     };
-
-
 
     const [isAvailable, setIsAvailable] = useState<boolean>(true);
     const checkQuantityOfProduct = useCallback(() => {
@@ -97,19 +107,43 @@ export default function ProductDetail() {
         checkQuantityOfProduct();
     }, [checkQuantityOfProduct]);
 
+    const [priceAfterHandle, setPriceAfterHandle] = useState<string>('');
+    const handlePrice = useCallback(() => {
+        const price = product?.price ?? '';
+        const priceAfter = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        setPriceAfterHandle(priceAfter + ' đ');
+    }, [product]);
+
+    useEffect(() => {
+        handlePrice();
+    }, [handlePrice]);
+
+    const [linkImg, setLinkImg] = useState<string>("");
+    const [showImgModal, setShowImgModal] = useState<boolean>(false);
+
     return (
         <div className={`container ${styles.customContainer}`}>
+            <ToastContainer />
+            <ShowImageModal
+                linkImg={linkImg}
+                showImgModal={showImgModal}
+                setShowImgModal={setShowImgModal}
+            ></ShowImageModal>
             <div className="site-wrapper">
                 <div className={styles['site-container']}>
                     <div className={styles['site-content']} style={!isAvailable ? { opacity: 0.55 } : {}}>
                         <div className={styles['left-content']}>
                             <Link href="#" className={styles['left-content__link']}>
-                                <img src={urlImage} alt="" />
+                                <img src={urlImage} alt="" onClick={() => {
+                                    setLinkImg(urlImage ?? '');
+                                    setShowImgModal(true);
+                                }
+                                } />
                             </Link>
                             <div className={styles['list-images']}>
                                 <ul>
                                     {product?.imageDTOs.map((image) => (
-                                        <li>
+                                        <li key={image.id}>
                                             <img src={image.url} alt="" onClick={() => handleChooseImage(image.url)} style={{ width: "75px", height: "75px" }} />
                                         </li>
                                     ))}
@@ -118,8 +152,9 @@ export default function ProductDetail() {
                         </div>
                         <div className={styles['right-content']}>
                             <div className="top">
-                                <p>{product?.name}</p>
+                                <h4>{product?.name}</h4>
                                 <p>{product?.description}</p>
+                                <p>{priceAfterHandle}</p>
                             </div>
                             <div className={styles['bottom']}>
                                 <input type="number" value={cartItem.quantity} style={{ width: '50px' }} min={isAvailable ? "1" : "0"} max={isAvailable ? product?.quantity : "0"} onChange={handleChangeQuantity} />

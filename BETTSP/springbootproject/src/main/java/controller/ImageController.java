@@ -3,14 +3,18 @@ package controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import data.dto.ImageDTO;
+import data.dto.OrderDTO;
 import services.ImageService;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/images")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/images")
 public class ImageController {
 
     @Autowired
@@ -110,4 +113,11 @@ public class ImageController {
     public void deleteManyImage(@RequestBody List<Long> ids) {
         imageService.deleteManyImage(ids);
     }
+
+    @GetMapping("/many2")
+    public ResponseEntity<Page<ImageDTO>> getManyOrder(@RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        Page<ImageDTO> imageList = imageService.findManyImage(page, size);
+        return ResponseEntity.ok(imageList);
+    };
 }

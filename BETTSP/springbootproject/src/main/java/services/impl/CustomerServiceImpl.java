@@ -22,4 +22,8 @@ public class CustomerServiceImpl implements CustomerService {
         return customerDao.getOneCustomerById(accountAuth.getAccount().getIdCustomer());
     }
 
+    @Override
+    public CustomerDTO getCustomerByMail(String mail) {
+        return customerDao.getOneCustomerByMail(mail);
+    }
 }

@@ -87,7 +87,7 @@ export default function LearnHTMLLayout() {
 
             <div className={styles['container-flexbox']}>
                 {images.map((src, index) => (
-                    <div className={styles["item"]} id={`item${index + 1}`}>
+                    <div key={index} className={styles["item"]} id={`item${index + 1}`}>
                         <img src={src} alt={`Image ${index + 1}`} />
                     </div>
                 ))}

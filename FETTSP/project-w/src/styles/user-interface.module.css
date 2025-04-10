@@ -34,3 +34,11 @@
     align-items: center;
 }
 
+@media (max-width:768px){
+    .user-container{
+        min-height: 200px;
+        min-width: 250px;
+        font-size: small;
+    }
+}
+

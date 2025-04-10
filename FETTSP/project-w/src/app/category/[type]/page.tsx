@@ -6,6 +6,9 @@ import { Category } from "@/type/category";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 export default function Type() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
+    // const url2 = 'localhost:3000';
     const [linkUrl, setLink] = useState<string>("");
     const [showImgModal, setShowImgModal] = useState<boolean>(false);
 
@@ -44,7 +47,7 @@ export default function Type() {
 
     useEffect(() => {
         if (categoryId > 0) {
-            fetch(`http://localhost:8082/category/one/${categoryId}`)
+            fetch(`https://${url}/api/category/one/${categoryId}`)
                 .then((res) => res.json())
                 .then((data) => {
                     setCategory(data);
@@ -54,6 +57,7 @@ export default function Type() {
         }
     }, [categoryId]);
 
+    //TODO: sửa url thành url2 ở thẻ link khi chạy local và ngược lại
     return (
         <div className={`container ${styles.customContainer}`}>
             <div className="site-wrapper">
@@ -62,12 +66,13 @@ export default function Type() {
                         <div className={styles['site-content__list-image']}>
                             <div className={styles['grid-main']}>
                                 {category?.productDTOs.map((product) => (
-                                    <div className={styles['grid-item']} >
-                                        <Link href={`http://localhost:3000/category/${categoryType}/picture/${product.id}`}>
+                                    <div key={product.id} className={styles['grid-item']} > 
+                                        <Link href={`https://${url}/category/${categoryType}/picture/${product.id}`}>
                                             <img src={product.imageDTOs[0].url} alt=""
                                                 onClick={() => {
-                                                }} style={{ height: "100%", maxWidth: "100%", padding: "20px" }}
-                                            /></Link>
+                                                }} style={{ maxWidth: "100%", padding: "5px" }}
+                                            />
+                                        </Link>
                                     </div>))}
                             </div>
                         </div>

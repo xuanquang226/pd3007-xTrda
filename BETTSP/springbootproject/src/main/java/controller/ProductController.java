@@ -3,8 +3,8 @@ package controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,14 +24,13 @@ import data.dto.ProductDTO;
 import services.ProductService;
 
 @RestController
-@RequestMapping("/product")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/product")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @PostMapping
+    @PostMapping("/admin")
     public void createOneProduct(@RequestPart("product") String productJson,
             @RequestPart("files") MultipartFile[] files) throws JsonMappingException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -52,5 +51,14 @@ public class ProductController {
     @PostMapping("/many")
     public ResponseEntity<List<ProductDTO>> findManyProductByIds(@RequestBody List<Long> idProductList) {
         return ResponseEntity.ok(productService.findManyProductByIds(idProductList));
+    }
+
+    @GetMapping("/2/{id}")
+    public ResponseEntity<ProductDTO> getOneProduct2(@PathVariable Long id) {
+        ProductDTO productDTO = productService.getOneProduct(id);
+        if (productDTO == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(productDTO);
     }
 }

@@ -34,7 +34,12 @@ public class CustomUserDetailService implements UserDetailsService {
         AccountDTO account = accountDao.getOneAccountByUserName(username);
         List<RoleAccountDTO> roleAccount = roleAccountDao.getManyRoleAccountByIdAccount(account.getId());
         // account.setRoleAccountList(roleAccount);
-        return new User(account.getUserName(), account.getPassword(), lAuthorities(roleAccount));
+        if (account.getStatus().trim().equalsIgnoreCase("active")) {
+            return new User(account.getUserName(), account.getPassword(), lAuthorities(roleAccount));
+        } else {
+            return null;
+        }
+
     }
 
     public List<GrantedAuthority> lAuthorities(List<RoleAccountDTO> roles) {

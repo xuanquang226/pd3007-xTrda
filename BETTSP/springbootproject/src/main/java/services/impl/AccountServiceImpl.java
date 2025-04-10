@@ -6,17 +6,22 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,10 +50,13 @@ import security.JWTProvider;
 import services.AccountService;
 import services.CartService;
 import services.DeviceService;
+import services.MailService;
 import utils.RedisUtils;
 import utils.TupleToken;
+import utils.objects.AccessTokenAndIdAccount;
 import utils.objects.InfoRefreshToken;
 
+@EnableAsync
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -82,6 +90,9 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private MailService mailService;
+
     @Override
     public void createAccount(AccountDTO accountDTO, CustomerDTO customerDTO) {
         // create account, customer and cart
@@ -110,6 +121,7 @@ public class AccountServiceImpl implements AccountService {
         cartService.createOneCart(cart);
 
         updateAccount(account);
+        mailService.sendEmailVerification(customer.getMail(), jwtProvider.generateVerifyToken(customer.getMail()));
     }
 
     @Override
@@ -151,6 +163,9 @@ public class AccountServiceImpl implements AccountService {
                     .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
             UserDetails user = customUserDetailService.loadUserByUsername(username);
+            if (user == null) {
+                return null;
+            }
             List<GrantedAuthority> listAuthorities = user.getAuthorities().stream().collect(Collectors.toList());
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(auth);
@@ -286,6 +301,62 @@ public class AccountServiceImpl implements AccountService {
             return true;
         } catch (EntityNotFoundException entityNotFoundException) {
             return false;
+        }
+    }
+
+    @Override
+    public void verifyAccount(String token) {
+        Claims claims = jwtProvider.validateToken(token);
+        CustomerDTO customer = customerDao.getOneCustomerByMail(claims.getSubject());
+        AccountDTO account = accountDao.getOneAccountByIdCustomer(customer.getId());
+        account.setStatus("active");
+        accountDao.updateAccount(account);
+    }
+
+    /*
+     * 1. Sau khi người dùng nhập đúng mail tồn tại. Tạo thêm token làm key và
+     * idAccount làm value lưu nó vào redis
+     * 2. Gửi mail kèm token này đến người dùng
+     * 3. Người dùng nhấp vào mail là sẽ gửi token này lại server kiểm tra token này
+     * có tồn tại trong redis không. Nếu không thì sẽ từ chối
+     * 4. Nếu có tồn tại thì cho phép người dùng nhập mật khẩu mới.
+     * 5. Sau khi thay đổi thành công sẽ xóa token khỏi redis
+     */
+    @Override
+    public Boolean forgotPassword(String email) {
+        try {
+            CustomerDTO customer = customerDao.getOneCustomerByMail(email);
+            AccountDTO account = accountDao.getOneAccountByIdCustomer(customer.getId());
+            String token = jwtProvider.generateRefreshToken(email);
+            redisUtils.setStringWithExpiry(token, account.getId().toString(), 60, TimeUnit.MINUTES);
+            mailService.sendEmailForgotPassword(email, token);
+            return true;
+        } catch (EntityNotFoundException entityNotFoundException) {
+            return false;
+        }
+    }
+
+    @Override
+    public void updateAccountToResetPassword(AccountDTO accountDTO) {
+        AccountDTO oldAccount = accountDao.getOneAccountById(accountDTO.getId());
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        oldAccount.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+        accountDao.updateAccount(oldAccount);
+    }
+
+    @Override
+    public AccessTokenAndIdAccount verifyTokenReset(String tokenReset) {
+        if (redisUtils.getString(tokenReset) != null) {
+            Long idAccount = Long.parseLong(redisUtils.getString(tokenReset));
+            AccountDTO account = accountDao.getOneAccountById(idAccount);
+            UserDetails user = customUserDetailService.loadUserByUsername(account.getUserName());
+            List<GrantedAuthority> listAuthorities = user.getAuthorities().stream().collect(Collectors.toList());
+            String newAccessToken = "Bearer " + jwtProvider.generateAccessToken(account.getUserName(), listAuthorities);
+            redisUtils.delete(tokenReset);
+            System.out.println("Có thể thay đổi mật khẩu");
+            return new AccessTokenAndIdAccount(newAccessToken, idAccount);
+        } else {
+            return null;
         }
     }
 }

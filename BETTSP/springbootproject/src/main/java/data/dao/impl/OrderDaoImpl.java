@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import data.dao.OrderDao;
 import data.dto.OrderDTO;
+import data.entities.OrderEntity;
 import data.mapper.OrderMapper;
 import data.repositories.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -53,5 +55,18 @@ public class OrderDaoImpl implements OrderDao {
         return orderMapper.toDto(
                 orderRepository.findFirstByIdCustomerOrderByIdDesc(idCustomer, pageable).getContent().get(0));
 
+    }
+
+    @Override
+    public List<OrderDTO> getManyOrderByIdCustomer(Long idCustomer) {
+        return orderMapper.toDto(orderRepository.findAllByIdCustomer(idCustomer));
+    }
+
+    @Override
+    public Page<OrderDTO> getManyOrderByIdCustomer(Long idCustomer, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<OrderEntity> pageEntity = orderRepository.findManyByIdCustomerOrderByIdDesc(idCustomer, pageable);
+        Page<OrderDTO> pageDtoPage = pageEntity.map(orderMapper::toDto);
+        return pageDtoPage;
     }
 }
