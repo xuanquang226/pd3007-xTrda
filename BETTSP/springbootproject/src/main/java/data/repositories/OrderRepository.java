@@ -1,5 +1,7 @@
 package data.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,5 +13,9 @@ import data.entities.OrderEntity;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     @Transactional
-    Page<OrderEntity> findFirstByIdCustomerOrderByIdAsc(Long idCustomer, Pageable pageable);
+    Page<OrderEntity> findFirstByIdCustomerOrderByIdDesc(Long idCustomer, Pageable pageable);
+
+    List<OrderEntity> findAllByIdCustomer(Long idCustomer);
+
+    Page<OrderEntity> findManyByIdCustomerOrderByIdDesc(Long idCustomer, Pageable pageable);
 }

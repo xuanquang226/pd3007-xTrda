@@ -16,4 +16,5 @@ public class MailDTO extends BaseDTO {
     private String phone;
     private String subject;
     private String body;
+    private String ticket;
 }

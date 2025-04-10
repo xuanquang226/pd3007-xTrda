@@ -2,6 +2,8 @@ package data.repositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +21,6 @@ public interface ImageRepository extends JpaRepository<ImageEntity, Long> {
     @Transactional
     // @Query("Delete from ImageEntity img where img.idProduct = :id")
     void deleteImagesByIdProduct(@Param("id") Long id);
+
+    Page<ImageEntity> findAllByOrderByIdAsc(Pageable pageable);
 }

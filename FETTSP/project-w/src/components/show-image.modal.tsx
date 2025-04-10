@@ -1,5 +1,5 @@
 import { Modal } from "react-bootstrap";
-
+import styles from "@/styles/image-modal.module.css";
 interface propsShowImgModal {
     linkImg: string;
     showImgModal: boolean;
@@ -18,13 +18,13 @@ export default function showImageModal(props: propsShowImgModal) {
                 show={showImgModal}
                 onHide={() => closeImgModal()}
                 keyboard={true}
-                size='xl'
+                size='lg'
                 backdrop={true}
             >
                 <Modal.Header closeButton></Modal.Header>
                 <Modal.Body>
-                    <div className="img-wrapper" style={{ display: 'flex', justifyContent: 'center' }}>
-                        <img src={linkImg} style={{ width: "750px", height: "750px" }} />
+                    <div className={styles['img-wrapper']} style={{ display: 'flex', justifyContent: 'center' }}>
+                        <img src={linkImg} />
                     </div>
                 </Modal.Body>
             </Modal>

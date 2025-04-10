@@ -2,6 +2,9 @@ package data.dao;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import data.dto.ImageDTO;
 
 public interface ImageDao {
@@ -24,4 +27,6 @@ public interface ImageDao {
     List<ImageDTO> findImageDTOsByIdProduct(Long id);
 
     void deleteImagesByIdProduct(Long id);
+
+    Page<ImageDTO> findManyImageOrderByIdDesc(int page, int size);
 }

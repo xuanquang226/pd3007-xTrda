@@ -18,8 +18,7 @@ import data.dto.CategoryDTO;
 import services.CategoryService;
 
 @RestController
-@RequestMapping("/category")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/category")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;

@@ -20,8 +20,7 @@ import jakarta.persistence.EntityNotFoundException;
 import services.CartItemService;
 
 @RestController
-@RequestMapping("/cart-item")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/cart-item")
 public class CartItemController {
     @Autowired
     private CartItemService cartItemService;

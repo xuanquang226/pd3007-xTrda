@@ -10,7 +10,7 @@ public interface ProductDao {
 
     ProductDTO getOneProduct(Long id);
 
-    List<ProductDTO> findOneProductByName(String name);
+    List<ProductDTO> findListProductByName(String name);
 
     void createOneProduct(ProductDTO productDTO);
 
@@ -25,4 +25,6 @@ public interface ProductDao {
     List<ProductDTO> findProductByIds(List<Long> productIdList);
 
     void updateQuantityAfterOrder(List<ProductDTO> productDTOs);
+
+    ProductDTO getProductLatest(String name);
 }

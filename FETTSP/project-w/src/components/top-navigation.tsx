@@ -10,15 +10,19 @@ import { Product } from "@/type/product";
 import CartItem from "@/type/cart-item";
 import useCartStore from "@/app/store/state-cart";
 import fetchWithToken from "@/utils/fetchWithToken";
+import Customer from "@/type/customer";
+import UserInterface from "@/components/user-interface";
+import { useRouter } from "next/navigation";
+import useUserStore from "@/app/store/state-user";
+import Sidebar from "./sidebar";
 
 export default function TopNavigation() {
-    const [isPopupVisible, setIsPopupVisible] = useState(false);
-    const showPopup = () => setIsPopupVisible(true);
-    const hidePopup = () => setIsPopupVisible(false);
-
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     //State chung cap nhat o component chi tiet san pham
     const { cartItemStore, addCartItem } = useCartStore();
-
+    const { customerStore, addCustomer } = useUserStore();
+    const [autoRetry, setAutoRetry] = useState<boolean>(false);
     // Get cart
     const [cart, setCart] = useState<Cart>({
         id: 0,
@@ -29,7 +33,7 @@ export default function TopNavigation() {
         notes: '',
         listCartItem: []
     });
-    const [cartItem, setCartItem] = useState<CartItem>({
+    const defaultCartItem = {
         id: 0,
         idCart: 0,
         idProduct: 0,
@@ -37,14 +41,15 @@ export default function TopNavigation() {
         price: null,
         note: null,
         name: null
-    });
+    };
+    const [cartItem, setCartItem] = useState<CartItem>(defaultCartItem);
 
     const getCart = useCallback(async () => {
         await delay(600);
-        const response = await fetchWithToken("http://localhost:8082/cart", {
+        const response = await fetchWithToken(`https://${url}/api/cart`, {
             method: 'GET'
-        });
-        if (response.ok) {
+        }, autoRetry);
+        if (response && response.ok) {
             const data = await response.json();
             setCart(data);
         } else {
@@ -60,6 +65,20 @@ export default function TopNavigation() {
         setCartItem(cartItemStore);
     }, [cartItemStore]);
 
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const showPopup = () => {
+        if (cart.id !== 0) {
+            if (isPopupVisible === true) {
+                setIsPopupVisible(false);
+            } else {
+                setIsPopupVisible(true);
+                setIsPopupUserVisible(false);
+            }
+        } else {
+            setIsPopupVisible(false);
+        }
+    };
+
     // Create map idProduct,Product from productList
     const idProductToProductMap = new Map<number, Product>();
     const [productList, setProductList] = useState<Product[]>([]);
@@ -71,11 +90,11 @@ export default function TopNavigation() {
         cart.listCartItem.forEach(cartItem => {
             idProductList.push(cartItem.idProduct);
         });
-        const response = await fetchWithToken(`http://localhost:8082/product/many`, {
+        const response = await fetchWithToken(`https://${url}/api/product/many`, {
             method: 'POST',
             body: JSON.stringify(idProductList)
-        });
-        if (response.ok) {
+        }, autoRetry);
+        if (response && response.ok) {
             const data = await response.json();
             setProductList(data);
         }
@@ -135,10 +154,10 @@ export default function TopNavigation() {
     const handleTotalPrice = (idProduct: number, idCart: number, quantity: number) => {
         setCartItem((oldCartItem) => {
             const newCartItem = { ...oldCartItem, idProduct: idProduct, idCart: idCart, quantity: quantity };
-            fetchWithToken(`http://localhost:8082/cart-item`, {
+            fetchWithToken(`https://${url}/api/cart-item`, {
                 method: 'PUT',
                 body: JSON.stringify(newCartItem)
-            });
+            }, autoRetry);
             return newCartItem;
         })
     };
@@ -146,9 +165,9 @@ export default function TopNavigation() {
 
     //Handle delete item
     const handleDeleteItem = (idCartItem: number) => {
-        fetchWithToken(`http://localhost:8082/cart-item/${idCartItem}`, {
+        fetchWithToken(`https://${url}/api/cart-item/${idCartItem}`, {
             method: 'DELETE',
-        });
+        }, autoRetry);
         setCartItem({ ...cartItem, id: idCartItem });
     };
 
@@ -168,23 +187,143 @@ export default function TopNavigation() {
     }, [handleQuantityCart]);
 
 
+    // get info customer after signin
+    const [customer, setCustomer] = useState<Customer>({
+        id: 0,
+        name: '',
+        mail: '',
+        location: '',
+        phone: '',
+        idAccount: 0
+    });
+
+    const getCustomer = useCallback(async () => {
+        const response = await fetchWithToken(`https://${url}/api/customer`, {
+            method: 'GET'
+        }, autoRetry);
+        if (response && response.ok) {
+            const data = await response.json();
+            setCustomer(data);
+            addCustomer(data);
+        } else {
+            console.log('Failed to fetch');
+        }
+    }, [cart, autoRetry]);
+
+    useEffect(() => {
+        getCustomer();
+    }, [getCustomer]);
+
+
+    //Hide popup when click container
+    const [isPopupUserVisible, setIsPopupUserVisible] = useState<boolean>(false);
+    const popupUserRef = useRef<HTMLAnchorElement>(null);
+    const popupRef = useRef<HTMLAnchorElement>(null);
+    const divPopupRef = useRef<HTMLDivElement>(null);
+
+    const showPopupUser = () => {
+        if (customer.id !== 0) {
+            if (isPopupUserVisible === true) {
+                setIsPopupUserVisible(false);
+            } else {
+                setIsPopupUserVisible(true);
+                setIsPopupVisible(false);
+            }
+        } else {
+            setIsPopupUserVisible(false);
+            setAutoRetry(true);
+        }
+    };
+
+    const handleClickOutSide = (event: MouseEvent) => {
+        if ((popupRef.current && !popupRef.current.contains(event.target as HTMLElement))
+            && (divPopupRef.current && !divPopupRef.current.contains(event.target as HTMLElement))) {
+            setIsPopupVisible(false);
+        }
+
+        if (popupUserRef.current && !popupUserRef.current.contains(event.target as HTMLElement)) {
+            setIsPopupUserVisible(false);
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener("click", handleClickOutSide);
+        return () => {
+            window.removeEventListener("click", handleClickOutSide);
+        };
+    }, [isPopupUserVisible, isPopupVisible]);
+
+
+    const handleClickCheckOut = async () => {
+        const responseOrder = await fetchWithToken(`https://${url}/api/order`, {
+            method: 'POST',
+        }, autoRetry);
+        if (responseOrder && responseOrder.ok) {
+            const responseCartAfterOrder = await fetchWithToken(`https://${url}/api/cart/after-order`, {
+                method: 'GET',
+            }, autoRetry);
+            if (responseCartAfterOrder && responseCartAfterOrder.ok) {
+                const data = await responseCartAfterOrder.json();
+                setCart(data);
+                setCartItem(defaultCartItem);
+            }
+        }
+    }
+
+    const noAction = () => {
+
+    };
+
+    // const [isShowSidebar, setIsShowbar] = useState<boolean>(false);
+    // const handleShowSidebar = useCallback(() => {
+    //     if (isShowSidebar) {
+    //         setIsShowbar(false);
+    //     } else {
+    //         setIsShowbar(true);
+    //     }
+    // }, [isShowSidebar]);
+
+    // useEffect(() => {
+    //     // Hàm kiểm tra kích thước màn hình
+    //     const handleResize = () => {
+    //         if (window.innerWidth >= 768) {
+    //             setIsShowbar(false); // Tắt sidebar khi màn hình lớn hơn 768px
+    //         }
+    //     };
+
+    //     // Gọi hàm ngay khi component mount
+    //     handleResize();
+
+    //     // Lắng nghe sự kiện resize
+    //     window.addEventListener('resize', handleResize);
+
+    //     // Cleanup listener khi unmount
+    //     return () => window.removeEventListener('resize', handleResize);
+    // }, []);
     return (
         <div className={styles['top-navigation']}>
-            <div className={styles['nav-icons']} onMouseEnter={showPopup} onMouseLeave={hidePopup}>
-                <Link href="" className={styles['icon']}>
+            <div className={styles['nav-icons']} >
+                <Link href={cart.id !== 0 ? '#' : '/sign-in'} ref={popupRef} className={styles['icon']} onClick={showPopup}>
                     <img src="/images/cart.png" alt="cart"></img>
                 </Link>
                 <p>{quantityCart}</p>
-                <Link href="" className={styles['icon']}>
+                <Link href={customer.id !== 0 ? '#' : '/sign-in'} ref={popupUserRef} className={styles['icon']} onClick={showPopupUser}>
                     <img src="/images/account.png" alt="account"></img>
                 </Link>
+                <p>{customer.name}</p>
+                <UserInterface info={customer} isPopupUserVisible={isPopupUserVisible}></UserInterface>
 
                 <div className={styles['popup']} style={{ visibility: isPopupVisible ? "visible" : "hidden" }}>
-                    <div className={styles['popup-content']}>
+                    <div ref={divPopupRef} className={styles['popup-content']}>
                         <div className={styles['cart-item-list']} style={{ overflowY: "auto", maxHeight: "90%", backgroundColor: "#ebe6e5" }}>
                             <ul style={{ padding: 0, margin: 0 }}>
                                 {cart.listCartItem.map(cartItem => {
-                                    return (<li key={cartItem.id}>
+                                    const product = idProductToProductMap.get(cartItem.idProduct);
+                                    let productIsAvailable = false;
+                                    if (product && product.quantity && product.quantity >= 1) {
+                                        productIsAvailable = true;
+                                    }
+                                    return (<li key={cartItem.id} style={productIsAvailable ? {} : { opacity: 0.55 }}>
                                         <div className={styles['cart-item']}>
                                             <Link
                                                 href={convertIdCategoryToNameCategory((idProductToProductMap.get(cartItem.idProduct)?.idCategory), cartItem.idProduct) ?? ''}
@@ -196,13 +335,13 @@ export default function TopNavigation() {
                                                 <p>{cartItem.note}</p>
                                                 <div className={styles['info2-cart-item']}>
                                                     <div className={styles['price-cart-item']}>
-                                                        <p>{idProductToProductMap.get(cartItem.idProduct)?.price}</p>
-                                                        <p>VNĐ</p>
+                                                        <p>{idProductToProductMap.get(cartItem.idProduct)?.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+                                                        <p>đ</p>
                                                     </div>
                                                     <div className={styles['quantity']}>
-                                                        <Link href="#" onClick={() => { decreaseQuantityItem(cartItem.idProduct, cartItem.idCart) }}><img src="/images/decrease.png" alt="" /></Link>
+                                                        <Link href="#" onClick={() => { productIsAvailable ? decreaseQuantityItem(cartItem.idProduct, cartItem.idCart) : noAction }}><img src="/images/decrease.png" alt="" /></Link>
                                                         <p>{quantities?.get(cartItem.idProduct)}</p>
-                                                        <Link href="#" onClick={() => { increaseQuantityItem(cartItem.idProduct, cartItem.idCart) }}><img src="/images/increase.png" alt="" /></Link>
+                                                        <Link href="#" onClick={() => { productIsAvailable ? increaseQuantityItem(cartItem.idProduct, cartItem.idCart) : noAction }}><img src="/images/increase.png" alt="" /></Link>
                                                     </div>
                                                 </div>
                                             </div>
@@ -216,14 +355,15 @@ export default function TopNavigation() {
                         <div className={styles['cart-info']}>
                             <div className={styles['total-price']}>
                                 <p>Total price: </p>
-                                <p>{cart.totalPrice}</p>
-                                <p>VNĐ</p>
+                                <p>{cart.totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}</p>
+                                <p>đ</p>
                             </div>
-                            <Button href="#" className={classNames(styles['cart-info__button'])} variant="dark">Checkout</Button>
+                            <Button href="#" onClick={handleClickCheckOut} className={classNames(styles['cart-info__button'])} variant="dark">Checkout</Button>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div >
     );
 }

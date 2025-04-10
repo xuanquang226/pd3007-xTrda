@@ -6,4 +6,5 @@ export default interface Account{
     accountType: string;
     idCustomer: number;
     roleAccountList: RoleAccount[];
+    status: string;
 }

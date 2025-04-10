@@ -16,4 +16,6 @@ public interface OrderLineRepository extends JpaRepository<OrderLineEntity, Long
     @Transactional
     @Query("Select ol From OrderLineEntity ol where ol.idOrder = :idOrder")
     List<OrderLineEntity> findManyOrderLineByIdOrder(@Param("idOrder") Long idOrder);
+
+    List<OrderLineEntity> findManyOrderLineByIdOrderIn(List<Long> idOrderList);
 }

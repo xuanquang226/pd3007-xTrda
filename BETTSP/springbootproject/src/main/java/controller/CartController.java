@@ -17,8 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import services.CartService;
 
 @RestController
-@RequestMapping("/cart")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/cart")
 public class CartController {
 
     @Autowired
@@ -52,10 +51,9 @@ public class CartController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/customer")
-    public ResponseEntity<Void> updateCartAfterOrder() {
-        cartService.updateCartAfterOrder();
-        return ResponseEntity.noContent().build();
+    @GetMapping("/after-order")
+    public ResponseEntity<CartDTO> updateCartAfterOrder() {
+        return ResponseEntity.ok(cartService.updateCartAfterOrder());
     }
 
 }

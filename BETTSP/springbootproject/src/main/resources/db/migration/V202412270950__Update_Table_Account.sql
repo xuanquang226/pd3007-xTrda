@@ -1,0 +1,1 @@
+ALTER TABLE public.account ADD COLUMN IF NOT EXISTS status VARCHAR(255);

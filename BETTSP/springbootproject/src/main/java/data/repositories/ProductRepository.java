@@ -1,5 +1,7 @@
 package data.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +15,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     List<ProductEntity> findProductsByIdCategory(Long idCategory);
 
     List<ProductEntity> findProductsByIdIn(List<Long> productIdList);
+
+    ProductEntity findFirstByNameOrderByIdDesc(String userName);
 }

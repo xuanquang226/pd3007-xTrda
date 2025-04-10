@@ -28,4 +28,10 @@ public class OrderLineDaoImpl implements OrderLineDao {
     public List<OrderLineDTO> getManyOrderLine(Long idOrder) {
         return mapper.toDto(repository.findManyOrderLineByIdOrder(idOrder));
     }
+
+    @Override
+    public List<OrderLineDTO> getManyOrderLineByIdOrderList(List<Long> idOrderList) {
+        return mapper.toDto(repository.findManyOrderLineByIdOrderIn(idOrderList));
+    }
+
 }

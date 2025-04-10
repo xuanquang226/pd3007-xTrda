@@ -2,6 +2,8 @@ package services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import data.dto.OrderDTO;
 
 public interface OrderService {
@@ -13,5 +15,6 @@ public interface OrderService {
 
     void deleteOrder(Long id);
 
-    void updateOrderLine();
+    Page<OrderDTO> getOrderList(int page, int size);
+
 }

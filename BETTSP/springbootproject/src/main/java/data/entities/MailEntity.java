@@ -26,4 +26,5 @@ public class MailEntity extends BaseEntity {
     private String phone;
     private String subject;
     private String body;
+    private String ticket;
 }

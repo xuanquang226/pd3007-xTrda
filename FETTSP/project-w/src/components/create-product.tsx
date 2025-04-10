@@ -1,17 +1,20 @@
 'use client'
 import { Image } from "@/type/image";
 import { Product } from "@/type/product";
+import fetchWithToken from "@/utils/fetchWithToken";
 import { useEffect, useState } from "react";
-
-
-
+import { getTokenFromCookie } from "@/utils/token-utils";
 export default function CreateProduct() {
+    const url = process.env.NEXT_PUBLIC_API_URL;
+    // const url = 'localhost:8082';
     const [product, setProduct] = useState<Product>({
         id: 0,
         name: '',
         description: '',
         idCategory: 1,
-        imageDTOs: []
+        imageDTOs: [],
+        price: '',
+        quantity: 0
     });
 
     const [files, setFiles] = useState<FileList | null>(null);
@@ -24,6 +27,7 @@ export default function CreateProduct() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        const token = getTokenFromCookie();
 
         const formData = new FormData();
 
@@ -47,15 +51,15 @@ export default function CreateProduct() {
             formData.append('product', JSON.stringify(updatedProduct));
 
             try {
-                const response = await fetch("http://localhost:8082/product", {
+                const response = await fetch(`https://${url}/api/product/admin`, {
                     method: "POST",
-                    // headers: {
-                    //     'Content-Type': 'application/json',
-                    // khong can khi gui formdata },
+                    headers: {
+                        Authorization: token ?? "",
+                    },
                     body: formData
                 });
 
-                if (response.ok) {
+                if (response && response.ok) {
                     console.log("Succeed");
                 } else {
                     console.error("Failed to upload image");
@@ -86,6 +90,17 @@ export default function CreateProduct() {
                     type="number"
                     placeholder="input idCategory"
                     onChange={(e) => setProduct({ ...product, idCategory: Number(e.target.value) })}
+                />
+                <input
+                    type="number"
+                    placeholder="input quantity"
+                    onChange={(e) => setProduct({ ...product, quantity: Number(e.target.value) })}
+                />
+
+                <input
+                    type="text"
+                    placeholder="input price"
+                    onChange={(e) => setProduct({ ...product, price: e.target.value })}
                 />
 
                 <input type="file" multiple onChange={handleFileChange} />

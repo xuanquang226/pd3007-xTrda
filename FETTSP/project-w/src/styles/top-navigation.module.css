@@ -1,12 +1,13 @@
 .top-navigation{
-
+    width: 100%;
+    position: relative;
 }
 
-.nav-icons{
+.nav-icons {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    gap: 2%;
+    gap: 10px;
 }
 
 .nav-icons .icon img:hover{
@@ -23,7 +24,8 @@
     z-index: 10;
     background-color: white;
     width: 500px;
-    height: 500px;
+    min-height: 500px;
+    max-height: 500px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     padding: 10px;
@@ -93,9 +95,17 @@
     margin: 0;
 }
 
+.icon--menu{
+    display: none;
+}
+
 @media (max-width: 768px){
     .popup-content{
         width: 300px;
         height: 400px;
+    }
+    .top-navigation{
+        font-size: small;
+        position: relative;
     }
 }

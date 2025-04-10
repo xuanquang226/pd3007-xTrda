@@ -24,4 +24,5 @@ public class AccountEntity extends BaseEntity {
     private String password;
     private String accountType;
     private Long idCustomer;
+    private String status;
 }

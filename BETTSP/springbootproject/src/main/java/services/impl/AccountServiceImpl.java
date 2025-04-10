@@ -6,17 +6,22 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,6 +38,7 @@ import data.dao.CustomerDao;
 import data.dao.RoleAccountDao;
 import data.dao.RoleDao;
 import data.dto.AccountDTO;
+import data.dto.CartDTO;
 import data.dto.CustomerDTO;
 import data.dto.RoleDTO;
 import io.jsonwebtoken.Claims;
@@ -42,11 +48,15 @@ import redis.clients.jedis.exceptions.JedisDataException;
 import security.CustomUserDetailService;
 import security.JWTProvider;
 import services.AccountService;
+import services.CartService;
 import services.DeviceService;
+import services.MailService;
 import utils.RedisUtils;
 import utils.TupleToken;
+import utils.objects.AccessTokenAndIdAccount;
 import utils.objects.InfoRefreshToken;
 
+@EnableAsync
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -77,9 +87,15 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private DeviceService deviceService;
 
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private MailService mailService;
+
     @Override
     public void createAccount(AccountDTO accountDTO, CustomerDTO customerDTO) {
-
+        // create account, customer and cart
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         String password = accountDTO.getPassword();
         String passwordEncode = passwordEncoder.encode(password);
@@ -96,7 +112,16 @@ public class AccountServiceImpl implements AccountService {
         }
         customerDTO.setIdAccount(account.getId());
         customerDao.createOneCustomer(customerDTO);
+        CustomerDTO customer = customerDao.getOneCustomerByIdAccount(account.getId());
+
+        CartDTO cart = new CartDTO();
+        cart.setIdCustomer(customer.getId());
+        cart.setNotes("empty");
+        cart.setStatus("inactive");
+        cartService.createOneCart(cart);
+
         updateAccount(account);
+        mailService.sendEmailVerification(customer.getMail(), jwtProvider.generateVerifyToken(customer.getMail()));
     }
 
     @Override
@@ -138,6 +163,9 @@ public class AccountServiceImpl implements AccountService {
                     .authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
             UserDetails user = customUserDetailService.loadUserByUsername(username);
+            if (user == null) {
+                return null;
+            }
             List<GrantedAuthority> listAuthorities = user.getAuthorities().stream().collect(Collectors.toList());
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(auth);
@@ -146,7 +174,7 @@ public class AccountServiceImpl implements AccountService {
                     + jwtProvider.generateAccessToken(sc.getAuthentication().getName(), listAuthorities);
             String refreshToken = jwtProvider.generateRefreshToken(sc.getAuthentication().getName());
             try {
-                createInfoRefreshToken(username, request);
+                createInfoRefreshToken(sc.getAuthentication().getName(), request, refreshToken);
             } catch (JsonMappingException ex) {
 
             } catch (JsonProcessingException ex) {
@@ -162,11 +190,10 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    public void createInfoRefreshToken(String username, HttpServletRequest request)
+    public void createInfoRefreshToken(String username, HttpServletRequest request, String refreshToken)
             throws JsonMappingException, JsonProcessingException {
         InfoRefreshToken infoRefreshToken = new InfoRefreshToken();
 
-        String refreshToken = jwtProvider.generateRefreshToken(username);
         Claims claims = jwtProvider.validateToken(refreshToken);
 
         Date dateCreated = claims.getIssuedAt();
@@ -213,9 +240,58 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public TupleToken validateRefreshToken(String refreshToken, HttpServletRequest request) {
+    public TupleToken validateRefreshToken(HttpServletRequest request) {
+        String deviceType = deviceService.detectDevice(request);
+        String refreshToken = request.getHeader("Authorization2");
+        Claims claims = jwtProvider.validateToken(refreshToken);
+        // TODO: Xử lý thêm hết hạn refresh token bắt đăng nhập lại
+        TupleToken tupleToken = new TupleToken();
+        if (claims != null) {
+            String userName = claims.getSubject();
+            String jsonValue = redisUtils.getValue(userName, deviceType, String.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // Đăng ký module cho java.time
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Không ghi ngày dưới dạng timestamp
 
-        return null;
+            try {
+                List<InfoRefreshToken> infoRefreshTokenList = objectMapper.readValue(jsonValue,
+                        new TypeReference<List<InfoRefreshToken>>() {
+                        });
+
+                List<String> refreshTokenList = infoRefreshTokenList.stream().map(InfoRefreshToken::getRefreshToken)
+                        .collect(Collectors.toList());
+                if (refreshTokenList.contains(refreshToken)) {
+                    if ((infoRefreshTokenList.get(infoRefreshTokenList.size() - 1)).getRefreshToken()
+                            .equalsIgnoreCase(refreshToken)) {
+                        System.out.println("Refresh token moi nhat hop le de tra ve bo token moi");
+
+                        UserDetails user = customUserDetailService.loadUserByUsername(userName);
+                        List<GrantedAuthority> listAuthorities = user.getAuthorities().stream()
+                                .collect(Collectors.toList());
+                        String newAccessToken = "Bearer "
+                                + jwtProvider.generateAccessToken(userName, listAuthorities);
+                        String newRefreshToken = jwtProvider.generateRefreshToken(userName);
+
+                        tupleToken.setAccessToken(newAccessToken);
+                        tupleToken.setRefreshToken(newRefreshToken);
+
+                        createInfoRefreshToken(userName, request, newRefreshToken); // Luu info vao redis
+
+                    } else {
+                        System.out.println("Yeu cau dang nhap lai vi refresh token da cu");
+                        tupleToken.setAccessToken("empty");
+                        tupleToken.setRefreshToken("empty");
+                    }
+                } else {
+                    System.out.println("Khong co refresh token nay trong bo nho refresh token da bi ban");
+                }
+
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return tupleToken;
     }
 
     @Override
@@ -225,6 +301,62 @@ public class AccountServiceImpl implements AccountService {
             return true;
         } catch (EntityNotFoundException entityNotFoundException) {
             return false;
+        }
+    }
+
+    @Override
+    public void verifyAccount(String token) {
+        Claims claims = jwtProvider.validateToken(token);
+        CustomerDTO customer = customerDao.getOneCustomerByMail(claims.getSubject());
+        AccountDTO account = accountDao.getOneAccountByIdCustomer(customer.getId());
+        account.setStatus("active");
+        accountDao.updateAccount(account);
+    }
+
+    /*
+     * 1. Sau khi người dùng nhập đúng mail tồn tại. Tạo thêm token làm key và
+     * idAccount làm value lưu nó vào redis
+     * 2. Gửi mail kèm token này đến người dùng
+     * 3. Người dùng nhấp vào mail là sẽ gửi token này lại server kiểm tra token này
+     * có tồn tại trong redis không. Nếu không thì sẽ từ chối
+     * 4. Nếu có tồn tại thì cho phép người dùng nhập mật khẩu mới.
+     * 5. Sau khi thay đổi thành công sẽ xóa token khỏi redis
+     */
+    @Override
+    public Boolean forgotPassword(String email) {
+        try {
+            CustomerDTO customer = customerDao.getOneCustomerByMail(email);
+            AccountDTO account = accountDao.getOneAccountByIdCustomer(customer.getId());
+            String token = jwtProvider.generateRefreshToken(email);
+            redisUtils.setStringWithExpiry(token, account.getId().toString(), 60, TimeUnit.MINUTES);
+            mailService.sendEmailForgotPassword(email, token);
+            return true;
+        } catch (EntityNotFoundException entityNotFoundException) {
+            return false;
+        }
+    }
+
+    @Override
+    public void updateAccountToResetPassword(AccountDTO accountDTO) {
+        AccountDTO oldAccount = accountDao.getOneAccountById(accountDTO.getId());
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        oldAccount.setPassword(passwordEncoder.encode(accountDTO.getPassword()));
+        accountDao.updateAccount(oldAccount);
+    }
+
+    @Override
+    public AccessTokenAndIdAccount verifyTokenReset(String tokenReset) {
+        if (redisUtils.getString(tokenReset) != null) {
+            Long idAccount = Long.parseLong(redisUtils.getString(tokenReset));
+            AccountDTO account = accountDao.getOneAccountById(idAccount);
+            UserDetails user = customUserDetailService.loadUserByUsername(account.getUserName());
+            List<GrantedAuthority> listAuthorities = user.getAuthorities().stream().collect(Collectors.toList());
+            String newAccessToken = "Bearer " + jwtProvider.generateAccessToken(account.getUserName(), listAuthorities);
+            redisUtils.delete(tokenReset);
+            System.out.println("Có thể thay đổi mật khẩu");
+            return new AccessTokenAndIdAccount(newAccessToken, idAccount);
+        } else {
+            return null;
         }
     }
 }
