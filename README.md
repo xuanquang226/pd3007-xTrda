@@ -3,7 +3,7 @@
 # Created Date: 2024
 
 ## 📌 Mô tả dự án
-+ Website show tranh đăng ký đăng nhập đặt hàng này nọ,....   Sử dụng account này để trải nghiệm giỏ hàng, đặt hàng> propro456321 Quang.0312
++ Website show tranh đăng ký đăng nhập đặt hàng,....   Sử dụng account này để trải nghiệm giỏ hàng, đặt hàng> propro456321 Quang.0312
 + Dự án này là một ứng dụng Mono bao gồm hai phần chính:
 
 - **Backend**: Được xây dựng với **Java Spring Boot**, kết nối **PostgreSQL** để lưu trữ dữ liệu và sử dụng **Redis** cho việc quản lý vòng đời jwt.
