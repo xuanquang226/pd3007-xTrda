@@ -14,15 +14,15 @@
 - Tất cả các config ở **docker-compose** chứa thông tin name service, container name, volume, network, các args và enviroment,... được lưu tại server nên ở git này chỉ có docker file build thôi.
 - Toàn bộ service trong docker compose cùng network nên chỉ có service **nginx** được expose cho phép client truy cập và postgresql được expose để dùng dbeaver. 
 
->>Mục tiêu kế tiếp làm phần chat với websocket, kafka, mongodb deploy riêng 
+>>Mục tiêu kế tiếp làm phần chat với websocket, kafka, mongodb deploy riêng.
 
 
 
-##### Status : hiện tại repo nhỏ này vẫn còn rất nhiều thứ để cải thiện với nhiều chức năng hấp dẫn khác nhưng tác giả muốn tìm việc (trong thời gian này đang học mấy cái UI/UX chứ website giao diện chán quá) 
+##### Status : hiện tại repo nhỏ này vẫn còn rất nhiều thứ để cải thiện với nhiều chức năng hấp dẫn khác nhưng tác giả muốn tìm việc (trong thời gian này đang học mấy cái UI/UX chứ website giao diện chán quá). 
 nên tạm ngừng hehehe ^_^!
 
-P/s: cái about me quên béng với chưa test
-
+P/s: cái about me quên béng với chưa test.
+P/s2: Tranh đã được sự cho phép và đồng ý của tác giả trước khi đưa lên website.
 
 
 
