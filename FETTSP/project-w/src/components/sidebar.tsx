@@ -1,10 +1,15 @@
 import { useRouter } from "next/router";
 import styles from "../styles/sidebar.module.css";
+import Link from "next/link";
 
 export default function Sidebar() {
     return (
         <div className={styles['sidebar']}>
-            <div className={styles.logo} style={{ height: "50px" }}></div>
+            <div className={`${styles.logo} w-fit h-fit`}>
+                <Link href="/">
+                    <img src="/images/logo.png" alt="" className={`w-42 h-auto`} />
+                </Link>
+            </div>
             <nav className={styles.nav}>
                 <ul>
                     <li><a href="/">Home</a></li>

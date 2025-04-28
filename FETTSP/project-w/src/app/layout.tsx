@@ -6,15 +6,21 @@ import Footer from "@/components/footer";
 import Sidebar from "@/components/sidebar";
 import Container from "react-bootstrap/Container";
 import 'react-toastify/dist/ReactToastify.css';
-// import "./globals.css";
+import "./globals.css";
 import styles from "./page.module.css";
 import { Children, Suspense } from "react";
 import TopNav from "@/components/top-navigation";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Quang Xuan web",
+  title: "Xiaotrada",
   description: "Created by Quang",
+  icons: {
+    icon: [
+      {url: '/images/favicon.ico', type: 'image/x-icon'},
+      {url: '/images/favicon.png', type: 'image/png', sizes: '32x32'}
+    ],
+  },
 };
 
 export default function RootLayout({

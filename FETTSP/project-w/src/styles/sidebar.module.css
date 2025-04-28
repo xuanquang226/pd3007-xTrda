@@ -6,9 +6,12 @@
 }
 
 .logo{
-    margin-bottom: 5%;
     font-size: 24px;
     font-weight: bold;
+    transition: transform 2s step-start;
+}
+.logo:hover{
+    transform: scale(1.15);
 }
 .nav{
     width: 80%;
