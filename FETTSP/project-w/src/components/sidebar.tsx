@@ -43,7 +43,6 @@ export default function Sidebar() {
             </div>
             <nav className={`${styles.nav} w-32 shadow-md`}>
                 <ul>
-                    <li><a href="/">Home</a></li>
                     <li><a href="/category/digital">Digital</a></li>
                     <li><a href="/category/water-color">WaterColor</a></li>
                     <li><a href="/category/comic">Comic</a></li>
