@@ -6,7 +6,7 @@ interface UserStore{
     addCustomer: (customer: Customer) => void;
 }
 
-const useUserStore = create<UserStore>(set => ({
+const useUserStore = create<UserStore>((set) => ({
     customerStore: {
         id: 0,
         name: '',
@@ -17,5 +17,4 @@ const useUserStore = create<UserStore>(set => ({
     },
     addCustomer: (customer) => (set({customerStore: customer})),
 }));
-
 export default useUserStore;

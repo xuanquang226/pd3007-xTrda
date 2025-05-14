@@ -32,9 +32,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {/* <Header /> */}
-        <div className={styles.layout}>
+        <div className={`layout`}>
           <Sidebar></Sidebar>
-          <main className={styles.mainContent}>
+          <main className={`md:grow p-2 w-full md:p-5 md:w-4/5`}>
             <TopNav></TopNav>
             <Suspense fallback={<div>Loading...</div>}>
               {children}
