@@ -15,6 +15,7 @@ import UserInterface from "@/components/user-interface";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/app/store/state-user";
 import Sidebar from "./sidebar";
+import useHButton from "@/app/store/state-hbutton";
 
 export default function TopNavigation() {
     const url = process.env.NEXT_PUBLIC_API_URL;
@@ -244,6 +245,8 @@ export default function TopNavigation() {
         if (popupUserRef.current && !popupUserRef.current.contains(event.target as HTMLElement)) {
             setIsPopupUserVisible(false);
         }
+
+
     };
 
     useEffect(() => {
@@ -300,17 +303,38 @@ export default function TopNavigation() {
     //     // Cleanup listener khi unmount
     //     return () => window.removeEventListener('resize', handleResize);
     // }, []);
+
+    // HButton
+    const {isVisible, setVisible} = useHButton();
+    const {toggleClick} = useHButton();
+    useEffect(() => {
+        const handleResize = () => {
+            setVisible(window.innerWidth < 768);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <div className={styles['top-navigation']}>
             <div className={styles['nav-icons']} >
-                <Link href={cart.id !== 0 ? '#' : '/sign-in'} ref={popupRef} className={styles['icon']} onClick={showPopup}>
-                    <img src="/images/cart.png" alt="cart"></img>
-                </Link>
-                <p>{quantityCart}</p>
-                <Link href={customer.id !== 0 ? '#' : '/sign-in'} ref={popupUserRef} className={styles['icon']} onClick={showPopupUser}>
-                    <img src="/images/account.png" alt="account"></img>
-                </Link>
-                <p>{customer.name}</p>
+                <div className="nav-icons__left">
+                    <button onClick={toggleClick} className={` hover:opacity-70 ${isVisible ? `visible` : `invisible`}`}>
+                        <img src="/images/hamburger.png" alt="hbutton" />
+                    </button>
+                </div>
+                <div className={styles['nav-icons__right']}>
+                    <Link href={cart.id !== 0 ? '#' : '/sign-in'} ref={popupRef} className={styles['icon']} onClick={showPopup}>
+                        <img src="/images/cart.png" alt="cart"></img>
+                    </Link>
+                        <p>{quantityCart}</p>
+                    <Link href={customer.id !== 0 ? '#' : '/sign-in'} ref={popupUserRef} className={styles['icon']} onClick={showPopupUser}>
+                        <img src="/images/account.png" alt="account"></img>
+                    </Link>
+                        <p>{customer.name}</p>
+                </div>
+                
                 <UserInterface info={customer} isPopupUserVisible={isPopupUserVisible}></UserInterface>
 
                 <div className={styles['popup']} style={{ visibility: isPopupVisible ? "visible" : "hidden" }}>

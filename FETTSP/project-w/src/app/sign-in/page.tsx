@@ -85,7 +85,7 @@ export default function SignIn() {
                                     <Form.Label>User name:</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Input your username"
+                                        placeholder="Enter your username"
                                         onChange={(e) => { setAccount({ ...account, userName: e.target.value }) }}>
                                     </Form.Control>
                                 </Form.Group>
@@ -93,7 +93,7 @@ export default function SignIn() {
                                     <Form.Label>Password:</Form.Label>
                                     <Form.Control
                                         type="password"
-                                        placeholder="Input your password"
+                                        placeholder="Enter your password"
                                         onChange={(e) => { setAccount({ ...account, password: e.target.value }) }}>
                                     </Form.Control>
                                 </Form.Group>

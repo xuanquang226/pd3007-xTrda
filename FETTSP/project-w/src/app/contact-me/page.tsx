@@ -165,7 +165,7 @@ export default function ContactMe() {
                                     <Form.Label>Name customer</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Input your name"
+                                        placeholder="Enter your name"
                                         value={mail.name}
                                         onChange={(e) => setMail({ ...mail, name: e.target.value })}
                                         onBlur={focusNameCustomer}
@@ -177,7 +177,7 @@ export default function ContactMe() {
                                     <InputGroup>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Input your mail"
+                                            placeholder="Enter your mail"
                                             value={mail.email}
                                             onChange={(e) => setMail({ ...mail, email: e.target.value })}
                                             onBlur={focusMailCustomer}
@@ -190,7 +190,7 @@ export default function ContactMe() {
                                     <Form.Label>Phone number</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Input your phone number"
+                                        placeholder="Enter your phone number"
                                         value={mail.phone}
                                         onChange={handlePhoneChange}
                                         onBlur={focusPhoneCustomer}
@@ -201,7 +201,7 @@ export default function ContactMe() {
                                     <Form.Label>Subject</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Input your subject"
+                                        placeholder="Enter your subject"
                                         value={mail.subject}
                                         onChange={(e) => setMail({ ...mail, subject: e.target.value })}
                                     ></Form.Control>

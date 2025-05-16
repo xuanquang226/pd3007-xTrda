@@ -4,6 +4,13 @@
 }
 
 .nav-icons {
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    justify-content: space-between;
+    padding-top: 5px
+}
+
+.nav-icons__right {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;

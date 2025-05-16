@@ -233,7 +233,7 @@ export default function SignUp() {
                                     <InputGroup>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Input your username"
+                                            placeholder="Enter your username"
                                             value={account.userName}
                                             onChange={(e) => { setAccount({ ...account, userName: e.target.value }) }}
                                             onBlur={handleUserName}
@@ -248,7 +248,7 @@ export default function SignUp() {
                                     <InputGroup>
                                         <Form.Control
                                             type={isSeePassWord ? "text" : "password"}
-                                            placeholder="Input your password"
+                                            placeholder="Enter your password"
                                             value={account.password}
                                             onChange={(e) => { setAccount({ ...account, password: e.target.value }) }}
                                             onBlur={handlePassWord}
@@ -266,7 +266,7 @@ export default function SignUp() {
                                     <InputGroup>
                                         <Form.Control
                                             type={isSeePassWord ? "text" : "password"}
-                                            placeholder="Input your password"
+                                            placeholder="Enter your password"
                                             value={confirmPassword}
                                             onChange={(e) => { setConfirmPassword(e.target.value) }}
                                             onBlur={handleConfirmPassWord}
@@ -279,7 +279,7 @@ export default function SignUp() {
                                     <InputGroup>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Input your name"
+                                            placeholder="Enter your name"
                                             value={customer.name}
                                             onChange={(e) => { setCustomer({ ...customer, name: e.target.value }) }}
                                         ></Form.Control>
@@ -291,7 +291,7 @@ export default function SignUp() {
                                     <InputGroup>
                                         <Form.Control
                                             type="number"
-                                            placeholder="Input your phone"
+                                            placeholder="Enter your phone"
                                             value={customer.phone}
                                             onChange={(e) => { setCustomer({ ...customer, phone: e.target.value }) }}
                                             onBlur={handlePhone}
@@ -304,7 +304,7 @@ export default function SignUp() {
                                     <InputGroup>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Input your mail"
+                                            placeholder="Enter your mail"
                                             value={customer.mail}
                                             onChange={(e) => { setCustomer({ ...customer, mail: e.target.value }) }}
                                             onBlur={handleMail}
@@ -337,7 +337,7 @@ export default function SignUp() {
                                     <InputGroup>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Input your location"
+                                            placeholder="Enter your location"
                                             value={customer.location}
                                             onChange={(e) => { setCustomer({ ...customer, location: e.target.value }) }}
                                         ></Form.Control>
@@ -349,7 +349,7 @@ export default function SignUp() {
                                     <InputGroup>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Input your referral code"
+                                            placeholder="Enter your referral code"
                                             value={referralCode}
                                             onChange={(e) => { setReferralCode(e.target.value) }}
                                             onBlur={handleReferralCode}

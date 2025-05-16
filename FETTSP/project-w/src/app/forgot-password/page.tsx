@@ -41,7 +41,7 @@ export default function ForgotPassword() {
                                     <InputGroup>
                                         <Form.Control
                                             type="text"
-                                            placeholder="Input your mail"
+                                            placeholder="Enter your mail"
                                             value={mail}
                                             onChange={(e) => { setMail(e.target.value) }}
                                         ></Form.Control>
