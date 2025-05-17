@@ -1,83 +1,90 @@
-.site-container{
+.site-container {
     position: relative;
     top: 10px;
     width: 100%;
     height: 75vh;
 }
-.site-content{
+
+.site-content {
     display: grid;
     grid-template-columns: 4fr 5fr;
     height: 80%;
     gap: 20px;
 }
 
-.left-content{
+.left-content {
     display: grid;
     grid-template-rows: 5fr 1fr;
     gap: 5px;
 }
 
-.left-content__link img{
+.left-content__link img {
     width: 100%;
-    height:400px;
-}
-.list-images{
-    overflow-x: scroll;
-    overflow-y: hidden;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 6px;
 }
 
-.list-images ul{
+.list-images {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+}
+
+.list-images ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: row;
-    flex-shrink: 1;
     gap: 10px;
-    justify-content: center;
+    justify-content: flex-start;
+    width: max-content;
 }
 
-.list-images ul li{
+.list-images ul li {
     opacity: 0.7;
     cursor: pointer;
     transition: transform 0.6s ease, opacity 0.6s ease;
     border-radius: 5px;
+    flex-shrink: 0;
 }
 
-.list-images ul li:hover{
+.list-images ul li:hover {
     transform: scale(1.2);
     opacity: 1;
 }
 
-.right-content .bottom{
-    position:relative;
+.right-content .bottom {
+    position: relative;
     top: 35%;
     display: flex;
     flex-direction: row;
     gap: 15px;
 }
 
-.customContainer{
+.customContainer {
     max-width: 100%;
 }
-  
-@media (max-width:768px){
-    .site-content{
+
+@media (max-width: 768px) {
+    .site-content {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+    }
+
+    .left-content {
         display: flex;
         flex-direction: column;
     }
 
-    .left-content{
-        display: flex;
-        flex-direction: column;
-    }
-
-    .left-content__link img{
-        width: 100%;
+    .left-content__link img {
         height: 200px;
     }
-    .customContainer{
-      
-    }
 
+    .right-content .bottom {
+        top: 0;
+        flex-wrap: wrap;
+    }
 }
