@@ -42,7 +42,7 @@ export default function Sidebar() {
                 </Link>
             </div>
             <nav className={`${styles.nav} w-32 shadow-md`}>
-                <ul>
+                <ul className={`flex flex-col gap-3 m-0 px-0 py-4`}>
                     <li><Link href="/category/digital">Digital</Link></li>
                     <li><Link href="/category/water-color">WaterColor</Link></li>
                     <li><Link href="/category/comic">Comic</Link></li>
